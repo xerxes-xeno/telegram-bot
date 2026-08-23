@@ -1,7 +1,7 @@
 import os
+import re
 import sqlite3
 import asyncio
-import re
 import time
 
 from telegram import Update, ChatPermissions
@@ -14,7 +14,13 @@ from telegram.ext import (
 )
 
 
+# =========================================================
+# CONFIG
+# =========================================================
+
 DB_FILE = "warnings.db"
+
+# Your Telegram User ID
 ADMIN_ID = 8504230656
 
 # Anti-spam settings
@@ -25,12 +31,16 @@ MUTE_TIME = 60
 user_messages = {}
 
 
-# =========================
+# =========================================================
 # DATABASE
-# =========================
+# =========================================================
+
+def get_db():
+    return sqlite3.connect(DB_FILE)
+
 
 def init_db():
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -61,7 +71,7 @@ def init_db():
 
 
 def save_user(user_id):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute(
@@ -74,7 +84,7 @@ def save_user(user_id):
 
 
 def get_all_users():
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute("SELECT user_id FROM users")
@@ -84,55 +94,72 @@ def get_all_users():
     return users
 
 
-# =========================
-# WARNINGS
-# =========================
+# =========================================================
+# WARNING SYSTEM
+# =========================================================
 
 def get_warnings(chat_id, user_id):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT count FROM warnings WHERE chat_id = ? AND user_id = ?",
+        """
+        SELECT count
+        FROM warnings
+        WHERE chat_id = ? AND user_id = ?
+        """,
         (chat_id, user_id)
     )
 
     result = cursor.fetchone()
+
     conn.close()
 
     return result[0] if result else 0
 
 
 def add_warning(chat_id, user_id):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO warnings (chat_id, user_id, count)
         VALUES (?, ?, 1)
+
         ON CONFLICT(chat_id, user_id)
         DO UPDATE SET count = count + 1
-    """, (chat_id, user_id))
+        """,
+        (chat_id, user_id)
+    )
 
     conn.commit()
 
     cursor.execute(
-        "SELECT count FROM warnings WHERE chat_id = ? AND user_id = ?",
+        """
+        SELECT count
+        FROM warnings
+        WHERE chat_id = ? AND user_id = ?
+        """,
         (chat_id, user_id)
     )
 
     count = cursor.fetchone()[0]
 
     conn.close()
+
     return count
 
 
 def reset_warnings(chat_id, user_id):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute(
-        "DELETE FROM warnings WHERE chat_id = ? AND user_id = ?",
+        """
+        DELETE FROM warnings
+        WHERE chat_id = ? AND user_id = ?
+        """,
         (chat_id, user_id)
     )
 
@@ -140,79 +167,100 @@ def reset_warnings(chat_id, user_id):
     conn.close()
 
 
-# =========================
+# =========================================================
 # SETTINGS
-# =========================
+# =========================================================
 
 def set_antilink(chat_id, status):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO settings (chat_id, antilink, antispam)
         VALUES (?, ?, 0)
+
         ON CONFLICT(chat_id)
         DO UPDATE SET antilink = excluded.antilink
-    """, (chat_id, status))
+        """,
+        (chat_id, status)
+    )
 
     conn.commit()
     conn.close()
 
 
 def get_antilink(chat_id):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT antilink FROM settings WHERE chat_id = ?",
+        """
+        SELECT antilink
+        FROM settings
+        WHERE chat_id = ?
+        """,
         (chat_id,)
     )
 
     result = cursor.fetchone()
+
     conn.close()
 
     return result[0] if result else 0
 
 
 def set_antispam(chat_id, status):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO settings (chat_id, antilink, antispam)
         VALUES (?, 0, ?)
+
         ON CONFLICT(chat_id)
         DO UPDATE SET antispam = excluded.antispam
-    """, (chat_id, status))
+        """,
+        (chat_id, status)
+    )
 
     conn.commit()
     conn.close()
 
 
 def get_antispam(chat_id):
-    conn = sqlite3.connect(DB_FILE)
+    conn = get_db()
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT antispam FROM settings WHERE chat_id = ?",
+        """
+        SELECT antispam
+        FROM settings
+        WHERE chat_id = ?
+        """,
         (chat_id,)
     )
 
     result = cursor.fetchone()
+
     conn.close()
 
     return result[0] if result else 0
 
 
-# =========================
+# =========================================================
 # ADMIN CHECK
-# =========================
+# =========================================================
 
 async def is_admin(update: Update):
     if not update.effective_chat:
         return False
 
     if update.effective_chat.type == "private":
+        return False
+
+    if not update.effective_user:
         return False
 
     try:
@@ -237,37 +285,40 @@ async def admin_only(update: Update):
     return True
 
 
-# =========================
+# =========================================================
 # START
-# =========================
+# =========================================================
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_user(update.effective_user.id)
 
     await update.message.reply_text(
-        "𝐓𝐡𝐞 𝐨𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐗𝐄𝐑𝐗𝐄𝐒 𝐛𝐨𝐭 — 𝐛𝐫𝐢𝐧𝐠𝐢𝐧𝐠 𝐆𝐚𝐦𝐢𝐧𝐠, 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 & 𝐌𝐮𝐬𝐢𝐜 𝐭𝐨𝐠𝐞𝐭𝐡𝐞𝐫 𝐰𝐢𝐭𝐡 𝐩𝐨𝐰𝐞𝐫𝐟𝐮𝐥 𝐟𝐞𝐚𝐭𝐮𝐫𝐞𝐬, 𝐬𝐦𝐨𝐨𝐭𝐡 𝐭𝐨𝐨𝐥𝐬, 𝐚𝐧𝐝 𝐚 𝐛𝐞𝐭𝐭𝐞𝐫 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲 𝐞𝐱𝐩𝐞𝐫𝐢𝐞𝐧𝐜𝐞.\n\n"
+        "𝐓𝐡𝐞 𝐨𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐗𝐄𝐑𝐗𝐄𝐒 𝐛𝐨𝐭 — 𝐛𝐫𝐢𝐧𝐠𝐢𝐧𝐠 "
+        "𝐆𝐚𝐦𝐢𝐧𝐠, 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 & 𝐌𝐮𝐬𝐢𝐜 𝐭𝐨𝐠𝐞𝐭𝐡𝐞𝐫 𝐰𝐢𝐭𝐡 "
+        "𝐩𝐨𝐰𝐞𝐫𝐟𝐮𝐥 𝐟𝐞𝐚𝐭𝐮𝐫𝐞𝐬, 𝐬𝐦𝐨𝐨𝐭𝐡 𝐭𝐨𝐨𝐥𝐬, 𝐚𝐧𝐝 𝐚 "
+        "𝐛𝐞𝐭𝐭𝐞𝐫 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲 𝐞𝐱𝐩𝐞𝐫𝐢𝐞𝐧𝐜𝐞.\n\n"
         "𝐌𝐨𝐫𝐞 𝐟𝐞𝐚𝐭𝐮𝐫𝐞𝐬 𝐜𝐨𝐦𝐢𝐧𝐠 𝐬𝐨𝐨𝐧. . .\n"
         "✆ 𝐀𝐮𝐭𝐡𝐨𝐫𝐢𝐭𝐲 𝐬𝐮𝐩𝐩𝐨𝐫𝐭: @XERXES_XENO 🜲"
     )
 
 
-# =========================
+# =========================================================
 # ID
-# =========================
+# =========================================================
 
 async def user_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_user(update.effective_user.id)
 
     await update.message.reply_text(
-        f"🆔 𝐘𝐨𝐮𝐫 𝐔𝐬𝐞𝐫 𝐈𝐃:\n\n"
+        "🆔 𝐘𝐨𝐮𝐫 𝐔𝐬𝐞𝐫 𝐈𝐃:\n\n"
         f"`{update.effective_user.id}`",
         parse_mode="Markdown"
     )
 
 
-# =========================
+# =========================================================
 # HELP
-# =========================
+# =========================================================
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_user(update.effective_user.id)
@@ -299,9 +350,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-# =========================
+# =========================================================
 # BAN
-# =========================
+# =========================================================
 
 async def ban(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
@@ -323,15 +374,17 @@ async def ban(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="HTML"
         )
 
-    except Exception:
+    except Exception as error:
+        print("Ban error:", error)
+
         await update.message.reply_text(
             "❌ I couldn't ban this user."
         )
 
 
-# =========================
+# =========================================================
 # UNBAN
-# =========================
+# =========================================================
 
 async def unban(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
@@ -356,15 +409,17 @@ async def unban(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="HTML"
         )
 
-    except Exception:
+    except Exception as error:
+        print("Unban error:", error)
+
         await update.message.reply_text(
             "❌ I couldn't unban this user."
         )
 
 
-# =========================
+# =========================================================
 # KICK
-# =========================
+# =========================================================
 
 async def kick(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
@@ -387,15 +442,17 @@ async def kick(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="HTML"
         )
 
-    except Exception:
+    except Exception as error:
+        print("Kick error:", error)
+
         await update.message.reply_text(
             "❌ I couldn't kick this user."
         )
 
 
-# =========================
+# =========================================================
 # MUTE
-# =========================
+# =========================================================
 
 async def mute(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
@@ -412,7 +469,9 @@ async def mute(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         await update.effective_chat.restrict_member(
             member.id,
-            ChatPermissions(can_send_messages=False)
+            permissions=ChatPermissions(
+                can_send_messages=False
+            )
         )
 
         await update.message.reply_text(
@@ -420,15 +479,17 @@ async def mute(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="HTML"
         )
 
-    except Exception:
+    except Exception as error:
+        print("Mute error:", error)
+
         await update.message.reply_text(
             "❌ I couldn't mute this user."
         )
 
 
-# =========================
+# =========================================================
 # UNMUTE
-# =========================
+# =========================================================
 
 async def unmute(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
@@ -445,7 +506,7 @@ async def unmute(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         await update.effective_chat.restrict_member(
             member.id,
-            ChatPermissions(
+            permissions=ChatPermissions(
                 can_send_messages=True,
                 can_send_audios=True,
                 can_send_documents=True,
@@ -464,15 +525,17 @@ async def unmute(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="HTML"
         )
 
-    except Exception:
+    except Exception as error:
+        print("Unmute error:", error)
+
         await update.message.reply_text(
             "❌ I couldn't unmute this user."
         )
 
 
-# =========================
+# =========================================================
 # WARN
-# =========================
+# =========================================================
 
 async def warn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
@@ -485,7 +548,11 @@ async def warn(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     member = update.message.reply_to_message.from_user
-    count = add_warning(update.effective_chat.id, member.id)
+
+    count = add_warning(
+        update.effective_chat.id,
+        member.id
+    )
 
     await update.message.reply_text(
         f"⚠️ 𝐖𝐚𝐫𝐧𝐢𝐧𝐠 𝐢𝐬𝐬𝐮𝐞𝐝 𝐭𝐨 {member.mention_html()}.\n\n"
@@ -494,9 +561,9 @@ async def warn(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-# =========================
+# =========================================================
 # WARNINGS
-# =========================
+# =========================================================
 
 async def warnings(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
@@ -509,7 +576,11 @@ async def warnings(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     member = update.message.reply_to_message.from_user
-    count = get_warnings(update.effective_chat.id, member.id)
+
+    count = get_warnings(
+        update.effective_chat.id,
+        member.id
+    )
 
     await update.message.reply_text(
         f"⚠️ {member.mention_html()} has {count} warning(s).",
@@ -517,9 +588,9 @@ async def warnings(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-# =========================
+# =========================================================
 # RESET WARNINGS
-# =========================
+# =========================================================
 
 async def resetwarns(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
@@ -533,7 +604,10 @@ async def resetwarns(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     member = update.message.reply_to_message.from_user
 
-    reset_warnings(update.effective_chat.id, member.id)
+    reset_warnings(
+        update.effective_chat.id,
+        member.id
+    )
 
     await update.message.reply_text(
         f"✅ 𝐖𝐚𝐫𝐧𝐢𝐧𝐠𝐬 𝐫𝐞𝐬𝐞𝐭 𝐟𝐨𝐫 {member.mention_html()}.",
@@ -541,34 +615,36 @@ async def resetwarns(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-# =========================
+# =========================================================
 # ANTI-LINK
-# =========================
+# =========================================================
 
 async def antilink(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
         return
 
+    chat_id = update.effective_chat.id
+
     if not context.args:
-        status = get_antilink(update.effective_chat.id)
+        status = get_antilink(chat_id)
 
         await update.message.reply_text(
-            "🔗 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤: " +
-            ("𝐎𝐍" if status else "𝐎𝐅𝐅")
+            "🔗 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤: "
+            + ("𝐎𝐍" if status else "𝐎𝐅𝐅")
         )
         return
 
     option = context.args[0].lower()
 
     if option == "on":
-        set_antilink(update.effective_chat.id, 1)
+        set_antilink(chat_id, 1)
 
         await update.message.reply_text(
             "🛡️ 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤 𝐞𝐧𝐚𝐛𝐥𝐞𝐝."
         )
 
     elif option == "off":
-        set_antilink(update.effective_chat.id, 0)
+        set_antilink(chat_id, 0)
 
         await update.message.reply_text(
             "🔓 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤 𝐝𝐢𝐬𝐚𝐛𝐥𝐞𝐝."
@@ -576,41 +652,42 @@ async def antilink(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     else:
         await update.message.reply_text(
-            "⚠️ 𝐔𝐬𝐞:\n"
+            "⚠️ 𝐔𝐬𝐚𝐠𝐞:\n"
             "/antilink on\n"
             "/antilink off"
         )
 
 
-# =========================
+# =========================================================
 # ANTI-SPAM
-# =========================
+# =========================================================
 
 async def antispam(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await admin_only(update):
         return
 
+    chat_id = update.effective_chat.id
+
     if not context.args:
-        status = get_antispam(update.effective_chat.id)
+        status = get_antispam(chat_id)
 
         await update.message.reply_text(
-            "🛡️ 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦: " +
-            ("𝐎𝐍" if status else "𝐎𝐅𝐅")
+            "🛡️ 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦: "
+            + ("𝐎𝐍" if status else "𝐎𝐅𝐅")
         )
         return
 
     option = context.args[0].lower()
 
     if option == "on":
-        set_antispam(update.effective_chat.id, 1)
+        set_antispam(chat_id, 1)
 
         await update.message.reply_text(
-            "🛡️ 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦 𝐞𝐧𝐚𝐛𝐥𝐞𝐝.\n"
-            "𝐑𝐚𝐩𝐢𝐝 𝐬𝐩𝐚𝐦 𝐰𝐢𝐥𝐥 𝐛𝐞 𝐦𝐨𝐝𝐞𝐫𝐚𝐭𝐞𝐝."
+            "🛡️ 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦 𝐞𝐧𝐚𝐛𝐥𝐞𝐝."
         )
 
     elif option == "off":
-        set_antispam(update.effective_chat.id, 0)
+        set_antispam(chat_id, 0)
 
         await update.message.reply_text(
             "🔓 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦 𝐝𝐢𝐬𝐚𝐛𝐥𝐞𝐝."
@@ -618,21 +695,24 @@ async def antispam(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     else:
         await update.message.reply_text(
-            "⚠️ 𝐔𝐬𝐞:\n"
+            "⚠️ 𝐔𝐬𝐚𝐠𝐞:\n"
             "/antispam on\n"
             "/antispam off"
         )
 
 
-# =========================
+# =========================================================
 # MODERATION HANDLER
-# =========================
+# =========================================================
 
 async def moderation_handler(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
 ):
-    if not update.message or not update.effective_chat:
+    if not update.message:
+        return
+
+    if not update.effective_chat:
         return
 
     if update.effective_chat.type == "private":
@@ -657,9 +737,9 @@ async def moderation_handler(
 
     text = update.message.text or update.message.caption or ""
 
-    # =========================
+    # -----------------------------------------------------
     # ANTI-LINK
-    # =========================
+    # -----------------------------------------------------
 
     if get_antilink(update.effective_chat.id):
 
@@ -678,21 +758,21 @@ async def moderation_handler(
                 await context.bot.send_message(
                     chat_id=update.effective_chat.id,
                     text=(
-                        f"🔗 𝐋𝐢𝐧𝐤 𝐫𝐞𝐦𝐨𝐯𝐞𝐝.\n"
+                        "🔗 𝐋𝐢𝐧𝐤 𝐫𝐞𝐦𝐨𝐯𝐞𝐝.\n"
                         f"⚠️ {user.mention_html()} — "
                         f"𝐖𝐚𝐫𝐧𝐢𝐧𝐠: {count}"
                     ),
                     parse_mode="HTML"
                 )
 
-            except Exception:
-                pass
+            except Exception as error:
+                print("Anti-link error:", error)
 
             return
 
-    # =========================
+    # -----------------------------------------------------
     # ANTI-SPAM
-    # =========================
+    # -----------------------------------------------------
 
     if get_antispam(update.effective_chat.id):
 
@@ -708,7 +788,6 @@ async def moderation_handler(
 
         user_messages[key].append(now)
 
-        # Keep only recent messages
         user_messages[key] = [
             timestamp
             for timestamp in user_messages[key]
@@ -736,83 +815,4 @@ async def moderation_handler(
                     until_date=int(now + MUTE_TIME)
                 )
 
-                await context.bot.send_message(
-                    chat_id=update.effective_chat.id,
-                    text=(
-                        f"🚨 𝐒𝐩𝐚𝐦 𝐝𝐞𝐭𝐞𝐜𝐭𝐞𝐝!\n\n"
-                        f"👤 {user.mention_html()}\n"
-                        f"⚠️ 𝐖𝐚𝐫𝐧𝐢𝐧𝐠𝐬: {count}\n"
-                        f"🔇 𝐌𝐮𝐭𝐞𝐝 𝐟𝐨𝐫 "
-                        f"{MUTE_TIME} 𝐬𝐞𝐜𝐨𝐧𝐝𝐬."
-                    ),
-                    parse_mode="HTML"
-                )
-
-            except Exception:
-                pass
-
-
-# =========================
-# BROADCAST
-# =========================
-
-async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        await update.message.reply_text(
-            "❌ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐧𝐨𝐭 𝐚𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐞𝐝 "
-            "𝐭𝐨 𝐮𝐬𝐞 𝐭𝐡𝐢𝐬 𝐜𝐨𝐦𝐦𝐚𝐧𝐝."
-        )
-        return
-
-    if not context.args:
-        await update.message.reply_text(
-            "⚠️ 𝐔𝐬𝐚𝐠𝐞:\n"
-            "/broadcast Your message here"
-        )
-        return
-
-    message = " ".join(context.args)
-    users = get_all_users()
-
-    sent = 0
-    failed = 0
-
-    await update.message.reply_text(
-        f"📢 𝐁𝐫𝐨𝐚𝐝𝐜𝐚𝐬𝐭 𝐬𝐭𝐚𝐫𝐭𝐞𝐝...\n"
-        f"👥 𝐑𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐮𝐬𝐞𝐫𝐬: {len(users)}"
-    )
-
-    for user_id in users:
-
-        try:
-            await context.bot.send_message(
-                chat_id=user_id,
-                text=message
-            )
-
-            sent += 1
-
-            # Small delay to reduce rate-limit problems
-            await asyncio.sleep(0.05)
-
-        except Exception:
-            failed += 1
-
-    await update.message.reply_text(
-        f"📊 𝐁𝐫𝐨𝐚𝐝𝐜𝐚𝐬𝐭 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞𝐝.\n\n"
-        f"✅ 𝐒𝐞𝐧𝐭: {sent}\n"
-        f"❌ 𝐅𝐚𝐢𝐥𝐞𝐝: {failed}"
-    )
-
-
-# =========================
-# START BOT
-# =========================
-
-init_db()
-
-app = Application.builder().token(
-    os.environ["TELEGRAM_BOT_TOKEN"]
-).build()
-
-
+                await 
