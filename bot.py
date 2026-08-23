@@ -2,6 +2,7 @@ import os
 import sqlite3
 import asyncio
 import re
+import time
 
 from telegram import Update, ChatPermissions
 from telegram.ext import (
@@ -15,6 +16,13 @@ from telegram.ext import (
 
 DB_FILE = "warnings.db"
 ADMIN_ID = 8504230656
+
+# Anti-spam settings
+SPAM_LIMIT = 5
+SPAM_WINDOW = 8
+MUTE_TIME = 60
+
+user_messages = {}
 
 
 def init_db():
@@ -39,7 +47,8 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS settings (
             chat_id INTEGER PRIMARY KEY,
-            antilink INTEGER NOT NULL DEFAULT 0
+            antilink INTEGER NOT NULL DEFAULT 0,
+            antispam INTEGER NOT NULL DEFAULT 0
         )
     """)
 
@@ -68,7 +77,6 @@ def get_all_users():
     users = [row[0] for row in cursor.fetchall()]
 
     conn.close()
-
     return users
 
 
@@ -108,7 +116,6 @@ def add_warning(chat_id, user_id):
     count = cursor.fetchone()[0]
 
     conn.close()
-
     return count
 
 
@@ -130,8 +137,8 @@ def set_antilink(chat_id, status):
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO settings (chat_id, antilink)
-        VALUES (?, ?)
+        INSERT INTO settings (chat_id, antilink, antispam)
+        VALUES (?, ?, 0)
         ON CONFLICT(chat_id)
         DO UPDATE SET antilink = excluded.antilink
     """, (chat_id, status))
@@ -146,6 +153,36 @@ def get_antilink(chat_id):
 
     cursor.execute(
         "SELECT antilink FROM settings WHERE chat_id = ?",
+        (chat_id,)
+    )
+
+    result = cursor.fetchone()
+    conn.close()
+
+    return result[0] if result else 0
+
+
+def set_antispam(chat_id, status):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO settings (chat_id, antilink, antispam)
+        VALUES (?, 0, ?)
+        ON CONFLICT(chat_id)
+        DO UPDATE SET antispam = excluded.antispam
+    """, (chat_id, status))
+
+    conn.commit()
+    conn.close()
+
+
+def get_antispam(chat_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT antispam FROM settings WHERE chat_id = ?",
         (chat_id,)
     )
 
@@ -220,7 +257,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• /warnings — Check warnings\n"
         "• /resetwarns — Reset warnings\n"
         "• /antilink on — Enable Anti-Link\n"
-        "• /antilink off — Disable Anti-Link\n\n"
+        "• /antilink off — Disable Anti-Link\n"
+        "• /antispam on — Enable Anti-Spam\n"
+        "• /antispam off — Disable Anti-Spam\n\n"
         "𝐔𝐭𝐢𝐥𝐢𝐭𝐢𝐞𝐬\n"
         "• /id — Get ID\n"
         "• /broadcast — Admin broadcast\n\n"
@@ -445,14 +484,9 @@ async def antilink(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         status = get_antilink(update.effective_chat.id)
 
-        if status:
-            await update.message.reply_text(
-                "🔗 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤: 𝐎𝐍"
-            )
-        else:
-            await update.message.reply_text(
-                "🔗 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤: 𝐎𝐅𝐅"
-            )
+        await update.message.reply_text(
+            "🔗 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤: " + ("𝐎𝐍" if status else "𝐎𝐅𝐅")
+        )
         return
 
     option = context.args[0].lower()
@@ -461,8 +495,7 @@ async def antilink(update: Update, context: ContextTypes.DEFAULT_TYPE):
         set_antilink(update.effective_chat.id, 1)
 
         await update.message.reply_text(
-            "🛡️ 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤 𝐞𝐧𝐚𝐛𝐥𝐞𝐝.\n"
-            "🔗 𝐋𝐢𝐧𝐤𝐬 𝐰𝐢𝐥𝐥 𝐛𝐞 𝐫𝐞𝐦𝐨𝐯𝐞𝐝 𝐚𝐮𝐭𝐨𝐦𝐚𝐭𝐢𝐜𝐚𝐥𝐥𝐲."
+            "🛡️ 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤 𝐞𝐧𝐚𝐛𝐥𝐞𝐝."
         )
 
     elif option == "off":
@@ -478,17 +511,49 @@ async def antilink(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
-async def check_links(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not update.message:
+async def antispam(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
         return
 
-    if not update.effective_chat:
+    if not context.args:
+        status = get_antispam(update.effective_chat.id)
+
+        await update.message.reply_text(
+            "🛡️ 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦: " + ("𝐎𝐍" if status else "𝐎𝐅𝐅")
+        )
+        return
+
+    option = context.args[0].lower()
+
+    if option == "on":
+        set_antispam(update.effective_chat.id, 1)
+
+        await update.message.reply_text(
+            "🛡️ 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦 𝐞𝐧𝐚𝐛𝐥𝐞𝐝.\n"
+            "𝐑𝐚𝐩𝐢𝐝 𝐬𝐩𝐚𝐦 𝐰𝐢𝐥𝐥 𝐛𝐞 𝐦𝐨𝐝𝐞𝐫𝐚𝐭𝐞𝐝."
+        )
+
+    elif option == "off":
+        set_antispam(update.effective_chat.id, 0)
+
+        await update.message.reply_text(
+            "🔓 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦 𝐝𝐢𝐬𝐚𝐛𝐥𝐞𝐝."
+        )
+
+    else:
+        await update.message.reply_text(
+            "⚠️ 𝐔𝐬𝐞:\n/antispam on\n/antispam off"
+        )
+
+
+async def moderation_handler(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+    if not update.message or not update.effective_chat:
         return
 
     if update.effective_chat.type == "private":
-        return
-
-    if not get_antilink(update.effective_chat.id):
         return
 
     user = update.effective_user
@@ -496,7 +561,9 @@ async def check_links(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not user:
         return
 
-    # Admins are ignored
+    save_user(user.id)
+
+    # Admins are exempt
     try:
         member = await update.effective_chat.get_member(user.id)
 
@@ -508,30 +575,93 @@ async def check_links(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text or update.message.caption or ""
 
-    link_pattern = r"(https?://|www\.|t\.me/|telegram\.me/|www\.)"
+    # ---------------- ANTI-LINK ----------------
 
-    if not re.search(link_pattern, text, re.IGNORECASE):
-        return
+    if get_antilink(update.effective_chat.id):
 
-    try:
-        await update.message.delete()
+        link_pattern = r"(https?://|www\.|t\.me/|telegram\.me/)"
 
-        count = add_warning(
+        if re.search(link_pattern, text, re.IGNORECASE):
+
+            try:
+                await update.message.delete()
+
+                count = add_warning(
+                    update.effective_chat.id,
+                    user.id
+                )
+
+                await context.bot.send_message(
+                    chat_id=update.effective_chat.id,
+                    text=(
+                        f"🔗 𝐋𝐢𝐧𝐤 𝐫𝐞𝐦𝐨𝐯𝐞𝐝.\n"
+                        f"⚠️ {user.mention_html()} — 𝐖𝐚𝐫𝐧𝐢𝐧𝐠: {count}"
+                    ),
+                    parse_mode="HTML"
+                )
+
+            except Exception:
+                pass
+
+            return
+
+    # ---------------- ANTI-SPAM ----------------
+
+    if get_antispam(update.effective_chat.id):
+
+        now = time.time()
+
+        key = (
             update.effective_chat.id,
             user.id
         )
 
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=(
-                f"🔗 𝐋𝐢𝐧𝐤 𝐫𝐞𝐦𝐨𝐯𝐞𝐝.\n"
-                f"⚠️ {user.mention_html()} — 𝐖𝐚𝐫𝐧𝐢𝐧𝐠: {count}"
-            ),
-            parse_mode="HTML"
-        )
+        if key not in user_messages:
+            user_messages[key] = []
 
-    except Exception:
-        pass
+        user_messages[key].append(now)
+
+        # Keep only recent messages
+        user_messages[key] = [
+            timestamp
+            for timestamp in user_messages[key]
+            if now - timestamp <= SPAM_WINDOW
+        ]
+
+        if len(user_messages[key]) >= SPAM_LIMIT:
+
+            user_messages[key] = []
+
+            try:
+                await update.message.delete()
+
+                count = add_warning(
+                    update.effective_chat.id,
+                    user.id
+                )
+
+                await context.bot.restrict_chat_member(
+                    chat_id=update.effective_chat.id,
+                    user_id=user.id,
+                    permissions=ChatPermissions(
+                        can_send_messages=False
+                    ),
+                    until_date=int(now + MUTE_TIME)
+                )
+
+                await context.bot.send_message(
+                    chat_id=update.effective_chat.id,
+                    text=(
+                        f"🚨 𝐒𝐩𝐚𝐦 𝐝𝐞𝐭𝐞𝐜𝐭𝐞𝐝!\n\n"
+                        f"👤 {user.mention_html()}\n"
+                        f"⚠️ 𝐖𝐚𝐫𝐧𝐢𝐧𝐠𝐬: {count}\n"
+                        f"🔇 𝐌𝐮𝐭𝐞𝐝 𝐟𝐨𝐫 {MUTE_TIME} 𝐬𝐞𝐜𝐨𝐧𝐝𝐬."
+                    ),
+                    parse_mode="HTML"
+                )
+
+            except Exception:
+                pass
 
 
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -559,6 +689,7 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     for user_id in users:
+
         try:
             await context.bot.send_message(
                 chat_id=user_id,
@@ -577,6 +708,8 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"❌ 𝐅𝐚𝐢𝐥𝐞𝐝: {failed}"
     )
 
+
+# ---------------- START BOT ----------------
 
 init_db()
 
@@ -600,12 +733,14 @@ app.add_handler(CommandHandler("warnings", warnings))
 app.add_handler(CommandHandler("resetwarns", resetwarns))
 
 app.add_handler(CommandHandler("antilink", antilink))
+app.add_handler(CommandHandler("antispam", antispam))
+
 app.add_handler(CommandHandler("broadcast", broadcast))
 
 app.add_handler(
     MessageHandler(
-        filters.TEXT | filters.CaptionRegex(r".*"),
-        check_links
+        filters.TEXT | filters.CAPTION,
+        moderation_handler
     )
 )
 
