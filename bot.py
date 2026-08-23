@@ -1,7 +1,81 @@
 import os
+import sqlite3
 
 from telegram import Update, ChatPermissions
 from telegram.ext import Application, CommandHandler, ContextTypes
+
+
+DB_FILE = "warnings.db"
+
+
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS warnings (
+            chat_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            count INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (chat_id, user_id)
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+def get_warnings(chat_id, user_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT count FROM warnings WHERE chat_id = ? AND user_id = ?",
+        (chat_id, user_id)
+    )
+
+    result = cursor.fetchone()
+    conn.close()
+
+    return result[0] if result else 0
+
+
+def add_warning(chat_id, user_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO warnings (chat_id, user_id, count)
+        VALUES (?, ?, 1)
+        ON CONFLICT(chat_id, user_id)
+        DO UPDATE SET count = count + 1
+    """, (chat_id, user_id))
+
+    conn.commit()
+
+    cursor.execute(
+        "SELECT count FROM warnings WHERE chat_id = ? AND user_id = ?",
+        (chat_id, user_id)
+    )
+
+    count = cursor.fetchone()[0]
+
+    conn.close()
+
+    return count
+
+
+def reset_warnings(chat_id, user_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM warnings WHERE chat_id = ? AND user_id = ?",
+        (chat_id, user_id)
+    )
+
+    conn.commit()
+    conn.close()
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -52,8 +126,7 @@ async def ban(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception:
         await update.message.reply_text(
-            "❌ I couldn't ban this user.\n"
-            "Make sure I have admin permission."
+            "❌ I couldn't ban this user."
         )
 
 
@@ -103,8 +176,7 @@ async def kick(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception:
         await update.message.reply_text(
-            "❌ I couldn't kick this user.\n"
-            "Make sure I have admin permission."
+            "❌ I couldn't kick this user."
         )
 
 
@@ -130,8 +202,7 @@ async def mute(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception:
         await update.message.reply_text(
-            "❌ I couldn't mute this user.\n"
-            "Make sure I have admin permission."
+            "❌ I couldn't mute this user."
         )
 
 
@@ -168,10 +239,63 @@ async def unmute(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception:
         await update.message.reply_text(
-            "❌ I couldn't unmute this user.\n"
-            "Make sure I have admin permission."
+            "❌ I couldn't unmute this user."
         )
 
+
+async def warn(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message.reply_to_message:
+        await update.message.reply_text(
+            "⚠️ Reply to the member's message and use /warn."
+        )
+        return
+
+    member = update.message.reply_to_message.from_user
+    chat_id = update.effective_chat.id
+
+    count = add_warning(chat_id, member.id)
+
+    await update.message.reply_text(
+        f"⚠️ 𝐖𝐚𝐫𝐧𝐢𝐧𝐠 𝐢𝐬𝐬𝐮𝐞𝐝 𝐭𝐨 {member.mention_html()}.\n\n"
+        f"𝐖𝐚𝐫𝐧𝐢𝐧𝐠𝐬: {count}",
+        parse_mode="HTML"
+    )
+
+
+async def warnings(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message.reply_to_message:
+        await update.message.reply_text(
+            "⚠️ Reply to the member's message and use /warnings."
+        )
+        return
+
+    member = update.message.reply_to_message.from_user
+    count = get_warnings(update.effective_chat.id, member.id)
+
+    await update.message.reply_text(
+        f"⚠️ {member.mention_html()} has **{count}** warning(s).",
+        parse_mode="HTML"
+    )
+
+
+async def resetwarns(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message.reply_to_message:
+        await update.message.reply_text(
+            "⚠️ Reply to the member's message and use /resetwarns."
+        )
+        return
+
+    member = update.message.reply_to_message.from_user
+
+    reset_warnings(update.effective_chat.id, member.id)
+
+    await update.message.reply_text(
+        f"✅ 𝐖𝐚𝐫𝐧𝐢𝐧𝐠𝐬 𝐫𝐞𝐬𝐞𝐭 𝐟𝐨𝐫 {member.mention_html()}.",
+        parse_mode="HTML"
+    )
+
+
+init_db()
 
 app = Application.builder().token(
     os.environ["TELEGRAM_BOT_TOKEN"]
@@ -184,6 +308,9 @@ app.add_handler(CommandHandler("unban", unban))
 app.add_handler(CommandHandler("kick", kick))
 app.add_handler(CommandHandler("mute", mute))
 app.add_handler(CommandHandler("unmute", unmute))
+app.add_handler(CommandHandler("warn", warn))
+app.add_handler(CommandHandler("warnings", warnings))
+app.add_handler(CommandHandler("resetwarns", resetwarns))
 
 print("XERXES BOT started...")
 app.run_polling()
