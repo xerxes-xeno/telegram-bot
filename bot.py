@@ -614,7 +614,6 @@ async def moderation_handler(update, context):
 
     save_user(user.id)
 
-    # Admins are exempt
     try:
         member = await update.effective_chat.get_member(user.id)
 
@@ -626,9 +625,7 @@ async def moderation_handler(update, context):
 
     text = update.message.text or update.message.caption or ""
 
-    # -----------------------------------------------------
     # ANTI-LINK
-    # -----------------------------------------------------
 
     if get_antilink(update.effective_chat.id):
 
@@ -659,9 +656,7 @@ async def moderation_handler(update, context):
 
             return
 
-    # -----------------------------------------------------
     # ANTI-SPAM
-    # -----------------------------------------------------
 
     if get_antispam(update.effective_chat.id):
 
@@ -757,8 +752,6 @@ async def broadcast(update, context):
             )
 
             sent += 1
-
-            # Avoid hitting Telegram rate limits
             await asyncio.sleep(0.1)
 
         except Exception as e:
@@ -804,3 +797,19 @@ def main():
     app.add_handler(CommandHandler("resetwarns", resetwarns))
 
     app.add_handler(CommandHandler("antilink", antilink))
+    app.add_handler(CommandHandler("antispam", antispam))
+    app.add_handler(CommandHandler("broadcast", broadcast))
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT | filters.CAPTION,
+            moderation_handler
+        )
+    )
+
+    print("XERXES Bot is starting...")
+
+    app.run_polling()
+
+
+if __name__ == "__
