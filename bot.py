@@ -1,9 +1,16 @@
 import os
 import sqlite3
 import asyncio
+import re
 
 from telegram import Update, ChatPermissions
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
 
 
 DB_FILE = "warnings.db"
@@ -26,6 +33,13 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS settings (
+            chat_id INTEGER PRIMARY KEY,
+            antilink INTEGER NOT NULL DEFAULT 0
         )
     """)
 
@@ -111,8 +125,41 @@ def reset_warnings(chat_id, user_id):
     conn.close()
 
 
+def set_antilink(chat_id, status):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO settings (chat_id, antilink)
+        VALUES (?, ?)
+        ON CONFLICT(chat_id)
+        DO UPDATE SET antilink = excluded.antilink
+    """, (chat_id, status))
+
+    conn.commit()
+    conn.close()
+
+
+def get_antilink(chat_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT antilink FROM settings WHERE chat_id = ?",
+        (chat_id,)
+    )
+
+    result = cursor.fetchone()
+    conn.close()
+
+    return result[0] if result else 0
+
+
 async def is_admin(update: Update):
-    if not update.effective_chat or update.effective_chat.type == "private":
+    if not update.effective_chat:
+        return False
+
+    if update.effective_chat.type == "private":
         return False
 
     try:
@@ -171,7 +218,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "𝐒𝐚𝐟𝐞𝐭𝐲\n"
         "• /warn — Warn a member\n"
         "• /warnings — Check warnings\n"
-        "• /resetwarns — Reset warnings\n\n"
+        "• /resetwarns — Reset warnings\n"
+        "• /antilink on — Enable Anti-Link\n"
+        "• /antilink off — Disable Anti-Link\n\n"
         "𝐔𝐭𝐢𝐥𝐢𝐭𝐢𝐞𝐬\n"
         "• /id — Get ID\n"
         "• /broadcast — Admin broadcast\n\n"
@@ -389,6 +438,102 @@ async def resetwarns(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def antilink(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
+    if not context.args:
+        status = get_antilink(update.effective_chat.id)
+
+        if status:
+            await update.message.reply_text(
+                "🔗 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤: 𝐎𝐍"
+            )
+        else:
+            await update.message.reply_text(
+                "🔗 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤: 𝐎𝐅𝐅"
+            )
+        return
+
+    option = context.args[0].lower()
+
+    if option == "on":
+        set_antilink(update.effective_chat.id, 1)
+
+        await update.message.reply_text(
+            "🛡️ 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤 𝐞𝐧𝐚𝐛𝐥𝐞𝐝.\n"
+            "🔗 𝐋𝐢𝐧𝐤𝐬 𝐰𝐢𝐥𝐥 𝐛𝐞 𝐫𝐞𝐦𝐨𝐯𝐞𝐝 𝐚𝐮𝐭𝐨𝐦𝐚𝐭𝐢𝐜𝐚𝐥𝐥𝐲."
+        )
+
+    elif option == "off":
+        set_antilink(update.effective_chat.id, 0)
+
+        await update.message.reply_text(
+            "🔓 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤 𝐝𝐢𝐬𝐚𝐛𝐥𝐞𝐝."
+        )
+
+    else:
+        await update.message.reply_text(
+            "⚠️ 𝐔𝐬𝐞:\n/antilink on\n/antilink off"
+        )
+
+
+async def check_links(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message:
+        return
+
+    if not update.effective_chat:
+        return
+
+    if update.effective_chat.type == "private":
+        return
+
+    if not get_antilink(update.effective_chat.id):
+        return
+
+    user = update.effective_user
+
+    if not user:
+        return
+
+    # Admins are ignored
+    try:
+        member = await update.effective_chat.get_member(user.id)
+
+        if member.status in ("administrator", "creator"):
+            return
+
+    except Exception:
+        return
+
+    text = update.message.text or update.message.caption or ""
+
+    link_pattern = r"(https?://|www\.|t\.me/|telegram\.me/|www\.)"
+
+    if not re.search(link_pattern, text, re.IGNORECASE):
+        return
+
+    try:
+        await update.message.delete()
+
+        count = add_warning(
+            update.effective_chat.id,
+            user.id
+        )
+
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=(
+                f"🔗 𝐋𝐢𝐧𝐤 𝐫𝐞𝐦𝐨𝐯𝐞𝐝.\n"
+                f"⚠️ {user.mention_html()} — 𝐖𝐚𝐫𝐧𝐢𝐧𝐠: {count}"
+            ),
+            parse_mode="HTML"
+        )
+
+    except Exception:
+        pass
+
+
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
         await update.message.reply_text(
@@ -439,6 +584,7 @@ app = Application.builder().token(
     os.environ["TELEGRAM_BOT_TOKEN"]
 ).build()
 
+
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("id", user_id))
 app.add_handler(CommandHandler("help", help_command))
@@ -453,7 +599,16 @@ app.add_handler(CommandHandler("warn", warn))
 app.add_handler(CommandHandler("warnings", warnings))
 app.add_handler(CommandHandler("resetwarns", resetwarns))
 
+app.add_handler(CommandHandler("antilink", antilink))
 app.add_handler(CommandHandler("broadcast", broadcast))
+
+app.add_handler(
+    MessageHandler(
+        filters.TEXT | filters.CaptionRegex(r".*"),
+        check_links
+    )
+)
+
 
 print("XERXES BOT started...")
 app.run_polling()
