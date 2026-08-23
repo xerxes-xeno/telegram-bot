@@ -111,6 +111,32 @@ def reset_warnings(chat_id, user_id):
     conn.close()
 
 
+async def is_admin(update: Update):
+    if not update.effective_chat or update.effective_chat.type == "private":
+        return False
+
+    try:
+        member = await update.effective_chat.get_member(
+            update.effective_user.id
+        )
+
+        return member.status in ("administrator", "creator")
+
+    except Exception:
+        return False
+
+
+async def admin_only(update: Update):
+    if not await is_admin(update):
+        await update.message.reply_text(
+            "❌ 𝐀𝐝𝐦𝐢𝐧𝐬 𝐨𝐧𝐥𝐲.\n"
+            "𝐘𝐨𝐮 𝐝𝐨 𝐧𝐨𝐭 𝐡𝐚𝐯𝐞 𝐩𝐞𝐫𝐦𝐢𝐬𝐬𝐢𝐨𝐧 𝐭𝐨 𝐮𝐬𝐞 𝐭𝐡𝐢𝐬 𝐜𝐨𝐦𝐦𝐚𝐧𝐝."
+        )
+        return False
+
+    return True
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_user(update.effective_user.id)
 
@@ -154,6 +180,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def ban(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
     if not update.message.reply_to_message:
         await update.message.reply_text(
             "⚠️ Reply to the member's message and use /ban."
@@ -177,6 +206,9 @@ async def ban(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def unban(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
     if not update.message.reply_to_message:
         await update.message.reply_text(
             "⚠️ Reply to the member's message and use /unban."
@@ -203,6 +235,9 @@ async def unban(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def kick(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
     if not update.message.reply_to_message:
         await update.message.reply_text(
             "⚠️ Reply to the member's message and use /kick."
@@ -227,6 +262,9 @@ async def kick(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def mute(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
     if not update.message.reply_to_message:
         await update.message.reply_text(
             "⚠️ Reply to the member's message and use /mute."
@@ -253,6 +291,9 @@ async def mute(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def unmute(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
     if not update.message.reply_to_message:
         await update.message.reply_text(
             "⚠️ Reply to the member's message and use /unmute."
@@ -290,6 +331,9 @@ async def unmute(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def warn(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
     if not update.message.reply_to_message:
         await update.message.reply_text(
             "⚠️ Reply to the member's message and use /warn."
@@ -307,6 +351,9 @@ async def warn(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def warnings(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
     if not update.message.reply_to_message:
         await update.message.reply_text(
             "⚠️ Reply to the member's message and use /warnings."
@@ -323,6 +370,9 @@ async def warnings(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def resetwarns(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
     if not update.message.reply_to_message:
         await update.message.reply_text(
             "⚠️ Reply to the member's message and use /resetwarns."
@@ -371,7 +421,6 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
             sent += 1
-
             await asyncio.sleep(0.05)
 
         except Exception:
