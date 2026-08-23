@@ -1,6 +1,6 @@
 import os
 
-from telegram import Update
+from telegram import Update, ChatPermissions
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 
@@ -108,6 +108,71 @@ async def kick(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
+async def mute(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message.reply_to_message:
+        await update.message.reply_text(
+            "⚠️ Reply to the member's message and use /mute."
+        )
+        return
+
+    member = update.message.reply_to_message.from_user
+
+    try:
+        await update.effective_chat.restrict_member(
+            member.id,
+            ChatPermissions(can_send_messages=False)
+        )
+
+        await update.message.reply_text(
+            f"🔇 𝐔𝐬𝐞𝐫 {member.mention_html()} 𝐡𝐚𝐬 𝐛𝐞𝐞𝐧 𝐦𝐮𝐭𝐞𝐝.",
+            parse_mode="HTML"
+        )
+
+    except Exception:
+        await update.message.reply_text(
+            "❌ I couldn't mute this user.\n"
+            "Make sure I have admin permission."
+        )
+
+
+async def unmute(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message.reply_to_message:
+        await update.message.reply_text(
+            "⚠️ Reply to the member's message and use /unmute."
+        )
+        return
+
+    member = update.message.reply_to_message.from_user
+
+    try:
+        await update.effective_chat.restrict_member(
+            member.id,
+            ChatPermissions(
+                can_send_messages=True,
+                can_send_audios=True,
+                can_send_documents=True,
+                can_send_photos=True,
+                can_send_videos=True,
+                can_send_video_notes=True,
+                can_send_voice_notes=True,
+                can_send_polls=True,
+                can_send_other_messages=True,
+                can_add_web_page_previews=True
+            )
+        )
+
+        await update.message.reply_text(
+            f"🔊 𝐔𝐬𝐞𝐫 {member.mention_html()} 𝐡𝐚𝐬 𝐛𝐞𝐞𝐧 𝐮𝐧𝐦𝐮𝐭𝐞𝐝.",
+            parse_mode="HTML"
+        )
+
+    except Exception:
+        await update.message.reply_text(
+            "❌ I couldn't unmute this user.\n"
+            "Make sure I have admin permission."
+        )
+
+
 app = Application.builder().token(
     os.environ["TELEGRAM_BOT_TOKEN"]
 ).build()
@@ -117,6 +182,8 @@ app.add_handler(CommandHandler("help", help_command))
 app.add_handler(CommandHandler("ban", ban))
 app.add_handler(CommandHandler("unban", unban))
 app.add_handler(CommandHandler("kick", kick))
+app.add_handler(CommandHandler("mute", mute))
+app.add_handler(CommandHandler("unmute", unmute))
 
 print("XERXES BOT started...")
 app.run_polling()
