@@ -86,6 +86,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def user_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    await update.message.reply_text(
+        f"🆔 𝐘𝐨𝐮𝐫 𝐔𝐬𝐞𝐫 𝐈𝐃:\n\n"
+        f"`{user.id}`",
+        parse_mode="Markdown"
+    )
+
+
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🛡️ 𝐗𝐄𝐑𝐗𝐄𝐒 𝐌𝐀𝐍𝐀𝐆𝐄𝐌𝐄𝐍𝐓\n\n"
@@ -273,7 +283,7 @@ async def warnings(update: Update, context: ContextTypes.DEFAULT_TYPE):
     count = get_warnings(update.effective_chat.id, member.id)
 
     await update.message.reply_text(
-        f"⚠️ {member.mention_html()} has **{count}** warning(s).",
+        f"⚠️ {member.mention_html()} has {count} warning(s).",
         parse_mode="HTML"
     )
 
@@ -302,6 +312,7 @@ app = Application.builder().token(
 ).build()
 
 app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("id", user_id))
 app.add_handler(CommandHandler("help", help_command))
 app.add_handler(CommandHandler("ban", ban))
 app.add_handler(CommandHandler("unban", unban))
