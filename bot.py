@@ -748,7 +748,7 @@ async def moderation_handler(
 
         if len(user_messages[key]) >= SPAM_LIMIT:
 
-            user_messages[key] = []
+                        user_messages[key] = []
 
             try:
                 await update.message.delete()
@@ -771,4 +771,12 @@ async def moderation_handler(
                     chat_id=update.effective_chat.id,
                     text=(
                         f"🚨 𝐒𝐩𝐚𝐦 𝐝𝐞𝐭𝐞𝐜𝐭𝐞𝐝!\n\n"
-           
+                        f"👤 {user.mention_html()}\n"
+                        f"⚠️ 𝐖𝐚𝐫𝐧𝐢𝐧𝐠𝐬: {count}\n"
+                        f"🔇 𝐌𝐮𝐭𝐞𝐝 𝐟𝐨𝐫 {MUTE_TIME} 𝐬𝐞𝐜𝐨𝐧𝐝𝐬."
+                    ),
+                    parse_mode="HTML"
+                )
+
+            except Exception:
+                pass
