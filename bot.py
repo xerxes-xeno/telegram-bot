@@ -10,6 +10,7 @@ from telegram.ext import (
     CommandHandler,
     ContextTypes,
     MessageHandler,
+    ChatMemberHandler,
     filters,
 )
 
@@ -17,7 +18,6 @@ from telegram.ext import (
 DB_FILE = "warnings.db"
 ADMIN_ID = 8504230656
 
-# Anti-spam settings
 SPAM_LIMIT = 5
 SPAM_WINDOW = 8
 MUTE_TIME = 60
@@ -48,7 +48,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS settings (
             chat_id INTEGER PRIMARY KEY,
             antilink INTEGER NOT NULL DEFAULT 0,
-            antispam INTEGER NOT NULL DEFAULT 0
+            antispam INTEGER NOT NULL DEFAULT 0,
+            welcome INTEGER NOT NULL DEFAULT 1
         )
     """)
 
@@ -137,8 +138,8 @@ def set_antilink(chat_id, status):
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO settings (chat_id, antilink, antispam)
-        VALUES (?, ?, 0)
+        INSERT INTO settings (chat_id, antilink, antispam, welcome)
+        VALUES (?, ?, 0, 1)
         ON CONFLICT(chat_id)
         DO UPDATE SET antilink = excluded.antilink
     """, (chat_id, status))
@@ -167,8 +168,8 @@ def set_antispam(chat_id, status):
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO settings (chat_id, antilink, antispam)
-        VALUES (?, 0, ?)
+        INSERT INTO settings (chat_id, antilink, antispam, welcome)
+        VALUES (?, 0, ?, 1)
         ON CONFLICT(chat_id)
         DO UPDATE SET antispam = excluded.antispam
     """, (chat_id, status))
@@ -190,6 +191,36 @@ def get_antispam(chat_id):
     conn.close()
 
     return result[0] if result else 0
+
+
+def set_welcome(chat_id, status):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO settings (chat_id, antilink, antispam, welcome)
+        VALUES (?, 0, 0, ?)
+        ON CONFLICT(chat_id)
+        DO UPDATE SET welcome = excluded.welcome
+    """, (chat_id, status))
+
+    conn.commit()
+    conn.close()
+
+
+def get_welcome(chat_id):
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT welcome FROM settings WHERE chat_id = ?",
+        (chat_id,)
+    )
+
+    result = cursor.fetchone()
+    conn.close()
+
+    return result[0] if result else 1
 
 
 async def is_admin(update: Update):
@@ -260,6 +291,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• /antilink off — Disable Anti-Link\n"
         "• /antispam on — Enable Anti-Spam\n"
         "• /antispam off — Disable Anti-Spam\n\n"
+        "𝐖𝐞𝐥𝐜𝐨𝐦𝐞\n"
+        "• /welcome on — Enable Welcome\n"
+        "• /welcome off — Disable Welcome\n\n"
         "𝐔𝐭𝐢𝐥𝐢𝐭𝐢𝐞𝐬\n"
         "• /id — Get ID\n"
         "• /broadcast — Admin broadcast\n\n"
@@ -493,14 +527,12 @@ async def antilink(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if option == "on":
         set_antilink(update.effective_chat.id, 1)
-
         await update.message.reply_text(
             "🛡️ 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤 𝐞𝐧𝐚𝐛𝐥𝐞𝐝."
         )
 
     elif option == "off":
         set_antilink(update.effective_chat.id, 0)
-
         await update.message.reply_text(
             "🔓 𝐀𝐧𝐭𝐢-𝐋𝐢𝐧𝐤 𝐝𝐢𝐬𝐚𝐛𝐥𝐞𝐝."
         )
@@ -527,15 +559,12 @@ async def antispam(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if option == "on":
         set_antispam(update.effective_chat.id, 1)
-
         await update.message.reply_text(
-            "🛡️ 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦 𝐞𝐧𝐚𝐛𝐥𝐞𝐝.\n"
-            "𝐑𝐚𝐩𝐢𝐝 𝐬𝐩𝐚𝐦 𝐰𝐢𝐥𝐥 𝐛𝐞 𝐦𝐨𝐝𝐞𝐫𝐚𝐭𝐞𝐝."
+            "🛡️ 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦 𝐞𝐧𝐚𝐛𝐥𝐞𝐝."
         )
 
     elif option == "off":
         set_antispam(update.effective_chat.id, 0)
-
         await update.message.reply_text(
             "🔓 𝐀𝐧𝐭𝐢-𝐒𝐩𝐚𝐦 𝐝𝐢𝐬𝐚𝐛𝐥𝐞𝐝."
         )
@@ -544,6 +573,99 @@ async def antispam(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "⚠️ 𝐔𝐬𝐞:\n/antispam on\n/antispam off"
         )
+
+
+async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await admin_only(update):
+        return
+
+    if not context.args:
+        status = get_welcome(update.effective_chat.id)
+
+        await update.message.reply_text(
+            "👋 𝐖𝐞𝐥𝐜𝐨𝐦𝐞: " + ("𝐎𝐍" if status else "𝐎𝐅𝐅")
+        )
+        return
+
+    option = context.args[0].lower()
+
+    if option == "on":
+        set_welcome(update.effective_chat.id, 1)
+        await update.message.reply_text(
+            "👋 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐬𝐲𝐬𝐭𝐞𝐦 𝐞𝐧𝐚𝐛𝐥𝐞𝐝."
+        )
+
+    elif option == "off":
+        set_welcome(update.effective_chat.id, 0)
+        await update.message.reply_text(
+            "🔕 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐬𝐲𝐬𝐭𝐞𝐦 𝐝𝐢𝐬𝐚𝐛𝐥𝐞𝐝."
+        )
+
+    else:
+        await update.message.reply_text(
+            "⚠️ 𝐔𝐬𝐞:\n/welcome on\n/welcome off"
+        )
+
+
+async def member_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.chat_member:
+        return
+
+    chat = update.chat_member.chat
+    old_status = update.chat_member.old_chat_member.status
+    new_status = update.chat_member.new_chat_member.status
+    user = update.chat_member.new_chat_member.user
+
+    # Ignore bots
+    if user.is_bot:
+        return
+
+    # New member
+    if old_status in ("left", "kicked") and new_status in (
+        "member",
+        "restricted"
+    ):
+
+        save_user(user.id)
+
+        if not get_welcome(chat.id):
+            return
+
+        try:
+            await context.bot.send_message(
+                chat_id=chat.id,
+                text=(
+                    f"👋 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 {user.mention_html()}!\n\n"
+                    f"🔥 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐭𝐨 𝐗𝐄𝐑𝐗𝐄𝐒.\n"
+                    f"🎮 𝐆𝐚𝐦𝐢𝐧𝐠 • 🛡️ 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 • 🎵 𝐌𝐮𝐬𝐢𝐜\n\n"
+                    f"✨ 𝐄𝐧𝐣𝐨𝐲 𝐭𝐡𝐞 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲!"
+                ),
+                parse_mode="HTML"
+            )
+        except Exception:
+            pass
+
+    # Member leaves
+    elif old_status in (
+        "member",
+        "restricted",
+        "administrator"
+    ) and new_status in ("left", "kicked"):
+
+        if not get_welcome(chat.id):
+            return
+
+        try:
+            await context.bot.send_message(
+                chat_id=chat.id,
+                text=(
+                    f"👋 𝐆𝐨𝐨𝐝𝐛𝐲𝐞 {user.mention_html()}!\n\n"
+                    f"𝐖𝐞 𝐡𝐨𝐩𝐞 𝐭𝐨 𝐬𝐞𝐞 𝐲𝐨𝐮 𝐚𝐠𝐚𝐢𝐧. 🖤"
+                ),
+                parse_mode="HTML"
+            )
+        except Exception:
+            pass
 
 
 async def moderation_handler(
@@ -563,7 +685,6 @@ async def moderation_handler(
 
     save_user(user.id)
 
-    # Admins are exempt
     try:
         member = await update.effective_chat.get_member(user.id)
 
@@ -575,8 +696,7 @@ async def moderation_handler(
 
     text = update.message.text or update.message.caption or ""
 
-    # ---------------- ANTI-LINK ----------------
-
+    # Anti-Link
     if get_antilink(update.effective_chat.id):
 
         link_pattern = r"(https?://|www\.|t\.me/|telegram\.me/)"
@@ -605,8 +725,7 @@ async def moderation_handler(
 
             return
 
-    # ---------------- ANTI-SPAM ----------------
-
+    # Anti-Spam
     if get_antispam(update.effective_chat.id):
 
         now = time.time()
@@ -621,7 +740,6 @@ async def moderation_handler(
 
         user_messages[key].append(now)
 
-        # Keep only recent messages
         user_messages[key] = [
             timestamp
             for timestamp in user_messages[key]
@@ -653,97 +771,4 @@ async def moderation_handler(
                     chat_id=update.effective_chat.id,
                     text=(
                         f"🚨 𝐒𝐩𝐚𝐦 𝐝𝐞𝐭𝐞𝐜𝐭𝐞𝐝!\n\n"
-                        f"👤 {user.mention_html()}\n"
-                        f"⚠️ 𝐖𝐚𝐫𝐧𝐢𝐧𝐠𝐬: {count}\n"
-                        f"🔇 𝐌𝐮𝐭𝐞𝐝 𝐟𝐨𝐫 {MUTE_TIME} 𝐬𝐞𝐜𝐨𝐧𝐝𝐬."
-                    ),
-                    parse_mode="HTML"
-                )
-
-            except Exception:
-                pass
-
-
-async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        await update.message.reply_text(
-            "❌ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐧𝐨𝐭 𝐚𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐞𝐝 𝐭𝐨 𝐮𝐬𝐞 𝐭𝐡𝐢𝐬 𝐜𝐨𝐦𝐦𝐚𝐧𝐝."
-        )
-        return
-
-    if not context.args:
-        await update.message.reply_text(
-            "⚠️ 𝐔𝐬𝐚𝐠𝐞:\n/broadcast Your message here"
-        )
-        return
-
-    message = " ".join(context.args)
-    users = get_all_users()
-
-    sent = 0
-    failed = 0
-
-    await update.message.reply_text(
-        f"📢 𝐁𝐫𝐨𝐚𝐝𝐜𝐚𝐬𝐭 𝐬𝐭𝐚𝐫𝐭𝐞𝐝...\n"
-        f"👥 𝐑𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐮𝐬𝐞𝐫𝐬: {len(users)}"
-    )
-
-    for user_id in users:
-
-        try:
-            await context.bot.send_message(
-                chat_id=user_id,
-                text=message
-            )
-
-            sent += 1
-            await asyncio.sleep(0.05)
-
-        except Exception:
-            failed += 1
-
-    await update.message.reply_text(
-        f"📊 𝐁𝐫𝐨𝐚𝐝𝐜𝐚𝐬𝐭 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞𝐝.\n\n"
-        f"✅ 𝐒𝐞𝐧𝐭: {sent}\n"
-        f"❌ 𝐅𝐚𝐢𝐥𝐞𝐝: {failed}"
-    )
-
-
-# ---------------- START BOT ----------------
-
-init_db()
-
-app = Application.builder().token(
-    os.environ["TELEGRAM_BOT_TOKEN"]
-).build()
-
-
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("id", user_id))
-app.add_handler(CommandHandler("help", help_command))
-
-app.add_handler(CommandHandler("ban", ban))
-app.add_handler(CommandHandler("unban", unban))
-app.add_handler(CommandHandler("kick", kick))
-app.add_handler(CommandHandler("mute", mute))
-app.add_handler(CommandHandler("unmute", unmute))
-
-app.add_handler(CommandHandler("warn", warn))
-app.add_handler(CommandHandler("warnings", warnings))
-app.add_handler(CommandHandler("resetwarns", resetwarns))
-
-app.add_handler(CommandHandler("antilink", antilink))
-app.add_handler(CommandHandler("antispam", antispam))
-
-app.add_handler(CommandHandler("broadcast", broadcast))
-
-app.add_handler(
-    MessageHandler(
-        filters.TEXT | filters.CAPTION,
-        moderation_handler
-    )
-)
-
-
-print("XERXES BOT started...")
-app.run_polling()
+           
