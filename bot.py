@@ -923,6 +923,9 @@ def main():
     app.add_handler(CommandHandler("broadcast", broadcast))
 
     app.add_handler(CommandHandler("setwelcome", setwelcome))
+    app.add_handler(CommandHandler("getwelcome", getwelcome))
+    app.add_handler(CommandHandler("resetwelcome", resetwelcome))
+    
     app.add_handler(
         MessageHandler(
             filters.StatusUpdate.NEW_CHAT_MEMBERS,
