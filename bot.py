@@ -4,12 +4,19 @@ import sqlite3
 import asyncio
 import time
 
-from telegram import Update, ChatPermissions
+from telegram import (
+    Update,
+    ChatPermissions,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
+
 from telegram.ext import (
     Application,
     CommandHandler,
     ContextTypes,
     MessageHandler,
+    CallbackQueryHandler,
     filters,
 )
 
@@ -1196,6 +1203,113 @@ async def filter_handler(update, context):
 
 
 # =========================================================
+# POKÉDEX START
+# =========================================================
+
+POKEDEX_IMAGE = "https://i.ibb.co/wrc5cYFr/Picsart-26-08-24-15-03-10-408.jpg"
+
+
+async def start_pokedex(update, context):
+    user = update.effective_user
+
+    if not user:
+        return
+
+    save_user(user.id)
+
+    text = (
+        "🀪𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫É𝐷𝛴𝛸\n\n"
+        "𝑊𝑒𝑙𝑐𝑜𝑚𝑒 𝑡𝑜 𝑡ℎ𝑒 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑊𝑜𝑟𝑙𝑑 🐾\n\n"
+        "𝑌𝑜𝑢𝑟 𝑎𝑑𝑣𝑒𝑛𝑡𝑢𝑟𝑒 𝑖𝑠 𝑎𝑏𝑜𝑢𝑡 𝑡𝑜 𝑏𝑒𝑔𝑖𝑛.\n"
+        "𝐶ℎ𝑜𝑜𝑠𝑒 𝑦𝑜𝑢𝑟 𝑓𝑖𝑟𝑠𝑡 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑎𝑛𝑑 𝑏𝑢𝑖𝑙𝑑 𝑦𝑜𝑢𝑟 𝑡𝑒𝑎𝑚 ☻"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "𝐁𝐮𝐥𝐛𝐚𝐬𝐚𝐮𝐫 🌱",
+                callback_data="starter_bulbasaur"
+            ),
+            InlineKeyboardButton(
+                "𝐂𝐡𝐚𝐫𝐦𝐚𝐧𝐝𝐞𝐫 🔥",
+                callback_data="starter_charmander"
+            ),
+            InlineKeyboardButton(
+                "𝐒𝐪𝐮𝐢𝐫𝐭𝐥𝐞 💧",
+                callback_data="starter_squirtle"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "𝐂𝐡𝐢𝐤𝐨𝐫𝐢𝐭𝐚 🍃",
+                callback_data="starter_chikorita"
+            ),
+            InlineKeyboardButton(
+                "𝐂𝐲𝐧𝐝𝐚𝐪𝐮𝐢𝐥 🔥",
+                callback_data="starter_cyndaquil"
+            ),
+            InlineKeyboardButton(
+                "𝐓𝐨𝐭𝐨𝐝𝐢𝐥𝐞 💧",
+                callback_data="starter_totodile"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "𝐓𝐫𝐞𝐞𝐜𝐤𝐨 🌿",
+                callback_data="starter_treecko"
+            ),
+            InlineKeyboardButton(
+                "𝐓𝐨𝐫𝐜𝐡𝐢𝐜 🔥",
+                callback_data="starter_torchic"
+            ),
+            InlineKeyboardButton(
+                "𝐌𝐮𝐝𝐤𝐢𝐩 💧",
+                callback_data="starter_mudkip"
+            )
+        ]
+    ]
+
+    await update.message.reply_photo(
+        photo=POKEDEX_IMAGE,
+        caption=text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# STARTER SELECTION
+# =========================================================
+
+STARTER_NAMES = {
+    "starter_bulbasaur": "𝐁𝐮𝐥𝐛𝐚𝐬𝐚𝐮𝐫 🌱",
+    "starter_charmander": "𝐂𝐡𝐚𝐫𝐦𝐚𝐧𝐝𝐞𝐫 🔥",
+    "starter_squirtle": "𝐒𝐪𝐮𝐢𝐫𝐭𝐥𝐞 💧",
+    "starter_chikorita": "𝐂𝐡𝐢𝐤𝐨𝐫𝐢𝐭𝐚 🍃",
+    "starter_cyndaquil": "𝐂𝐲𝐧𝐝𝐚𝐪𝐮𝐢𝐥 🔥",
+    "starter_totodile": "𝐓𝐨𝐭𝐨𝐝𝐢𝐥𝐞 💧",
+    "starter_treecko": "𝐓𝐫𝐞𝐞𝐜𝐤𝐨 🌿",
+    "starter_torchic": "𝐓𝐨𝐫𝐜𝐡𝐢𝐜 🔥",
+    "starter_mudkip": "𝐌𝐮𝐝𝐤𝐢𝐩 💧"
+}
+
+
+async def starter_selected(update, context):
+    query = update.callback_query
+
+    await query.answer()
+
+    pokemon = STARTER_NAMES.get(query.data)
+
+    if not pokemon:
+        return
+
+    await query.message.reply_text(
+        f"𝐘𝐨𝐮 𝐜𝐡𝐨𝐬𝐞: {pokemon}\n\n"
+        "𝐘𝐨𝐮𝐫 𝐏𝐨𝐤é𝐦𝐨𝐧 𝐡𝐚𝐬 𝐛𝐞𝐞𝐧 𝐚𝐝𝐝𝐞𝐝 𝐭𝐨 𝐲𝐨𝐮𝐫 𝐭𝐞𝐚𝐦! 🐾"
+    )
+
+
+# =========================================================
 # BROADCAST
 # =========================================================
 
@@ -1264,10 +1378,17 @@ def main():
     app = Application.builder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("startpokedex", startpokedex))
+    app.add_handler(CommandHandler("startpokedex", start_pokedex))
+
+    app.add_handler(
+        CallbackQueryHandler(
+            starter_selected,
+            pattern="^starter_"
+        )
+    )
+
     app.add_handler(CommandHandler("id", user_id))
     app.add_handler(CommandHandler("help", help_command))
-
     app.add_handler(CommandHandler("ban", ban))
     app.add_handler(CommandHandler("unban", unban))
     app.add_handler(CommandHandler("kick", kick))
