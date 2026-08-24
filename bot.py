@@ -57,7 +57,16 @@ def init_db():
             antispam INTEGER NOT NULL DEFAULT 0
         )
     """)
-
+       
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS filters (
+            chat_id INTEGER NOT NULL,
+            keyword TEXT NOT NULL,
+            response TEXT NOT NULL,
+            PRIMARY KEY (chat_id, keyword)
+        )
+    """)
+    
     try:
         cur.execute("ALTER TABLE settings ADD COLUMN welcome TEXT")
     except sqlite3.OperationalError:
@@ -199,6 +208,43 @@ def get_antispam(chat_id):
     conn.close()
 
     return result[0] if result else 0
+
+
+def set_filter(chat_id, keyword, response):
+    conn = db()
+    conn.execute("""
+        INSERT INTO filters (chat_id, keyword, response)
+        VALUES (?, ?, ?)
+        ON CONFLICT(chat_id, keyword)
+        DO UPDATE SET response=excluded.response
+    """, (chat_id, keyword.lower(), response))
+    conn.commit()
+    conn.close()
+
+
+def get_filter(chat_id, keyword):
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT response FROM filters WHERE chat_id=? AND keyword=?",
+        (chat_id, keyword.lower())
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    return result[0] if result else None
+
+
+def delete_filter(chat_id, keyword):
+    conn = db()
+    conn.execute(
+        "DELETE FROM filters WHERE chat_id=? AND keyword=?",
+        (chat_id, keyword.lower())
+    )
+    conn.commit()
+    conn.close()
 
 
 # =========================================================
@@ -652,6 +698,85 @@ async def antispam(update, context):
         )
 
 
+# =========================================================
+# FILTER COMMANDS
+# =========================================================
+
+async def filter_command(update, context):
+    if not await admin_only(update):
+        return
+
+    if len(context.args) < 2:
+        await update.message.reply_text(
+            "⚠️ Use:\n/filter keyword reply"
+        )
+        return
+
+    keyword = context.args[0]
+    response = " ".join(context.args[1:])
+
+    set_filter(
+        update.effective_chat.id,
+        keyword,
+        response
+    )
+
+    await update.message.reply_text(
+        f"✅ Filter set for: {keyword}"
+    )
+
+
+async def filters_command(update, context):
+    if not await admin_only(update):
+        return
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT keyword FROM filters WHERE chat_id=?",
+        (update.effective_chat.id,)
+    )
+
+    rows = cur.fetchall()
+    conn.close()
+
+    if not rows:
+        await update.message.reply_text(
+            "📭 No filters set."
+        )
+        return
+
+    text = "📋 𝐀𝐜𝐭𝐢𝐯𝐞 𝐅𝐢𝐥𝐭𝐞𝐫𝐬:\n\n"
+
+    for row in rows:
+        text += f"• {row[0]}\n"
+
+    await update.message.reply_text(text)
+
+
+async def stop_filter(update, context):
+    if not await admin_only(update):
+        return
+
+    if not context.args:
+        await update.message.reply_text(
+            "⚠️ Use:\n/stop keyword"
+        )
+        return
+
+    keyword = context.args[0]
+
+    delete_filter(
+        update.effective_chat.id,
+        keyword
+    )
+
+    await update.message.reply_text(
+        f"🗑️ Filter removed: {keyword}"
+    )
+
+
 # ========================================================= 
 # WELCOME SYSTEM 
 # =========================================================
@@ -891,6 +1016,34 @@ async def moderation_handler(update, context):
 
 
 # =========================================================
+# FILTER HANDLER
+# =========================================================
+
+async def filter_handler(update, context):
+    if not update.message:
+        return
+
+    if not update.effective_chat:
+        return
+
+    if update.effective_chat.type == "private":
+        return
+
+    text = update.message.text or ""
+
+    if not text:
+        return
+
+    response = get_filter(
+        update.effective_chat.id,
+        text.strip()
+    )
+
+    if response:
+        await update.message.reply_text(response)
+
+
+# =========================================================
 # BROADCAST
 # =========================================================
 
@@ -978,6 +1131,10 @@ def main():
     app.add_handler(CommandHandler("antispam", antispam))
     app.add_handler(CommandHandler("broadcast", broadcast))
 
+    app.add_handler(CommandHandler("filter", filter_command))
+    app.add_handler(CommandHandler("filters", filters_command))
+    app.add_handler(CommandHandler("stop", stop_filter))
+
     app.add_handler(CommandHandler("setwelcome", setwelcome))
     app.add_handler(CommandHandler("getwelcome", getwelcome))
     app.add_handler(CommandHandler("resetwelcome", resetwelcome))
@@ -988,13 +1145,20 @@ def main():
             welcome
         )
     )
-    
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT,
+            filter_handler
+        )
+    )
+
     app.add_handler(
         MessageHandler(
             filters.TEXT | filters.CAPTION,
             moderation_handler
         )
-    )
+    ) 
 
     print("XERXES Bot is starting...")
 
