@@ -324,10 +324,10 @@ async def start(update, context):
 async def startpokedex(update, context):
 
     await update.message.reply_text(
-        "🎮 XERXES POKÉDEX\n\n"
-        "Welcome to the Pokémon World! 🐾\n\n"
-        "Your adventure is about to begin.\n"
-        "Choose your first Pokémon and build your team! 🔥🌊🌿"
+        "🀪𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫É𝐷𝛴𝛸\n\n"
+        "𝑊𝑒𝑙𝑐𝑜𝑚𝑒 𝑡𝑜 𝑡ℎ𝑒 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑊𝑜𝑟𝑙𝑑 🐾\n\n"
+        "𝑌𝑜𝑢𝑟 𝑎𝑑𝑣𝑒𝑛𝑡𝑢𝑟𝑒 𝑖𝑠 𝑎𝑏𝑜𝑢𝑡 𝑡𝑜 𝑏𝑒𝑔𝑖𝑛.\n"
+        "𝐶ℎ𝑜𝑜𝑠𝑒 𝑦𝑜𝑢𝑟 𝑓𝑖𝑟𝑠𝑡 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑎𝑛𝑑 𝑏𝑢𝑖𝑙𝑑 𝑦𝑜𝑢𝑟 𝑡𝑒𝑎𝑚 ☻"
     )
 
 
