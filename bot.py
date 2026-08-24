@@ -602,14 +602,70 @@ async def antispam(update, context):
 # WELCOME SYSTEM 
 # =========================================================
 
+async def setwelcome(update, context):
+    if not await admin_only(update):
+        return
+
+    if not context.args:
+        await update.message.reply_text(
+            "⚠️ Use:\n/setwelcome Your welcome message"
+        )
+        return
+
+    welcome_text = " ".join(context.args)
+
+    conn = db()
+
+    conn.execute("""
+        INSERT INTO settings (chat_id, antilink, antispam, welcome)
+        VALUES (?, 0, 0, ?)
+        ON CONFLICT(chat_id)
+        DO UPDATE SET welcome=excluded.welcome
+    """, (
+        update.effective_chat.id,
+        welcome_text
+    ))
+
+    conn.commit()
+    conn.close()
+
+    await update.message.reply_text(
+        "✅ 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐦𝐞𝐬𝐬𝐚𝐠𝐞 𝐬𝐞𝐭 𝐡𝐨 𝐠𝐚𝐲𝐚!"
+    )
+
 async def welcome(update, context):
     if not update.message or not update.message.new_chat_members:
         return
+
+    chat_id = update.effective_chat.id
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT welcome FROM settings WHERE chat_id=?",
+        (chat_id,)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    welcome_text = (
+        result[0]
+        if result and result[0]
+        else "🪬 Welcome {user} to the group! 🥳\n\n✨ Have a great time here!"
+    )
+
     for user in update.message.new_chat_members:
         save_user(user.id)
+
+        message = welcome_text.replace(
+            "{user}",
+            user.mention_html()
+        )
+
         await update.message.reply_text(
-            f"🪬 Welcome {user.mention_html()} to the group! 🥳\n\n"
-            f"✨ Have a great time here!",
+            message,
             parse_mode="HTML"
         )
         
