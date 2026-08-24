@@ -967,6 +967,8 @@ def main():
     app.add_handler(CommandHandler("kick", kick))
     app.add_handler(CommandHandler("mute", mute))
     app.add_handler(CommandHandler("unmute", unmute))
+    app.add_handler(CommandHandler("pin", pin))
+    app.add_handler(CommandHandler("unpin", unpin))
 
     app.add_handler(CommandHandler("warn", warn))
     app.add_handler(CommandHandler("warnings", warnings))
