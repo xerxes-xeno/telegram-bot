@@ -3,6 +3,7 @@ import re
 import sqlite3
 import asyncio
 import time
+import random
 
 from telegram import (
     Update,
@@ -64,7 +65,21 @@ def init_db():
             antispam INTEGER NOT NULL DEFAULT 0
         )
     """)
-       
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS pokedex (
+            user_id INTEGER PRIMARY KEY,
+            pokemon TEXT NOT NULL,
+            nature TEXT NOT NULL,
+            hp INTEGER NOT NULL,
+            attack INTEGER NOT NULL,
+            defense INTEGER NOT NULL,
+            sp_attack INTEGER NOT NULL,
+            sp_defense INTEGER NOT NULL,
+            speed INTEGER NOT NULL
+        )
+    """)
+   
     cur.execute("""
         CREATE TABLE IF NOT EXISTS filters (
             chat_id INTEGER NOT NULL,
@@ -101,6 +116,58 @@ def init_db():
     conn.close()
 
 
+# =========================================================
+# POKEDEX DATABASE
+# =========================================================
+
+def starter_exists(user_id):
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT pokemon FROM pokedex WHERE user_id=?",
+        (user_id,)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    return result is not None
+
+
+def save_starter(user_id, pokemon, nature, ivs):
+    conn = db()
+
+    conn.execute("""
+        INSERT OR REPLACE INTO pokedex
+        (
+            user_id,
+            pokemon,
+            nature,
+            hp,
+            attack,
+            defense,
+            sp_attack,
+            sp_defense,
+            speed
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        user_id,
+        pokemon,
+        nature,
+        ivs[0],
+        ivs[1],
+        ivs[2],
+        ivs[3],
+        ivs[4],
+        ivs[5]
+    ))
+
+    conn.commit()
+    conn.close()    
+
+
 def save_user(user_id):
     conn = db()
     conn.execute(
@@ -118,6 +185,66 @@ def get_all_users():
     users = [row[0] for row in cur.fetchall()]
     conn.close()
     return users
+
+
+# =========================================================
+# POKEMON STARTER SETTINGS
+# =========================================================
+
+STARTER_POKEMON = [
+    "Bulbasaur",
+    "Charmander",
+    "Squirtle",
+    "Pikachu",
+    "Eevee",
+    "Riolu",
+    "Ralts",
+    "Axew"
+]
+
+NATURES = [
+    "Adamant",
+    "Bashful",
+    "Brave",
+    "Calm",
+    "Careful",
+    "Docile",
+    "Gentle",
+    "Hardy",
+    "Hasty",
+    "Impish",
+    "Jolly",
+    "Lax",
+    "Lonely",
+    "Mild",
+    "Modest",
+    "Naive",
+    "Naughty",
+    "Quiet",
+    "Quirky",
+    "Rash",
+    "Relaxed",
+    "Sassy",
+    "Serious",
+    "Timid"
+]
+
+
+def generate_ivs():
+    while True:
+        ivs = [
+            random.randint(0, 31),
+            random.randint(0, 31),
+            random.randint(0, 31),
+            random.randint(0, 31),
+            random.randint(0, 31),
+            random.randint(0, 31)
+        ]
+
+        total = sum(ivs)
+
+        if 141 <= total <= 186:
+            return ivs
 
 
 # =========================================================
@@ -330,11 +457,69 @@ async def start(update, context):
 
 async def startpokedex(update, context):
 
-    await update.message.reply_text(
-        "🀪𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫É𝐷𝛴𝛸\n\n"
-        "𝑊𝑒𝑙𝑐𝑜𝑚𝑒 𝑡𝑜 𝑡ℎ𝑒 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑊𝑜𝑟𝑙𝑑 🐾\n\n"
-        "𝑌𝑜𝑢𝑟 𝑎𝑑𝑣𝑒𝑛𝑡𝑢𝑟𝑒 𝑖𝑠 𝑎𝑏𝑜𝑢𝑡 𝑡𝑜 𝑏𝑒𝑔𝑖𝑛.\n"
-        "𝐶ℎ𝑜𝑜𝑠𝑒 𝑦𝑜𝑢𝑟 𝑓𝑖𝑟𝑠𝑡 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑎𝑛𝑑 𝑏𝑢𝑖𝑙𝑑 𝑦𝑜𝑢𝑟 𝑡𝑒𝑎𝑚 ☻"
+    user_id = update.effective_user.id
+
+    save_user(user_id)
+
+    # Starter already selected?
+    if starter_exists(user_id):
+        await update.message.reply_text(
+            "𝐘𝐨𝐮 𝐡𝐚𝐯𝐞 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐜𝐡𝐨𝐬𝐞𝐧 𝐲𝐨𝐮𝐫 𝐟𝐢𝐫𝐬𝐭 𝐏𝐨𝐤é𝐦𝐨𝐧. 🐾"
+        )
+        return
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🌿 𝐁𝐮𝐥𝐛𝐚𝐬𝐚𝐮𝐫",
+                callback_data="starter_Bulbasaur"
+            ),
+            InlineKeyboardButton(
+                "🔥 𝐂𝐡𝐚𝐫𝐦𝐚𝐧𝐝𝐞𝐫",
+                callback_data="starter_Charmander"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "💧 𝐒𝐪𝐮𝐮𝐫𝐭𝐥𝐞",
+                callback_data="starter_Squirtle"
+            ),
+            InlineKeyboardButton(
+                "⚡ 𝐏𝐢𝐤𝐚𝐜𝐡𝐮",
+                callback_data="starter_Pikachu"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "✨ 𝐄𝐞𝐯𝐞𝐞",
+                callback_data="starter_Eevee"
+            ),
+            InlineKeyboardButton(
+                "🥋 𝐑𝐢𝐨𝐥𝐮",
+                callback_data="starter_Riolu"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🔮 𝐑𝐚𝐥𝐭𝐬",
+                callback_data="starter_Ralts"
+            ),
+            InlineKeyboardButton(
+                "🐉 𝐀𝐱𝐞𝐰",
+                callback_data="starter_Axew"
+            )
+        ]
+    ]
+
+    await update.message.reply_photo(
+        photo="https://i.ibb.co/wrc5cYFr/Picsart-26-08-24-15-03-10-408.jpg",
+        caption=(
+            "🀪𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫É𝐷𝛴𝛸\n\n"
+            "𝑊𝑒𝑙𝑐𝑜𝑚𝑒 𝑡𝑜 𝑡ℎ𝑒 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑊𝑜𝑟𝑙𝑑 🐾\n\n"
+            "𝑌𝑜𝑢𝑟 𝑎𝑑𝑣𝑒𝑛𝑡𝑢𝑟𝑒 𝑖𝑠 𝑎𝑏𝑜𝑢𝑡 𝑡𝑜 𝑏𝑒𝑔𝑖𝑛.\n"
+            "𝐶ℎ𝑜𝑜𝑠𝑒 𝑦𝑜𝑢𝑟 𝑓𝑖𝑟𝑠𝑡 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑎𝑛𝑑 𝑏𝑢𝑖𝑙𝑑 𝑦𝑜𝑢𝑟 𝑡𝑒𝑎𝑚 ☻"
+        ),
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
@@ -1203,26 +1388,10 @@ async def filter_handler(update, context):
 
 
 # =========================================================
-# POKÉDEX START
+# POKEDEX START
 # =========================================================
 
-POKEDEX_IMAGE = "https://i.ibb.co/wrc5cYFr/Picsart-26-08-24-15-03-10-408.jpg"
-
-
 async def start_pokedex(update, context):
-    user = update.effective_user
-
-    if not user:
-        return
-
-    save_user(user.id)
-
-    text = (
-        "🀪𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫É𝐷𝛴𝛸\n\n"
-        "𝑊𝑒𝑙𝑐𝑜𝑚𝑒 𝑡𝑜 𝑡ℎ𝑒 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑊𝑜𝑟𝑙𝑑 🐾\n\n"
-        "𝑌𝑜𝑢𝑟 𝑎𝑑𝑣𝑒𝑛𝑡𝑢𝑟𝑒 𝑖𝑠 𝑎𝑏𝑜𝑢𝑡 𝑡𝑜 𝑏𝑒𝑔𝑖𝑛.\n"
-        "𝐶ℎ𝑜𝑜𝑠𝑒 𝑦𝑜𝑢𝑟 𝑓𝑖𝑟𝑠𝑡 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑎𝑛𝑑 𝑏𝑢𝑖𝑙𝑑 𝑦𝑜𝑢𝑟 𝑡𝑒𝑎𝑚 ☻"
-    )
 
     keyboard = [
         [
@@ -1233,46 +1402,51 @@ async def start_pokedex(update, context):
             InlineKeyboardButton(
                 "𝐂𝐡𝐚𝐫𝐦𝐚𝐧𝐝𝐞𝐫 🔥",
                 callback_data="starter_charmander"
-            ),
+            )
+        ],
+        [
             InlineKeyboardButton(
-                "𝐒𝐪𝐮𝐢𝐫𝐭𝐥𝐞 💧",
+                "𝐒𝐪𝐮𝐮𝐫𝐭𝐥𝐞 💧",
                 callback_data="starter_squirtle"
+            ),
+            InlineKeyboardButton(
+                "𝐏𝐢𝐤𝐚𝐜𝐡𝐮 ⚡",
+                callback_data="starter_pikachu"
             )
         ],
         [
             InlineKeyboardButton(
-                "𝐂𝐡𝐢𝐤𝐨𝐫𝐢𝐭𝐚 🍃",
-                callback_data="starter_chikorita"
+                "𝐄𝐞𝐯𝐞𝐞 ✨",
+                callback_data="starter_eevee"
             ),
             InlineKeyboardButton(
-                "𝐂𝐲𝐧𝐝𝐚𝐪𝐮𝐢𝐥 🔥",
-                callback_data="starter_cyndaquil"
-            ),
-            InlineKeyboardButton(
-                "𝐓𝐨𝐭𝐨𝐝𝐢𝐥𝐞 💧",
-                callback_data="starter_totodile"
+                "𝐑𝐢𝐨𝐥𝐮 🥊",
+                callback_data="starter_riolu"
             )
         ],
         [
             InlineKeyboardButton(
-                "𝐓𝐫𝐞𝐞𝐜𝐤𝐨 🌿",
-                callback_data="starter_treecko"
+                "𝐑𝐚𝐥𝐭𝐬 🔮",
+                callback_data="starter_ralts"
             ),
             InlineKeyboardButton(
-                "𝐓𝐨𝐫𝐜𝐡𝐢𝐜 🔥",
-                callback_data="starter_torchic"
-            ),
-            InlineKeyboardButton(
-                "𝐌𝐮𝐝𝐤𝐢𝐩 💧",
-                callback_data="starter_mudkip"
+                "𝐀𝐱𝐞𝐰 🐉",
+                callback_data="starter_axew"
             )
         ]
     ]
 
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
     await update.message.reply_photo(
-        photo=POKEDEX_IMAGE,
-        caption=text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        photo="https://i.ibb.co/wrc5cYFr/Picsart-26-08-24-15-03-10-408.jpg",
+        caption=(
+            "🀪𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫É𝐷𝛴𝛸\n\n"
+            "𝑊𝑒𝑙𝑐𝑜𝑚𝑒 𝑡𝑜 𝑡ℎ𝑒 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑊𝑜𝑟𝑙𝑑 🐾\n\n"
+            "𝑌𝑜𝑢𝑟 𝑎𝑑𝑣𝑒𝑛𝑡𝑢𝑟𝑒 𝑖𝑠 𝑎𝑏𝑜𝑢𝑡 𝑡𝑜 𝑏𝑒𝑔𝑖𝑛.\n"
+            "𝐶ℎ𝑜𝑜𝑠𝑒 𝑦𝑜𝑢𝑟 𝑓𝑖𝑟𝑠𝑡 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑎𝑛𝑑 𝑏𝑢𝑖𝑙𝑑 𝑦𝑜𝑢𝑟 𝑡𝑒𝑎𝑚 ☻"
+        ),
+        reply_markup=reply_markup
     )
 
 
@@ -1280,17 +1454,48 @@ async def start_pokedex(update, context):
 # STARTER SELECTION
 # =========================================================
 
+import random
+
+
 STARTER_NAMES = {
     "starter_bulbasaur": "𝐁𝐮𝐥𝐛𝐚𝐬𝐚𝐮𝐫 🌱",
     "starter_charmander": "𝐂𝐡𝐚𝐫𝐦𝐚𝐧𝐝𝐞𝐫 🔥",
     "starter_squirtle": "𝐒𝐪𝐮𝐢𝐫𝐭𝐥𝐞 💧",
-    "starter_chikorita": "𝐂𝐡𝐢𝐤𝐨𝐫𝐢𝐭𝐚 🍃",
-    "starter_cyndaquil": "𝐂𝐲𝐧𝐝𝐚𝐪𝐮𝐢𝐥 🔥",
-    "starter_totodile": "𝐓𝐨𝐭𝐨𝐝𝐢𝐥𝐞 💧",
-    "starter_treecko": "𝐓𝐫𝐞𝐞𝐜𝐤𝐨 🌿",
-    "starter_torchic": "𝐓𝐨𝐫𝐜𝐡𝐢𝐜 🔥",
-    "starter_mudkip": "𝐌𝐮𝐝𝐤𝐢𝐩 💧"
+    "starter_pikachu": "𝐏𝐢𝐤𝐚𝐜𝐡𝐮 ⚡",
+    "starter_eevee": "𝐄𝐞𝐯𝐞𝐞 ✨",
+    "starter_riolu": "𝐑𝐢𝐨𝐥𝐮 🥊",
+    "starter_ralts": "𝐑𝐚𝐥𝐭𝐬 🔮",
+    "starter_axew": "𝐀𝐱𝐞𝐰 🐉"
 }
+
+
+NATURES = [
+    "Hardy",
+    "Lonely",
+    "Brave",
+    "Adamant",
+    "Naughty",
+    "Bold",
+    "Docile",
+    "Relaxed",
+    "Impish",
+    "Lax",
+    "Timid",
+    "Hasty",
+    "Serious",
+    "Jolly",
+    "Naive",
+    "Modest",
+    "Mild",
+    "Quiet",
+    "Rash",
+    "Bashful",
+    "Calm",
+    "Gentle",
+    "Sassy",
+    "Careful",
+    "Quirky"
+]
 
 
 async def starter_selected(update, context):
@@ -1298,14 +1503,57 @@ async def starter_selected(update, context):
 
     await query.answer()
 
+    user_id = query.from_user.id
+
+    # Already has a starter
+    if starter_exists(user_id):
+        try:
+            await query.message.delete()
+        except Exception:
+            pass
+
+        await context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text="⚠️ 𝐘𝐨𝐮 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐡𝐚𝐯𝐞 𝐚 𝐏𝐨𝐤é𝐦𝐨𝐧 𝐢𝐧 𝐲𝐨𝐮𝐫 𝐏𝐨𝐤é𝐝𝐞𝐱."
+        )
+        return
+
     pokemon = STARTER_NAMES.get(query.data)
 
     if not pokemon:
         return
 
-    await query.message.reply_text(
-        f"𝐘𝐨𝐮 𝐜𝐡𝐨𝐬𝐞: {pokemon}\n\n"
-        "𝐘𝐨𝐮𝐫 𝐏𝐨𝐤é𝐦𝐨𝐧 𝐡𝐚𝐬 𝐛𝐞𝐞𝐧 𝐚𝐝𝐝𝐞𝐝 𝐭𝐨 𝐲𝐨𝐮𝐫 𝐭𝐞𝐚𝐦! 🐾"
+    # Random Nature
+    nature = random.choice(NATURES)
+
+    # Random IVs — total 141–186
+    while True:
+        ivs = [random.randint(0, 31) for _ in range(6)]
+
+        if 141 <= sum(ivs) <= 186:
+            break
+
+    # Save Pokémon + hidden Nature + IVs
+    save_starter(
+        user_id,
+        pokemon,
+        nature,
+        ivs
+    )
+
+    # Delete starter selection message
+    try:
+        await query.message.delete()
+    except Exception as e:
+        print("Starter message delete error:", e)
+
+    # Simple confirmation only
+    await context.bot.send_message(
+        chat_id=query.message.chat_id,
+        text=(
+            f"☻ 𝐏𝐨𝐤é𝐦𝐨𝐧 𝐚𝐝𝐝𝐞𝐝 𝐭𝐨 𝐲𝐨𝐮𝐫 𝐏𝐨𝐤é𝐝𝐞𝐱!\n\n"
+            f"🐾 {pokemon}"
+        )
     )
 
 
