@@ -593,6 +593,21 @@ async def antispam(update, context):
         )
 
 
+# ========================================================= 
+# WELCOME SYSTEM 
+# =========================================================
+
+async def welcome(update, context):
+    if not update.message or not update.message.new_chat_members:
+        return
+    for user in update.message.new_chat_members:
+        save_user(user.id)
+        await update.message.reply_text(
+            f"🪬 Welcome {user.mention_html()} to the group! 🥳\n\n"
+            f"✨ Have a great time here!",
+            parse_mode="HTML"
+        )
+        
 # =========================================================
 # MESSAGE MODERATION
 # =========================================================
