@@ -630,10 +630,53 @@ async def setwelcome(update, context):
     conn.close()
 
     await update.message.reply_text(
-        "✅ 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐦𝐞𝐬𝐬𝐚𝐠𝐞 𝐬𝐞𝐭 𝐡𝐨 𝐠𝐚𝐲𝐚!"
+        "🎉🛠️ 𝐍𝐞𝐰 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐌𝐞𝐬𝐬𝐚𝐠𝐞 𝐢𝐬 𝐬𝐞𝐭 𝐍𝐨𝐰🍥!"
     )
 
-async def welcome(update, context):
+async def getwelcome(update, context):
+    if not await admin_only(update):
+        return
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT welcome FROM settings WHERE chat_id=?",
+        (update.effective_chat.id,)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    if result and result[0]:
+        await update.message.reply_text(
+            "📌 𝐂𝐮𝐫𝐫𝐞𝐧𝐭 𝐖𝐞𝐥𝐜𝐨𝐦𝐞:\n\n" + result[0]
+        )
+    else:
+        await update.message.reply_text(
+            "⚠️ 𝐍𝐨 𝐜𝐮𝐬𝐭𝐨𝐦 𝐰𝐞𝐥𝐜𝐨𝐦𝐞 𝐢𝐬 𝐬𝐞𝐭."
+        )
+
+
+async def resetwelcome(update, context):
+    if not await admin_only(update):
+        return
+
+    conn = db()
+
+    conn.execute(
+        "UPDATE settings SET welcome=NULL WHERE chat_id=?",
+        (update.effective_chat.id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    await update.message.reply_text(
+        "🎉🛠️ 𝐍𝐞𝐰 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐌𝐞𝐬𝐬𝐚𝐠𝐞 𝐢𝐬 𝐬𝐞𝐭 𝐍𝐨𝐰🍥!"
+    )
+    
+ async def welcome(update, context):
     if not update.message or not update.message.new_chat_members:
         return
 
