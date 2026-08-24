@@ -818,6 +818,12 @@ def main():
 
     app.add_handler(
         MessageHandler(
+            filters.StatusUpdate.NEW_CHAT_MEMBERS,
+            welcome
+        )
+    )
+    app.add_handler(
+        MessageHandler(
             filters.TEXT | filters.CAPTION,
             moderation_handler
         )
