@@ -1284,6 +1284,13 @@ def main():
             welcome
         )
     )
+    
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT,
+            text_sticker_filter_handler
+        )
+    )
 
     app.add_handler(
         MessageHandler(
@@ -1291,13 +1298,6 @@ def main():
             filter_handler
         )
     )
-
-    app.add_handler(
-        MessageHandler(
-            filters.TEXT,
-            text_sticker_filter_handler
-        )
-     )
     
     app.add_handler(
         MessageHandler(
