@@ -447,6 +447,60 @@ async def unmute(update, context):
 
 
 # =========================================================
+# PIN / UNPIN
+# =========================================================
+
+async def pin(update, context):
+    if not await admin_only(update):
+        return
+
+    if not update.message.reply_to_message:
+        await update.message.reply_text(
+            "⚠️ Reply to a message and use /pin."
+        )
+        return
+
+    try:
+        await update.message.reply_to_message.pin(
+            disable_notification=True
+        )
+
+        await update.message.reply_text(
+            "📌 𝐌𝐞𝐬𝐬𝐚𝐠𝐞 𝐩𝐢𝐧𝐧𝐞𝐝 𝐬𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥𝐥𝐲."
+        )
+
+    except Exception as e:
+        print("Pin error:", e)
+        await update.message.reply_text(
+            "❌ I couldn't pin this message."
+        )
+
+
+async def unpin(update, context):
+    if not await admin_only(update):
+        return
+
+    if not update.message.reply_to_message:
+        await update.message.reply_text(
+            "⚠️ Reply to a message and use /unpin."
+        )
+        return
+
+    try:
+        await update.message.reply_to_message.unpin()
+
+        await update.message.reply_text(
+            "📌 𝐌𝐞𝐬𝐬𝐚𝐠𝐞 𝐮𝐧𝐩𝐢𝐧𝐧𝐞𝐝 𝐬𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥𝐥𝐲."
+        )
+
+    except Exception as e:
+        print("Unpin error:", e)
+        await update.message.reply_text(
+            "❌ I couldn't unpin this message."
+        )
+
+
+# =========================================================
 # WARNING COMMANDS
 # =========================================================
 
