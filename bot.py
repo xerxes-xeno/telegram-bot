@@ -66,6 +66,15 @@ def init_db():
             PRIMARY KEY (chat_id, keyword)
         )
     """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS sticker_filters (
+            chat_id INTEGER NOT NULL,
+            sticker_id TEXT NOT NULL,
+            response TEXT NOT NULL,
+            PRIMARY KEY (chat_id, sticker_id)
+        )
+    """)
     
     try:
         cur.execute("ALTER TABLE settings ADD COLUMN welcome TEXT")
@@ -777,6 +786,88 @@ async def stop_filter(update, context):
     )
 
 
+# =========================================================
+# STICKER FILTER
+# =========================================================
+
+async def sticker_filter(update, context):
+    if not await admin_only(update):
+        return
+
+    if not update.message.reply_to_message:
+        await update.message.reply_text(
+            "⚠️ Sticker ko reply karke use:\n"
+            "/stickerfilter Your reply"
+        )
+        return
+
+    replied = update.message.reply_to_message
+
+    if not replied.sticker:
+        await update.message.reply_text(
+            "⚠️ Sticker wale message ko reply karo."
+        )
+        return
+
+    if not context.args:
+        await update.message.reply_text(
+            "⚠️ Use:\n/stickerfilter Your reply"
+        )
+        return
+
+    response = " ".join(context.args)
+    sticker_id = replied.sticker.file_id
+
+    conn = db()
+    conn.execute("""
+        INSERT INTO sticker_filters (chat_id, sticker_id, response)
+        VALUES (?, ?, ?)
+        ON CONFLICT(chat_id, sticker_id)
+        DO UPDATE SET response=excluded.response
+    """, (
+        update.effective_chat.id,
+        sticker_id,
+        response
+    ))
+    conn.commit()
+    conn.close()
+
+    await update.message.reply_text(
+        "✅ Sticker filter set!"
+        )
+
+
+# =========================================================
+# STICKER FILTER HANDLER
+# =========================================================
+
+async def sticker_filter_handler(update, context):
+    if not update.message:
+        return
+
+    if not update.effective_chat:
+        return
+
+    if not update.message.sticker:
+        return
+
+    sticker_id = update.message.sticker.file_id
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT response FROM sticker_filters WHERE chat_id=? AND sticker_id=?",
+        (update.effective_chat.id, sticker_id)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    if result:
+        await update.message.reply_text(result[0])
+
+
 # ========================================================= 
 # WELCOME SYSTEM 
 # =========================================================
@@ -1134,7 +1225,8 @@ def main():
     app.add_handler(CommandHandler("filter", filter_command))
     app.add_handler(CommandHandler("filters", filters_command))
     app.add_handler(CommandHandler("stop", stop_filter))
-
+    app.add_handler(CommandHandler("stickerfilter", sticker_filter))
+    
     app.add_handler(CommandHandler("setwelcome", setwelcome))
     app.add_handler(CommandHandler("getwelcome", getwelcome))
     app.add_handler(CommandHandler("resetwelcome", resetwelcome))
@@ -1153,6 +1245,13 @@ def main():
         )
     )
 
+    app.add_handler(
+        MessageHandler(
+            filters.Sticker.ALL,
+            sticker_filter_handler
+        )
+    )
+    
     app.add_handler(
         MessageHandler(
             filters.TEXT | filters.CAPTION,
