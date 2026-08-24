@@ -822,6 +822,7 @@ def main():
             welcome
         )
     )
+    
     app.add_handler(
         MessageHandler(
             filters.TEXT | filters.CAPTION,
