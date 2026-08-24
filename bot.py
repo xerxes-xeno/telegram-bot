@@ -318,6 +318,20 @@ async def start(update, context):
 
 
 # =========================================================
+# POKEDEX START
+# =========================================================
+
+async def startpokedex(update, context):
+
+    await update.message.reply_text(
+        "🎮 XERXES POKÉDEX\n\n"
+        "Welcome to the Pokémon World! 🐾\n\n"
+        "Your adventure is about to begin.\n"
+        "Choose your first Pokémon and build your team! 🔥🌊🌿"
+    )
+
+
+# =========================================================
 # ID
 # =========================================================
 
@@ -1250,6 +1264,7 @@ def main():
     app = Application.builder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("startpokedex", startpokedex))
     app.add_handler(CommandHandler("id", user_id))
     app.add_handler(CommandHandler("help", help_command))
 
