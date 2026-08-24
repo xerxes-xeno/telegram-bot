@@ -633,6 +633,7 @@ async def setwelcome(update, context):
         "🎉🛠️ 𝐍𝐞𝐰 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐌𝐞𝐬𝐬𝐚𝐠𝐞 𝐢𝐬 𝐬𝐞𝐭 𝐍𝐨𝐰🍥!"
     )
 
+
 async def getwelcome(update, context):
     if not await admin_only(update):
         return
@@ -676,7 +677,8 @@ async def resetwelcome(update, context):
         "🎉🛠️ 𝐍𝐞𝐰 𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐌𝐞𝐬𝐬𝐚𝐠𝐞 𝐢𝐬 𝐬𝐞𝐭 𝐍𝐨𝐰🍥!"
     )
     
- async def welcome(update, context):
+ 
+async def welcome(update, context):
     if not update.message or not update.message.new_chat_members:
         return
 
