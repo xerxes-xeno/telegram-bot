@@ -50,11 +50,12 @@ def init_db():
         )
     """)
 
-    cur.execute("""
+        cur.execute("""
         CREATE TABLE IF NOT EXISTS settings (
             chat_id INTEGER PRIMARY KEY,
             antilink INTEGER NOT NULL DEFAULT 0,
-            antispam INTEGER NOT NULL DEFAULT 0
+            antispam INTEGER NOT NULL DEFAULT 0,
+            welcome TEXT
         )
     """)
 
