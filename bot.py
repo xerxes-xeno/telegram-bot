@@ -54,11 +54,15 @@ def init_db():
         CREATE TABLE IF NOT EXISTS settings (
             chat_id INTEGER PRIMARY KEY,
             antilink INTEGER NOT NULL DEFAULT 0,
-            antispam INTEGER NOT NULL DEFAULT 0,
-            welcome TEXT
+            antispam INTEGER NOT NULL DEFAULT 0,    
         )
     """)
 
+    try:
+        cur.execute("ALTER TABLE settings ADD COLUMN welcome TEXT")
+    except sqlite3.OperationalError:
+        pass     
+   
     conn.commit()
     conn.close()
 
