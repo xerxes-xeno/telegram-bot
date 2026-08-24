@@ -50,20 +50,19 @@ def init_db():
         )
     """)
 
-     cur.execute("""
-         CREATE TABLE IF NOT EXISTS settings (
-                chat_id INTEGER PRIMARY KEY,
-                antilink INTEGER NOT NULL DEFAULT 0,
-                antispam INTEGER NOT NULL DEFAULT 0
-            )
-        """)
-
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS settings (
+            chat_id INTEGER PRIMARY KEY,
+            antilink INTEGER NOT NULL DEFAULT 0,
+            antispam INTEGER NOT NULL DEFAULT 0
+        )
+    """)
 
     try:
         cur.execute("ALTER TABLE settings ADD COLUMN welcome TEXT")
     except sqlite3.OperationalError:
-        pass     
-   
+        pass
+
     conn.commit()
     conn.close()
 
