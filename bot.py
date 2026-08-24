@@ -821,6 +821,7 @@ def main():
     app.add_handler(CommandHandler("antispam", antispam))
     app.add_handler(CommandHandler("broadcast", broadcast))
 
+    app.add_handler(CommandHandler("setwelcome", setwelcome))
     app.add_handler(
         MessageHandler(
             filters.StatusUpdate.NEW_CHAT_MEMBERS,
