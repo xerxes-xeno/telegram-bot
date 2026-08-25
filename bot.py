@@ -67,6 +67,18 @@ def init_db():
     """)
 
     cur.execute("""
+        CREATE TABLE IF NOT EXISTS pokedex_control (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            enabled INTEGER NOT NULL DEFAULT 1
+        )
+    """)
+
+    cur.execute("""
+        INSERT OR IGNORE INTO pokedex_control (id, enabled)
+        VALUES (1, 1)
+    """)
+    
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS pokedex (
             user_id INTEGER PRIMARY KEY,
             pokemon TEXT NOT NULL,
@@ -99,18 +111,48 @@ def init_db():
     """)
 
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS text_sticker_filters (
-        chat_id INTEGER NOT NULL,
-        keyword TEXT NOT NULL,
-        sticker_id TEXT NOT NULL,
-        PRIMARY KEY (chat_id, keyword)
-    )
-""")
+        CREATE TABLE IF NOT EXISTS text_sticker_filters (
+            chat_id INTEGER NOT NULL,
+            keyword TEXT NOT NULL,
+            sticker_id TEXT NOT NULL,
+            PRIMARY KEY (chat_id, keyword)
+        )
+    """)
   
     try:
         cur.execute("ALTER TABLE settings ADD COLUMN welcome TEXT")
     except sqlite3.OperationalError:
         pass
+
+    conn.commit()
+    conn.close()
+
+
+# =========================================================
+# POKEDEX GLOBAL CONTROL
+# =========================================================
+
+def is_pokedex_enabled():
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT enabled FROM pokedex_control WHERE id=1"
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    return bool(result[0]) if result else True
+
+
+def set_pokedex_enabled(status):
+    conn = db()
+
+    conn.execute(
+        "UPDATE pokedex_control SET enabled=? WHERE id=1",
+        (1 if status else 0,)
+    )
 
     conn.commit()
     conn.close()
@@ -437,6 +479,41 @@ async def admin_only(update):
         return False
 
     return True
+
+
+# =========================================================
+# POKEDEX MASTER CONTROL
+# =========================================================
+
+async def stopdex(update, context):
+    if update.effective_user.id != ADMIN_ID:
+        await update.message.reply_text(
+            "❌ Only the XERXES Boss can control the Pokémon system."
+        )
+        return
+
+    set_pokedex_enabled(False)
+
+    await update.message.reply_text(
+        "🔴 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐒𝐲𝐬𝐭𝐞𝐦 𝐎𝐅𝐅.\n\n"
+        "💾 All Pokémon data remains safe.\n"
+        "🛡️ Nothing has been deleted."
+    )
+
+
+async def ondex(update, context):
+    if update.effective_user.id != ADMIN_ID:
+        await update.message.reply_text(
+            "❌ Only the XERXES Boss can control the Pokémon system."
+        )
+        return
+
+    set_pokedex_enabled(True)
+
+    await update.message.reply_text(
+        "🟢 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐒𝐲𝐬𝐭𝐞𝐦 𝐎𝐍.\n\n"
+        "⚡ The Pokémon system is active again."
+        )
 
 
 # =========================================================
@@ -1710,6 +1787,8 @@ def main():
     app = Application.builder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("stopdex", stopdex))
+    app.add_handler(CommandHandler("ondex", ondex))
     app.add_handler(CommandHandler("startpokedex", start_pokedex))
 
     app.add_handler(
