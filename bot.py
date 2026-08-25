@@ -532,11 +532,14 @@ async def startpokedex(update, context):
 # =========================================================
 
 async def user_id(update, context):
-    save_user(update.effective_user.id)
+    if update.message.reply_to_message:
+        target_user = update.message.reply_to_message.from_user
+    else:
+        target_user = update.effective_user
 
     await update.message.reply_text(
-        f"🆔 𝐘𝐨𝐮𝐫 𝐔𝐬𝐞𝐫 𝐈𝐃:\n\n"
-        f"`{update.effective_user.id}`",
+        f"🆔 𝐔𝐬𝐞𝐫 𝐈𝐃:\n\n"
+        f"`{target_user.id}`",
         parse_mode="Markdown"
     )
 
