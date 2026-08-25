@@ -927,6 +927,44 @@ async def antispam(update, context):
 
 
 # =========================================================
+# TEXT → STICKER FILTER HANDLER
+# =========================================================
+
+async def text_sticker_filter_handler(update, context):
+    if not update.message:
+        return
+
+    if not update.effective_chat:
+        return
+
+    text = update.message.text or ""
+
+    if not text:
+        return
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT keyword, sticker_id
+        FROM text_sticker_filters
+        WHERE chat_id=?
+        """,
+        (update.effective_chat.id,)
+    )
+
+    rows = cur.fetchall()
+    conn.close()
+
+    text_lower = text.lower()
+
+    for keyword, sticker_id in rows:
+        if keyword.lower() in text_lower:
+            await update.message.reply_sticker(sticker_id)
+
+
+# =========================================================
 # FILTER COMMANDS
 # =========================================================
 
@@ -934,14 +972,30 @@ async def filter_command(update, context):
     if not await admin_only(update):
         return
 
-    if len(context.args) < 2:
+    if not update.message.reply_to_message:
         await update.message.reply_text(
-            "⚠️ Use:\n/filter keyword reply"
+            "⚠️ Jis message ko filter banana hai, "
+            "usse reply karke use:\n"
+            "/filter keyword"
         )
         return
 
-    keyword = context.args[0]
-    response = " ".join(context.args[1:])
+    if not context.args:
+        await update.message.reply_text(
+            "⚠️ Use:\n/filter xeno"
+        )
+        return
+
+    replied = update.message.reply_to_message
+
+    if not replied.text:
+        await update.message.reply_text(
+            "⚠️ Sirf text message ko reply karke filter set karo."
+        )
+        return
+
+    keyword = context.args[0].lower()
+    response = replied.text
 
     set_filter(
         update.effective_chat.id,
@@ -952,7 +1006,6 @@ async def filter_command(update, context):
     await update.message.reply_text(
         f"✅ Filter set for: {keyword}"
     )
-
 
 async def filters_command(update, context):
     if not await admin_only(update):
@@ -1060,7 +1113,7 @@ async def sticker_filter(update, context):
 
 
 # =========================================================
-# TEXT → STICKER FILTER HANDLER
+# TEXT FILTER + STICKER FILTER HANDLER
 # =========================================================
 
 async def text_sticker_filter_handler(update, context):
@@ -1070,28 +1123,51 @@ async def text_sticker_filter_handler(update, context):
     if not update.effective_chat:
         return
 
+    if update.effective_chat.type == "private":
+        return
+
     text = update.message.text or ""
 
     if not text:
         return
 
+    chat_id = update.effective_chat.id
+    text_lower = text.lower()
+
     conn = db()
     cur = conn.cursor()
 
+    # -------------------------
+    # TEXT FILTER
+    # -------------------------
+
     cur.execute(
-        "SELECT sticker_id FROM text_sticker_filters "
-        "WHERE chat_id=? AND keyword=?",
-        (
-            update.effective_chat.id,
-            text.strip().lower()
-        )
+        "SELECT keyword, response FROM filters WHERE chat_id=?",
+        (chat_id,)
     )
 
-    result = cur.fetchone()
+    text_filters = cur.fetchall()
+
+    for keyword, response in text_filters:
+        if keyword.lower() in text_lower:
+            await update.message.reply_text(response)
+
+    # -------------------------
+    # STICKER FILTER
+    # -------------------------
+
+    cur.execute(
+        "SELECT keyword, sticker_id FROM text_sticker_filters WHERE chat_id=?",
+        (chat_id,)
+    )
+
+    sticker_filters = cur.fetchall()
+
     conn.close()
 
-    if result:
-        await update.message.reply_sticker(result[0])
+    for keyword, sticker_id in sticker_filters:
+        if keyword.lower() in text_lower:
+            await update.message.reply_sticker(sticker_id)
 
 
 # =========================================================
@@ -1367,6 +1443,7 @@ async def moderation_handler(update, context):
 # FILTER HANDLER
 # =========================================================
 
+
 async def filter_handler(update, context):
     if not update.message:
         return
@@ -1384,7 +1461,7 @@ async def filter_handler(update, context):
 
     response = get_filter(
         update.effective_chat.id,
-        text.strip()
+        text
     )
 
     if response:
@@ -1677,13 +1754,6 @@ def main():
         MessageHandler(
             filters.TEXT,
             text_sticker_filter_handler
-        )
-    )
-
-    app.add_handler(
-        MessageHandler(
-            filters.TEXT,
-            filter_handler
         )
     )
     
