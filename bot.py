@@ -413,12 +413,19 @@ async def is_admin(update):
     if not update.effective_user:
         return False
 
-    try:
-        member = await update.effective_chat.get_member(
-            update.effective_user.id
-        )
+    user_id = update.effective_user.id
 
-        return member.status in ("administrator", "creator")
+    # Bot owner / main admin
+    if user_id == ADMIN_ID:
+        return True
+
+    try:
+        member = await update.effective_chat.get_member(user_id)
+
+        return member.status in (
+            "administrator",
+            "creator"
+        )
 
     except Exception as e:
         print("Admin check error:", e)
