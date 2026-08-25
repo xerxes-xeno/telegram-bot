@@ -537,9 +537,14 @@ async def start(update, context):
 # =========================================================
 
 async def startpokedex(update, context):
-
     user_id = update.effective_user.id
 
+    # Check if pokedex is enabled (Ensure this function is properly handled if async)
+    if not is_pokedex_enabled():
+        await update.message.reply_text("🔴 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐢𝐬 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐎𝐅𝐅.")
+        return
+
+    # Save user into the database
     save_user(user_id)
 
     # Starter already selected?
@@ -549,6 +554,8 @@ async def startpokedex(update, context):
         )
         return
 
+    # Propose starter selection or continue setup logic below...
+    
     keyboard = [
         [
             InlineKeyboardButton(
