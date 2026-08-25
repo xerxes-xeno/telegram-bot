@@ -404,31 +404,28 @@ def delete_filter(chat_id, keyword):
 # =========================================================
 
 async def is_admin(update):
-    if not update.effective_chat:
+    if not update.effective_chat or not update.effective_user:
         return False
 
     if update.effective_chat.type == "private":
         return False
 
-    if not update.effective_user:
-        return False
-
-    user_id = update.effective_user.id
-
-    # Bot owner / main admin
-    if user_id == ADMIN_ID:
-        return True
-
     try:
-        member = await update.effective_chat.get_member(user_id)
-
-        return member.status in (
-            "administrator",
-            "creator"
+        member = await update.effective_chat.get_member(
+            update.effective_user.id
         )
 
+        print(
+            "ADMIN DEBUG:",
+            "user_id =", update.effective_user.id,
+            "status =", member.status,
+            "chat_id =", update.effective_chat.id
+        )
+
+        return member.status in ("administrator", "creator")
+
     except Exception as e:
-        print("Admin check error:", e)
+        print("Admin check error:", repr(e))
         return False
 
 
