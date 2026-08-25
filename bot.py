@@ -21,7 +21,7 @@ from telegram.ext import (
     filters,
 )
 
-DB_FILE = "warnings.db"
+DB_FILE = "/data/warnings.db"
 ADMIN_ID = 8504230656
 
 SPAM_LIMIT = 5
