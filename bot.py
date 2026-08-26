@@ -18,6 +18,7 @@ from telegram.ext import (
     ContextTypes,
     MessageHandler,
     CallbackQueryHandler,
+    ConversationHandler,
     filters,
 )
 
@@ -57,7 +58,7 @@ def init_db():
             user_id INTEGER PRIMARY KEY
         )
     """)
-
+    
 
 # =========================================================
 # TRAINER PROFILE
@@ -65,7 +66,9 @@ def init_db():
 
     for column, definition in [
         ("trainer_id", "TEXT"),
+        ("trainer_name", "TEXT"),
         ("hometown", "TEXT DEFAULT 'Unknown'"),
+        ("region", "TEXT DEFAULT 'Unknown'"),
         ("wins", "INTEGER DEFAULT 0"),
         ("losses", "INTEGER DEFAULT 0"),
         ("avatar", "TEXT"),
@@ -148,6 +151,111 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+
+# =========================================================
+# TRAINER ID
+# =========================================================
+
+def generate_trainer_id(user_id):
+    return f"XRX-{user_id}"
+
+
+# =========================================================
+# TRAINER SAVE
+# =========================================================
+
+def save_trainer(user_id, trainer_name, hometown, region):
+
+    trainer_id = generate_trainer_id(user_id)
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        UPDATE users
+        SET trainer_id=?,
+            trainer_name=?,
+            hometown=?,
+            region=?
+        WHERE user_id=?
+        """,
+        (
+            trainer_id,
+            trainer_name,
+            hometown,
+            region,
+            user_id
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    return trainer_id
+
+
+# =========================================================
+# TRAINER PROFILE
+# =========================================================
+
+async def trainer(update, context):
+
+    user_id = update.effective_user.id
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT trainer_id, trainer_name, hometown, region
+        FROM users
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    user = cur.fetchone()
+
+    cur.execute(
+        """
+        SELECT pokemon
+        FROM pokedex
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    pokemon = cur.fetchone()
+
+    conn.close()
+
+    if not user or not user[1]:
+        await update.message.reply_text(
+            "❌ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐧𝐨𝐭 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 𝐏𝐨𝐤é𝐦𝐨𝐧 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐲𝐞𝐭.\n\n"
+            "Use /startpokedex to begin your journey."
+        )
+        return
+
+    trainer_id, name, hometown, region = user
+
+    starter = pokemon[0] if pokemon else "Not selected"
+
+    await update.message.reply_photo(
+        photo="https://i.ibb.co/MT7GVfB/IMG-20260826-101702-983.webp",
+        caption=(
+            "🎓 𝐓𝐑𝐀𝐈𝐍𝐄𝐑 𝐏𝐑𝐎𝐅𝐈𝐋𝐄\n\n"
+            f"👤 𝐍𝐚𝐦𝐞: {name}\n"
+            f"🆔 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐈𝐃: {trainer_id}\n"
+            f"🏠 𝐇𝐨𝐦𝐞𝐭𝐨𝐰𝐧: {hometown}\n"
+            f"🌍 𝐑𝐞𝐠𝐢𝐨𝐧: {region}\n\n"
+            f"🐾 𝐒𝐭𝐚𝐫𝐭𝐞𝐫: {starter}\n\n"
+            "🏆 𝐖𝐢𝐧𝐬: 0\n"
+            "💀 𝐋𝐨𝐬𝐬𝐞𝐬: 0\n"
+            "🎖️ 𝐁𝐚𝐝𝐠𝐞𝐬: 0"
+        )
+    )
 
 
 # =========================================================
@@ -633,12 +741,19 @@ async def start(update, context):
     save_user(update.effective_user.id)
 
     await update.message.reply_text(
-        "𝐓𝐡𝐞 𝐨𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐗𝐄𝐑𝐗𝐄𝐒 𝐛𝐨𝐭 🜲\n\n"
-        "𝐆𝐚𝐦𝐢𝐧𝐠 • 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 • 𝐌𝐮𝐬𝐢𝐜\n\n"
-        "𝐏𝐨𝐰𝐞𝐫𝐟𝐮𝐥 𝐟𝐞𝐚𝐭𝐮𝐫𝐞𝐬, 𝐬𝐦𝐨𝐨𝐭𝐡 𝐭𝐨𝐨𝐥𝐬 "
-        "𝐚𝐧𝐝 𝐚 𝐛𝐞𝐭𝐭𝐞𝐫 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲 𝐞𝐱𝐩𝐞𝐫𝐢𝐞𝐧𝐜𝐞.\n\n"
-        "✆ 𝐀𝐮𝐭𝐡𝐨𝐫𝐢𝐭𝐲 𝐬𝐮𝐩𝐩𝐨𝐫𝐭: @XERXES_XENO"
-    )
+        "╭━━━━━━━━━━━━━━━━━╮\n"
+        "      𝛸𝛴𝛤𝛸𝛴𝑆\n"
+        "╰━━━━━━━━━━━━━━━━━╯\n"
+        "𝐀𝐧 𝐨𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲 𝐛𝐨𝐭 𝐛𝐮𝐢𝐥𝐭 𝐭𝐨 𝐛𝐫𝐢𝐧𝐠\n"
+        "𝐆𝐚𝐦𝐢𝐧𝐠, 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 & 𝐌𝐮𝐬𝐢𝐜\n"
+        "𝐭𝐨𝐠𝐞𝐭𝐡𝐞𝐫 𝐢𝐧 𝐨𝐧𝐞 𝐩𝐥𝐚𝐜𝐞 — 𝐦𝐚𝐤𝐢𝐧𝐠 𝐲𝐨𝐮𝐫\n"
+        "𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲 𝐞𝐱𝐩𝐞𝐫𝐢𝐞𝐧𝐜𝐞 𝐬𝐦𝐚𝐫𝐭𝐞𝐫, 𝐬𝐦𝐨𝐨𝐭𝐡𝐞𝐫,\n"
+        "𝐚𝐧𝐝 𝐦𝐨𝐫𝐞 𝐞𝐧𝐠𝐚𝐠𝐢𝐧𝐠.\n\n"
+        "𝐇𝐞𝐫𝐞 𝐮 𝐠𝐞𝐭 𝐚𝐥𝐥 𝐭𝐡𝐞 𝐥𝐢𝐧𝐤𝐬 𝐚𝐧𝐝 𝐚𝐜𝐜𝐞𝐬𝐬 𝐭𝐨\n"
+        "𝐚𝐥𝐥 𝐭𝐡𝐞 𝐠𝐫𝐨𝐮𝐩𝐬 𝐚𝐧𝐝 𝐜𝐡𝐚𝐧𝐧𝐞𝐥𝐬 𝐨𝐟 𝐭𝐡𝐞 𝐗𝐞𝐫𝐱𝐞𝐬 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲.\n\n"
+        "https://t.me/XERXES_COMMUNITY\n\n"
+        "                         ── ⋆⋅𖤓⋅⋆ ──"
+)
 
 
 # =========================================================
@@ -1586,8 +1701,11 @@ async def filter_handler(update, context):
 
 
 # =========================================================
-# POKEDEX START
+# POKEDEX REGISTRATION
 # =========================================================
+
+TRAINER_NAME, TRAINER_HOMETOWN, TRAINER_REGION = range(3)
+
 
 async def start_pokedex(update, context):
 
@@ -1598,16 +1716,137 @@ async def start_pokedex(update, context):
         await update.message.reply_text(
             "🔴 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐢𝐬 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐎𝐅𝐅."
         )
-        return
+        return ConversationHandler.END
 
     save_user(user_id)
 
-    # STARTER ALREADY SELECTED
-    if starter_exists(user_id):
+    # ALREADY REGISTERED
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT trainer_name FROM users WHERE user_id=?",
+        (user_id,)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    if result and result[0]:
         await update.message.reply_text(
-            "𝐘𝐨𝐮 𝐡𝐚𝐯𝐞 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐜𝐡𝐨𝐬𝐞𝐧 𝐲𝐨𝐮𝐫 𝐟𝐢𝐫𝐬𝐭 𝐏𝐨𝐤é𝐦𝐨𝐧. 🐾"
+            "𝐘𝐨𝐮 𝐚𝐫𝐞 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 𝐭𝐫𝐚𝐢𝐧𝐞𝐫 𝐢𝐧 "
+            "𝐏𝐨𝐤𝐞𝐰𝐨𝐫𝐥𝐝 𝐨𝐟 𝛸𝛴𝛤𝛸𝛴𝑆 ❗"
         )
-        return
+        return ConversationHandler.END
+
+    await update.message.reply_text(
+        "🎓 𝐖𝐞𝐥𝐜𝐨𝐦𝐞, 𝐟𝐮𝐭𝐮𝐫𝐞 𝐓𝐫𝐚𝐢𝐧𝐞𝐫!\n\n"
+        "𝐖𝐡𝐚𝐭 𝐧𝐚𝐦𝐞 𝐰𝐨𝐮𝐥𝐝 𝐲𝐨𝐮 𝐥𝐢𝐤𝐞 𝐭𝐨 𝐮𝐬𝐞 𝐚𝐬 𝐲𝐨𝐮𝐫 "
+        "𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐧𝐚𝐦𝐞?"
+    )
+
+    return TRAINER_NAME
+
+
+async def trainer_name(update, context):
+
+    name = update.message.text.strip()
+
+    if not name:
+        await update.message.reply_text(
+            "⚠️ Please enter a valid Trainer name."
+        )
+        return TRAINER_NAME
+
+    if len(name) > 30:
+        await update.message.reply_text(
+            "⚠️ Trainer name must be 30 characters or less."
+        )
+        return TRAINER_NAME
+
+    context.user_data["trainer_name"] = name
+
+    await update.message.reply_text(
+        "🏠 𝐖𝐡𝐚𝐭 𝐢𝐬 𝐲𝐨𝐮𝐫 𝐡𝐨𝐦𝐞𝐭𝐨𝐰𝐧?"
+    )
+
+    return TRAINER_HOMETOWN
+
+
+async def trainer_hometown(update, context):
+
+    hometown = update.message.text.strip()
+
+    if not hometown:
+        await update.message.reply_text(
+            "⚠️ Please enter a valid hometown."
+        )
+        return TRAINER_HOMETOWN
+
+    if len(hometown) > 30:
+        await update.message.reply_text(
+            "⚠️ Hometown must be 30 characters or less."
+        )
+        return TRAINER_HOMETOWN
+
+    context.user_data["hometown"] = hometown
+
+    keyboard = [
+        [
+            InlineKeyboardButton("𝐊𝐚𝐧𝐭𝐨", callback_data="region_Kanto"),
+            InlineKeyboardButton("𝐉𝐨𝐡𝐭𝐨", callback_data="region_Johto")
+        ],
+        [
+            InlineKeyboardButton("𝐇𝐨𝐞𝐧𝐧", callback_data="region_Hoenn"),
+            InlineKeyboardButton("𝐒𝐢𝐧𝐧𝐨𝐡", callback_data="region_Sinnoh")
+        ],
+        [
+            InlineKeyboardButton("𝐔𝐧𝐨𝐯𝐚", callback_data="region_Unova"),
+            InlineKeyboardButton("𝐊𝐚𝐥𝐨𝐬", callback_data="region_Kalos")
+        ],
+        [
+            InlineKeyboardButton("𝐀𝐥𝐨𝐥𝐚", callback_data="region_Alola"),
+            InlineKeyboardButton("𝐆𝐚𝐥𝐚𝐫", callback_data="region_Galar")
+        ],
+        [
+            InlineKeyboardButton("𝐏𝐚𝐥𝐝𝐞𝐚", callback_data="region_Paldea")
+        ]
+    ]
+
+    await update.message.reply_text(
+        "🌍 𝐂𝐡𝐨𝐨𝐬𝐞 𝐲𝐨𝐮𝐫 𝐏𝐨𝐤é𝐦𝐨𝐧 𝐫𝐞𝐠𝐢𝐨𝐧:",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+    return TRAINER_REGION
+
+
+async def trainer_region(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    region = query.data.replace("region_", "")
+
+    trainer_name = context.user_data.get("trainer_name")
+    hometown = context.user_data.get("hometown")
+
+    if not trainer_name or not hometown:
+        await query.message.reply_text(
+            "❌ 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐫𝐞𝐠𝐢𝐬𝐭𝐫𝐚𝐭𝐢𝐨𝐧 𝐞𝐫𝐫𝐨𝐫.\n\n"
+            "Please use /startpokedex again."
+        )
+        return ConversationHandler.END
+
+    # Save Trainer ID + Name + Hometown + Region
+    save_trainer(
+        user_id,
+        trainer_name,
+        hometown,
+        region
+    )
 
     keyboard = [
         [
@@ -1652,18 +1891,14 @@ async def start_pokedex(update, context):
         ]
     ]
 
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    await update.message.reply_photo(
-        photo="https://i.ibb.co/wrc5cYFr/Picsart-26-08-24-15-03-10-408.jpg",
-        caption=(
-            "🀪𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫É𝐷𝛴𝛸\n\n"
-            "𝑊𝑒𝑙𝑐𝑜𝑚𝑒 𝑡𝑜 𝑡ℎ𝑒 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑊𝑜𝑟𝑙𝑑 🐾\n\n"
-            "𝑌𝑜𝑢𝑟 𝑎𝑑𝑣𝑒𝑛𝑡𝑢𝑟𝑒 𝑖𝑠 𝑎𝑏𝑜𝑢𝑡 𝑡𝑜 𝑏𝑒𝑔𝑖𝑛.\n"
-            "𝐶ℎ𝑜𝑜𝑠𝑒 𝑦𝑜𝑢𝑟 𝑓𝑖𝑟𝑠𝑡 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑎𝑛𝑑 𝑏𝑢𝑖𝑙𝑑 𝑦𝑜𝑢𝑟 𝑡𝑒𝑎𝑚 ☻"
-        ),
-        reply_markup=reply_markup
+    await query.message.edit_text(
+        "🌍 𝐑𝐞𝐠𝐢𝐨𝐧 𝐬𝐞𝐭 𝐭𝐨: "
+        f"𝐓𝐡𝐞 𝐫𝐞𝐠𝐢𝐨𝐧 𝐨𝐟 {region}\n\n"
+        "🐾 𝐍𝐨𝐰 𝐜𝐡𝐨𝐨𝐬𝐞 𝐲𝐨𝐮𝐫 𝐟𝐢𝐫𝐬𝐭 𝐏𝐨𝐤é𝐦𝐨𝐧!",
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+    return ConversationHandler.END
 
 
 # =========================================================
@@ -1845,14 +2080,34 @@ def main():
     app.add_handler(CommandHandler("trainer", trainer))
     app.add_handler(CommandHandler("stopdex", stopdex))
     app.add_handler(CommandHandler("ondex", ondex))
-    app.add_handler(CommandHandler("startpokedex", start_pokedex))
-
-    app.add_handler(
-        CallbackQueryHandler(
-            starter_selected,
-            pattern="^starter_"
-        )
+    pokedex_registration = ConversationHandler(
+        entry_points=[
+            CommandHandler("startpokedex", start_pokedex)
+        ],
+        states={
+            TRAINER_NAME: [
+                MessageHandler(
+                    filters.TEXT & ~filters.COMMAND,
+                    trainer_name
+                )
+            ],
+            TRAINER_HOMETOWN: [
+                MessageHandler(
+                    filters.TEXT & ~filters.COMMAND,
+                    trainer_hometown
+                )
+            ],
+            TRAINER_REGION: [
+                CallbackQueryHandler(
+                    trainer_region,
+                    pattern="^region_"
+                )
+            ]
+        },
+        fallbacks=[]
     )
+
+    app.add_handler(pokedex_registration)
 
     app.add_handler(CommandHandler("id", user_id))
     app.add_handler(CommandHandler("help", help_command))
