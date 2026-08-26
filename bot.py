@@ -452,32 +452,32 @@ async def trainer(update, context):
     # =====================================================
 
     keyboard = [
-    [
-        InlineKeyboardButton(
-            text="👤 Profile",
-            web_app=WebAppInfo(
-                url="https://xerxes-xeno.github.io/xerxes-miniapp/"
+        [
+            InlineKeyboardButton(
+                text="👤 Profile",
+                web_app=WebAppInfo(
+                    url="https://xerxes-xeno.github.io/xerxes-miniapp/"
+                )
             )
-        )
-    ],
-    [
-        InlineKeyboardButton(
-            text="🎟️ X Pass Batches",
-            callback_data="x_pass_batches"
-        )
-    ],
-    [
-        InlineKeyboardButton(
-            text="💎 X Prime Pass Batches",
-            callback_data="x_prime_batches"
-        )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🎟️ X Pass Batches",
+                callback_data="x_pass_batches"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="💎 X Prime Pass Batches",
+                callback_data="x_prime_batches"
+            )
+        ]
     ]
-]
 
-await update.message.reply_photo(
-    photo=profile_image,
-    reply_markup=InlineKeyboardMarkup(keyboard)
-)
+    await update.message.reply_photo(
+        photo=profile_image,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
 
 # =========================================================
