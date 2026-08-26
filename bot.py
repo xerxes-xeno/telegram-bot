@@ -533,85 +533,6 @@ async def start(update, context):
 
 
 # =========================================================
-# POKEDEX START
-# =========================================================
-
-async def startpokedex(update, context):
-    user_id = update.effective_user.id
-
-    # Check if pokedex is enabled (Ensure this function is properly handled if async)
-    if not is_pokedex_enabled():
-        await update.message.reply_text("🔴 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐢𝐬 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐎𝐅𝐅.")
-        return
-
-    # Save user into the database
-    save_user(user_id)
-
-    # Starter already selected?
-    if starter_exists(user_id):
-        await update.message.reply_text(
-            "𝐘𝐨𝐮 𝐡𝐚𝐯𝐞 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐜𝐡𝐨𝐬𝐞𝐧 𝐲𝐨𝐮𝐫 𝐟𝐢𝐫𝐬𝐭 𝐏𝐨𝐤é𝐦𝐨𝐧. 🐾"
-        )
-        return
-
-    # Propose starter selection or continue setup logic below...
-    
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🌿 𝐁𝐮𝐥𝐛𝐚𝐬𝐚𝐮𝐫",
-                callback_data="starter_Bulbasaur"
-            ),
-            InlineKeyboardButton(
-                "🔥 𝐂𝐡𝐚𝐫𝐦𝐚𝐧𝐝𝐞𝐫",
-                callback_data="starter_Charmander"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "💧 𝐒𝐪𝐮𝐮𝐫𝐭𝐥𝐞",
-                callback_data="starter_Squirtle"
-            ),
-            InlineKeyboardButton(
-                "⚡ 𝐏𝐢𝐤𝐚𝐜𝐡𝐮",
-                callback_data="starter_Pikachu"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "✨ 𝐄𝐞𝐯𝐞𝐞",
-                callback_data="starter_Eevee"
-            ),
-            InlineKeyboardButton(
-                "🥋 𝐑𝐢𝐨𝐥𝐮",
-                callback_data="starter_Riolu"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🔮 𝐑𝐚𝐥𝐭𝐬",
-                callback_data="starter_Ralts"
-            ),
-            InlineKeyboardButton(
-                "🐉 𝐀𝐱𝐞𝐰",
-                callback_data="starter_Axew"
-            )
-        ]
-    ]
-
-    await update.message.reply_photo(
-        photo="https://i.ibb.co/wrc5cYFr/Picsart-26-08-24-15-03-10-408.jpg",
-        caption=(
-            "🀪𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫É𝐷𝛴𝛸\n\n"
-            "𝑊𝑒𝑙𝑐𝑜𝑚𝑒 𝑡𝑜 𝑡ℎ𝑒 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑊𝑜𝑟𝑙𝑑 🐾\n\n"
-            "𝑌𝑜𝑢𝑟 𝑎𝑑𝑣𝑒𝑛𝑡𝑢𝑟𝑒 𝑖𝑠 𝑎𝑏𝑜𝑢𝑡 𝑡𝑜 𝑏𝑒𝑔𝑖𝑛.\n"
-            "𝐶ℎ𝑜𝑜𝑠𝑒 𝑦𝑜𝑢𝑟 𝑓𝑖𝑟𝑠𝑡 𝑃𝑜𝑘é𝑚𝑜𝑛 𝑎𝑛𝑑 𝑏𝑢𝑖𝑙𝑑 𝑦𝑜𝑢𝑟 𝑡𝑒𝑎𝑚 ☻"
-        ),
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-
-
-# =========================================================
 # ID
 # =========================================================
 
@@ -1560,6 +1481,24 @@ async def filter_handler(update, context):
 # =========================================================
 
 async def start_pokedex(update, context):
+
+    user_id = update.effective_user.id
+
+    # POKEDEX OFF CHECK
+    if not is_pokedex_enabled():
+        await update.message.reply_text(
+            "🔴 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐢𝐬 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐎𝐅𝐅."
+        )
+        return
+
+    save_user(user_id)
+
+    # STARTER ALREADY SELECTED
+    if starter_exists(user_id):
+        await update.message.reply_text(
+            "𝐘𝐨𝐮 𝐡𝐚𝐯𝐞 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐜𝐡𝐨𝐬𝐞𝐧 𝐲𝐨𝐮𝐫 𝐟𝐢𝐫𝐬𝐭 𝐏𝐨𝐤é𝐦𝐨𝐧. 🐾"
+        )
+        return
 
     keyboard = [
         [
