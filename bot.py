@@ -197,68 +197,6 @@ def save_trainer(user_id, trainer_name, hometown, region):
 
 
 # =========================================================
-# TRAINER PROFILE
-# =========================================================
-
-async def trainer(update, context):
-
-    user_id = update.effective_user.id
-
-    conn = db()
-    cur = conn.cursor()
-
-    cur.execute(
-        """
-        SELECT trainer_id, trainer_name, hometown, region
-        FROM users
-        WHERE user_id=?
-        """,
-        (user_id,)
-    )
-
-    user = cur.fetchone()
-
-    cur.execute(
-        """
-        SELECT pokemon
-        FROM pokedex
-        WHERE user_id=?
-        """,
-        (user_id,)
-    )
-
-    pokemon = cur.fetchone()
-
-    conn.close()
-
-    if not user or not user[1]:
-        await update.message.reply_text(
-            "❌ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐧𝐨𝐭 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 𝐏𝐨𝐤é𝐦𝐨𝐧 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐲𝐞𝐭.\n\n"
-            "Use /startpokedex to begin your journey."
-        )
-        return
-
-    trainer_id, name, hometown, region = user
-
-    starter = pokemon[0] if pokemon else "Not selected"
-
-    await update.message.reply_photo(
-        photo="https://i.ibb.co/MT7GVfB/IMG-20260826-101702-983.webp",
-        caption=(
-            "🎓 𝐓𝐑𝐀𝐈𝐍𝐄𝐑 𝐏𝐑𝐎𝐅𝐈𝐋𝐄\n\n"
-            f"👤 𝐍𝐚𝐦𝐞: {name}\n"
-            f"🆔 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐈𝐃: {trainer_id}\n"
-            f"🏠 𝐇𝐨𝐦𝐞𝐭𝐨𝐰𝐧: {hometown}\n"
-            f"🌍 𝐑𝐞𝐠𝐢𝐨𝐧: {region}\n\n"
-            f"🐾 𝐒𝐭𝐚𝐫𝐭𝐞𝐫: {starter}\n\n"
-            "🏆 𝐖𝐢𝐧𝐬: 0\n"
-            "💀 𝐋𝐨𝐬𝐬𝐞𝐬: 0\n"
-            "🎖️ 𝐁𝐚𝐝𝐠𝐞𝐬: 0"
-        )
-    )
-
-
-# =========================================================
 # SAVE USER
 # =========================================================
 
@@ -298,7 +236,7 @@ def save_user(user_id):
 
     conn.commit()
     conn.close()
-
+    
 
 # =========================================================
 # TRAINER COMMAND
@@ -308,40 +246,65 @@ async def trainer(update, context):
 
     user_id = update.effective_user.id
 
-    # Make sure user exists
+    # Make sure user exists and Trainer ID is created
     save_user(user_id)
 
     conn = db()
     cur = conn.cursor()
 
+    # Get Trainer Profile
     cur.execute(
         """
-        SELECT trainer_id, hometown, wins, losses, batches
+        SELECT trainer_id, trainer_name, hometown, region,
+               wins, losses, batches
         FROM users
         WHERE user_id=?
         """,
         (user_id,)
     )
 
-    result = cur.fetchone()
+    user = cur.fetchone()
+
+    # Get permanent starter
+    cur.execute(
+        """
+        SELECT pokemon
+        FROM pokedex
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    pokemon = cur.fetchone()
+
     conn.close()
 
-    if not result:
+    # Not registered yet
+    if not user or not user[1]:
         await update.message.reply_text(
-            "❌ Trainer profile not found."
+            "❌ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐧𝐨𝐭 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 𝐏𝐨𝐤é𝐦𝐨𝐧 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐲𝐞𝐭.\n\n"
+            "𝐔𝐬𝐞 /startpokedex 𝐭𝐨 𝐛𝐞𝐠𝐢𝐧 𝐲𝐨𝐮𝐫 𝐣𝐨𝐮𝐫𝐧𝐞𝐲."
         )
         return
 
-    trainer_id, hometown, wins, losses, batches = result
+    trainer_id, name, hometown, region, wins, losses, batches = user
 
-    await update.message.reply_text(
-        f"🎓 𝐓𝐑𝐀𝐈𝐍𝐄𝐑 𝐏𝐑𝐎𝐅𝐈𝐋𝐄\n\n"
-        f"🆔 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐈𝐃: `{trainer_id}`\n"
-        f"🏠 𝐇𝐨𝐦𝐞𝐭𝐨𝐰𝐧: {hometown}\n\n"
-        f"🏆 𝐖𝐢𝐧𝐬: {wins}\n"
-        f"💀 𝐋𝐨𝐬𝐬𝐞𝐬: {losses}\n"
-        f"🎖️ 𝐁𝐚𝐝𝐠𝐞𝐬: {batches}",
-        parse_mode="Markdown"
+    starter = pokemon[0] if pokemon else "Not selected"
+
+    # Trainer Profile
+    await update.message.reply_photo(
+        photo="https://i.ibb.co/MT7GVfB/IMG-20260826-101702-983.webp",
+        caption=(
+            "🎓 𝐓𝐑𝐀𝐈𝐍𝐄𝐑 𝐏𝐑𝐎𝐅𝐈𝐋𝐄\n\n"
+            f"👤 𝐍𝐚𝐦𝐞: {name}\n"
+            f"🆔 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐈𝐃: {trainer_id}\n"
+            f"🏠 𝐇𝐨𝐦𝐞𝐭𝐨𝐰𝐧: {hometown}\n"
+            f"🌍 𝐑𝐞𝐠𝐢𝐨𝐧: {region}\n\n"
+            f"🐾 𝐒𝐭𝐚𝐫𝐭𝐞𝐫: {starter}\n\n"
+            f"🏆 𝐖𝐢𝐧𝐬: {wins}\n"
+            f"💀 𝐋𝐨𝐬𝐬𝐞𝐬: {losses}\n"
+            f"🎖️ 𝐁𝐚𝐝𝐠𝐞𝐬: {batches}"
+        )
     )
 
 
