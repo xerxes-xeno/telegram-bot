@@ -13,7 +13,8 @@ from telegram import (
     Update,
     ChatPermissions,
     InlineKeyboardButton,
-    InlineKeyboardMarkup
+    InlineKeyboardMarkup,
+    WebAppInfo
 )
 
 from telegram.ext import (
@@ -451,30 +452,32 @@ async def trainer(update, context):
     # =====================================================
 
     keyboard = [
-        [
-            InlineKeyboardButton(
-                "👤 𝐏𝐫𝐨𝐟𝐢𝐥𝐞",
-                callback_data="trainer_profile"
+    [
+        InlineKeyboardButton(
+            text="👤 𝐏𝐫𝐨𝐟𝐢𝐥𝐞",
+            web_app=WebAppInfo(
+                url="https://xerxes-xeno.github.io/xerxes-miniapp/"
             )
-        ],
-        [
-            InlineKeyboardButton(
-                "🎟️ 𝐗 𝐏𝐚𝐬𝐬 𝐁𝐚𝐭𝐜𝐡𝐞𝐬",
-                callback_data="x_pass_batches"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "💎 𝐗 𝐏𝐫𝐢𝐦𝐞 𝐏𝐚𝐬𝐬 𝐁𝐚𝐭𝐜𝐡𝐞𝐬",
-                callback_data="x_prime_batches"
-            )
-        ]
+        )
+    ],
+    [
+        InlineKeyboardButton(
+            text="🎟️ 𝐗 𝐏𝐚𝐬𝐬 𝐁𝐚𝐭𝐜𝐡𝐞𝐬",
+            callback_data="x_pass_batches"
+        )
+    ],
+    [
+        InlineKeyboardButton(
+            text="💎 𝐗 𝐏𝐫𝐢𝐦𝐞 𝐏𝐚𝐬𝐬 𝐁𝐚𝐭𝐜𝐡𝐞𝐬",
+            callback_data="x_prime_batches"
+        )
     ]
+]
 
-    await update.message.reply_photo(
-        photo=profile_image,
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+await update.message.reply_photo(
+    photo=profile_image,
+    reply_markup=InlineKeyboardMarkup(keyboard)
+)
 
 
 # =========================================================
