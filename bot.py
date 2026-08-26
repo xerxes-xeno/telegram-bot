@@ -5,6 +5,10 @@ import asyncio
 import time
 import random
 
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
+from urllib.request import urlopen
+
 from telegram import (
     Update,
     ChatPermissions,
@@ -239,6 +243,138 @@ def save_user(user_id):
     
 
 # =========================================================
+# TRAINER PROFILE IMAGE
+# =========================================================
+
+TRAINER_PROFILE_IMAGE = (
+    "https://i.ibb.co/QjQXF3x9/IMG-20260826-143257.jpg"
+)
+
+
+def get_font(size):
+    font_paths = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf"
+    ]
+
+    for path in font_paths:
+        try:
+            return ImageFont.truetype(path, size)
+        except Exception:
+            pass
+
+    return ImageFont.load_default()
+
+
+def create_trainer_profile(
+    name,
+    trainer_id,
+    hometown,
+    region,
+    starter,
+    wins,
+    losses
+):
+
+    # Download template image
+    image_data = urlopen(TRAINER_PROFILE_IMAGE).read()
+
+    image = Image.open(BytesIO(image_data)).convert("RGB")
+
+    draw = ImageDraw.Draw(image)
+
+    # Fonts
+    normal_font = get_font(16)
+    small_font = get_font(13)
+    region_font = get_font(14)
+
+    # =====================================================
+    # TEXT POSITIONS
+    # =====================================================
+
+    # NAME
+    draw.text(
+        (125, 146),
+        str(name),
+        font=normal_font,
+        fill="black"
+    )
+
+    # HOMETOWN
+    draw.text(
+        (155, 181),
+        str(hometown),
+        font=normal_font,
+        fill="black"
+    )
+
+    # STARTER
+    draw.text(
+        (125, 215),
+        str(starter),
+        font=normal_font,
+        fill="black"
+    )
+
+    # WINS
+    draw.text(
+        (125, 257),
+        str(wins),
+        font=normal_font,
+        fill="black"
+    )
+
+    # LOSSES
+    draw.text(
+        (135, 288),
+        str(losses),
+        font=normal_font,
+        fill="black"
+    )
+
+    # TRAINER ID
+    draw.text(
+        (85, 322),
+        str(trainer_id),
+        font=small_font,
+        fill="black"
+    )
+
+    # =====================================================
+    # REGION
+    # Right-side blank box
+    # =====================================================
+
+    draw.text(
+        (315, 110),
+        "REGION",
+        font=region_font,
+        fill="black"
+    )
+
+    draw.text(
+        (315, 130),
+        str(region),
+        font=region_font,
+        fill="black"
+    )
+
+    # Save into memory
+    output = BytesIO()
+    output.name = "trainer_profile.jpg"
+
+    image.save(
+        output,
+        format="JPEG",
+        quality=95
+    )
+
+    output.seek(0)
+
+    return output
+
+
+# =========================================================
 # TRAINER COMMAND
 # =========================================================
 
@@ -246,17 +382,23 @@ async def trainer(update, context):
 
     user_id = update.effective_user.id
 
-    # Make sure user exists and Trainer ID is created
+    # Make sure user exists
     save_user(user_id)
 
     conn = db()
     cur = conn.cursor()
 
-    # Get Trainer Profile
+    # Trainer information
     cur.execute(
         """
-        SELECT trainer_id, trainer_name, hometown, region,
-               wins, losses, batches
+        SELECT
+            trainer_id,
+            trainer_name,
+            hometown,
+            region,
+            wins,
+            losses,
+            batches
         FROM users
         WHERE user_id=?
         """,
@@ -265,7 +407,7 @@ async def trainer(update, context):
 
     user = cur.fetchone()
 
-    # Get permanent starter
+    # Starter information
     cur.execute(
         """
         SELECT pokemon
@@ -279,32 +421,56 @@ async def trainer(update, context):
 
     conn.close()
 
-    # Not registered yet
+    # =====================================================
+    # PROFILE NOT FOUND
+    # =====================================================
+
     if not user or not user[1]:
+
         await update.message.reply_text(
-            "❌ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐧𝐨𝐭 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 𝐏𝐨𝐤é𝐦𝐨𝐧 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐲𝐞𝐭.\n\n"
-            "𝐔𝐬𝐞 /startpokedex 𝐭𝐨 𝐛𝐞𝐠𝐢𝐧 𝐲𝐨𝐮𝐫 𝐣𝐨𝐮𝐫𝐧𝐞𝐲."
+            "❌ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐧𝐨𝐭 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 "
+            "𝐏𝐨𝐤é𝐦𝐨𝐧 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐲𝐞𝐭.\n\n"
+            "Use /startpokedex to begin your journey."
         )
+
         return
 
-    trainer_id, name, hometown, region, wins, losses, batches = user
+    (
+        trainer_id,
+        name,
+        hometown,
+        region,
+        wins,
+        losses,
+        batches
+    ) = user
 
     starter = pokemon[0] if pokemon else "Not selected"
 
-    # Trainer Profile
+    # Safety for old database rows
+    wins = wins if wins is not None else 0
+    losses = losses if losses is not None else 0
+
+    # =====================================================
+    # CREATE PROFILE IMAGE
+    # =====================================================
+
+    profile_image = create_trainer_profile(
+        name=name,
+        trainer_id=trainer_id,
+        hometown=hometown,
+        region=region,
+        starter=starter,
+        wins=wins,
+        losses=losses
+    )
+
+    # =====================================================
+    # SEND ONLY IMAGE
+    # =====================================================
+
     await update.message.reply_photo(
-        photo="https://i.ibb.co/MT7GVfB/IMG-20260826-101702-983.webp",
-        caption=(
-            "🎓 𝐓𝐑𝐀𝐈𝐍𝐄𝐑 𝐏𝐑𝐎𝐅𝐈𝐋𝐄\n\n"
-            f"👤 𝐍𝐚𝐦𝐞: {name}\n"
-            f"🆔 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐈𝐃: {trainer_id}\n"
-            f"🏠 𝐇𝐨𝐦𝐞𝐭𝐨𝐰𝐧: {hometown}\n"
-            f"🌍 𝐑𝐞𝐠𝐢𝐨𝐧: {region}\n\n"
-            f"🐾 𝐒𝐭𝐚𝐫𝐭𝐞𝐫: {starter}\n\n"
-            f"🏆 𝐖𝐢𝐧𝐬: {wins}\n"
-            f"💀 𝐋𝐨𝐬𝐬𝐞𝐬: {losses}\n"
-            f"🎖️ 𝐁𝐚𝐝𝐠𝐞𝐬: {batches}"
-        )
+        photo=profile_image
     )
 
 
