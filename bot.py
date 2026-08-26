@@ -58,6 +58,28 @@ def init_db():
         )
     """)
 
+
+# =========================================================
+# TRAINER PROFILE
+# =========================================================
+
+    for column, definition in [
+        ("trainer_id", "TEXT"),
+        ("hometown", "TEXT DEFAULT 'Unknown'"),
+        ("wins", "INTEGER DEFAULT 0"),
+        ("losses", "INTEGER DEFAULT 0"),
+        ("avatar", "TEXT"),
+        ("banner", "TEXT"),
+        ("batches", "INTEGER DEFAULT 0")
+    ]:
+        try:
+            cur.execute(
+                f"ALTER TABLE users ADD COLUMN {column} {definition}"
+        )
+        except sqlite3.OperationalError:
+            pass
+
+    
     cur.execute("""
         CREATE TABLE IF NOT EXISTS settings (
             chat_id INTEGER PRIMARY KEY,
@@ -126,6 +148,93 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+
+# =========================================================
+# SAVE USER
+# =========================================================
+
+def save_user(user_id):
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT trainer_id FROM users WHERE user_id=?",
+        (user_id,)
+    )
+
+    result = cur.fetchone()
+
+    if not result:
+        trainer_id = f"XRX-{user_id}"
+
+        cur.execute(
+            """
+            INSERT INTO users (user_id, trainer_id)
+            VALUES (?, ?)
+            """,
+            (user_id, trainer_id)
+        )
+
+    elif not result[0]:
+        trainer_id = f"XRX-{user_id}"
+
+        cur.execute(
+            """
+            UPDATE users
+            SET trainer_id=?
+            WHERE user_id=?
+            """,
+            (trainer_id, user_id)
+        )
+
+    conn.commit()
+    conn.close()
+
+
+# =========================================================
+# TRAINER COMMAND
+# =========================================================
+
+async def trainer(update, context):
+
+    user_id = update.effective_user.id
+
+    # Make sure user exists
+    save_user(user_id)
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT trainer_id, hometown, wins, losses, batches
+        FROM users
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    if not result:
+        await update.message.reply_text(
+            "❌ Trainer profile not found."
+        )
+        return
+
+    trainer_id, hometown, wins, losses, batches = result
+
+    await update.message.reply_text(
+        f"🎓 𝐓𝐑𝐀𝐈𝐍𝐄𝐑 𝐏𝐑𝐎𝐅𝐈𝐋𝐄\n\n"
+        f"🆔 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐈𝐃: `{trainer_id}`\n"
+        f"🏠 𝐇𝐨𝐦𝐞𝐭𝐨𝐰𝐧: {hometown}\n\n"
+        f"🏆 𝐖𝐢𝐧𝐬: {wins}\n"
+        f"💀 𝐋𝐨𝐬𝐬𝐞𝐬: {losses}\n"
+        f"🎖️ 𝐁𝐚𝐝𝐠𝐞𝐬: {batches}",
+        parse_mode="Markdown"
+    )
 
 
 # =========================================================
@@ -1733,6 +1842,7 @@ def main():
     app = Application.builder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("trainer", trainer))
     app.add_handler(CommandHandler("stopdex", stopdex))
     app.add_handler(CommandHandler("ondex", ondex))
     app.add_handler(CommandHandler("startpokedex", start_pokedex))
