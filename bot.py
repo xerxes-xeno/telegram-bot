@@ -294,7 +294,7 @@ def create_trainer_profile(
 
     # NAME
     draw.text(
-        (125, 146),
+        (145, 146),
         str(name),
         font=normal_font,
         fill="black"
@@ -302,7 +302,7 @@ def create_trainer_profile(
 
     # HOMETOWN
     draw.text(
-        (155, 181),
+        (175, 181),
         str(hometown),
         font=normal_font,
         fill="black"
@@ -310,7 +310,7 @@ def create_trainer_profile(
 
     # STARTER
     draw.text(
-        (125, 215),
+        (145, 215),
         str(starter),
         font=normal_font,
         fill="black"
@@ -318,7 +318,7 @@ def create_trainer_profile(
 
     # WINS
     draw.text(
-        (125, 257),
+        (145, 257),
         str(wins),
         font=normal_font,
         fill="black"
@@ -326,7 +326,7 @@ def create_trainer_profile(
 
     # LOSSES
     draw.text(
-        (135, 288),
+        (155, 288),
         str(losses),
         font=normal_font,
         fill="black"
@@ -334,28 +334,9 @@ def create_trainer_profile(
 
     # TRAINER ID
     draw.text(
-        (85, 322),
+        (105, 322),
         str(trainer_id),
         font=small_font,
-        fill="black"
-    )
-
-    # =====================================================
-    # REGION
-    # Right-side blank box
-    # =====================================================
-
-    draw.text(
-        (315, 110),
-        "REGION",
-        font=region_font,
-        fill="black"
-    )
-
-    draw.text(
-        (315, 130),
-        str(region),
-        font=region_font,
         fill="black"
     )
 
@@ -469,8 +450,30 @@ async def trainer(update, context):
     # SEND ONLY IMAGE
     # =====================================================
 
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "👤 𝐏𝐫𝐨𝐟𝐢𝐥𝐞",
+                callback_data="trainer_profile"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🎟️ 𝐗 𝐏𝐚𝐬𝐬 𝐁𝐚𝐭𝐜𝐡𝐞𝐬",
+                callback_data="x_pass_batches"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "💎 𝐗 𝐏𝐫𝐢𝐦𝐞 𝐏𝐚𝐬𝐬 𝐁𝐚𝐭𝐜𝐡𝐞𝐬",
+                callback_data="x_prime_batches"
+            )
+        ]
+    ]
+
     await update.message.reply_photo(
-        photo=profile_image
+        photo=profile_image,
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
