@@ -454,7 +454,7 @@ async def trainer(update, context):
     keyboard = [
     [
         InlineKeyboardButton(
-            text="👤 𝐏𝐫𝐨𝐟𝐢𝐥𝐞",
+            text="👤 Profile",
             web_app=WebAppInfo(
                 url="https://xerxes-xeno.github.io/xerxes-miniapp/"
             )
@@ -462,13 +462,13 @@ async def trainer(update, context):
     ],
     [
         InlineKeyboardButton(
-            text="🎟️ 𝐗 𝐏𝐚𝐬𝐬 𝐁𝐚𝐭𝐜𝐡𝐞𝐬",
+            text="🎟️ X Pass Batches",
             callback_data="x_pass_batches"
         )
     ],
     [
         InlineKeyboardButton(
-            text="💎 𝐗 𝐏𝐫𝐢𝐦𝐞 𝐏𝐚𝐬𝐬 𝐁𝐚𝐭𝐜𝐡𝐞𝐬",
+            text="💎 X Prime Pass Batches",
             callback_data="x_prime_batches"
         )
     ]
