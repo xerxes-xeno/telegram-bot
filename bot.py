@@ -41,6 +41,10 @@ DB_FILE = "/data/warnings.db"
 
 api = Flask(__name__)
 
+from flask_cors import CORS
+
+CORS(api)
+
 # =========================================================
 # VERIFY TELEGRAM MINI APP DATA
 # =========================================================
