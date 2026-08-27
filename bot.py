@@ -5,6 +5,8 @@ import asyncio
 import time
 import random
 import threading
+import hashlib
+import hmac
 
 from flask import Flask, jsonify, request
 
@@ -39,17 +41,89 @@ DB_FILE = "/data/warnings.db"
 
 api = Flask(__name__)
 
+# =========================================================
+# VERIFY TELEGRAM MINI APP DATA
+# =========================================================
+
+def verify_telegram_init_data(init_data):
+
+    if not init_data:
+        return None
+
+    try:
+        from urllib.parse import parse_qsl
+
+        data = dict(parse_qsl(init_data, keep_blank_values=True))
+
+        received_hash = data.pop("hash", None)
+
+        if not received_hash:
+            return None
+
+        data_check_string = "\n".join(
+            f"{key}={data[key]}"
+            for key in sorted(data)
+        )
+
+        token = os.environ.get("TELEGRAM_BOT_TOKEN")
+
+        if not token:
+            return None
+
+        secret_key = hmac.new(
+            b"WebAppData",
+            token.encode(),
+            hashlib.sha256
+        ).digest()
+
+        calculated_hash = hmac.new(
+            secret_key,
+            data_check_string.encode(),
+            hashlib.sha256
+        ).hexdigest()
+
+        if not hmac.compare_digest(
+            calculated_hash,
+            received_hash
+        ):
+            return None
+
+        return data
+
+    except Exception:
+        return None 
 
 @api.route("/api/profile")
 def get_profile():
 
-    user_id = request.args.get("user_id")
+    # Get Telegram Mini App initData
+    init_data = request.headers.get("X-Telegram-Init-Data")
+
+    verified_data = verify_telegram_init_data(init_data)
+
+    if not verified_data:
+        return jsonify({
+            "error": "Invalid Telegram data"
+        }), 403
+
+    user_json = verified_data.get("user")
+
+    if not user_json:
+        return jsonify({
+            "error": "Telegram user not found"
+        }), 403
+
+    import json
+
+    telegram_user = json.loads(user_json)
+
+    user_id = telegram_user.get("id")
 
     if not user_id:
         return jsonify({
-            "error": "user_id is required"
-        }), 400
-
+            "error": "Telegram user ID not found"
+        }), 403
+ 
     conn = db()
     cur = conn.cursor()
 
