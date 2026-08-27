@@ -793,6 +793,145 @@ def generate_ivs():
 
 
 # =========================================================
+# BAG / INVENTORY
+# =========================================================
+
+async def bag(update, context):
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "֎ 𝐌𝐞𝐠𝐚 𝐒𝐭𝐨𝐧𝐞",
+                callback_data="bag_mega"
+            ),
+            InlineKeyboardButton(
+                "⌘ 𝐈𝐭𝐞𝐦𝐬",
+                callback_data="bag_items"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🀪 𝐓𝐮𝐭𝐨𝐫𝐬",
+                callback_data="bag_tutors"
+            ),
+            InlineKeyboardButton(
+                "💿 𝐓𝐌𝐬",
+                callback_data="bag_tms"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "✪ 𝐙-𝐂𝐫𝐲𝐬𝐭𝐚𝐥",
+                callback_data="bag_zcrystal"
+            ),
+            InlineKeyboardButton(
+                "⎉ 𝐏𝐨𝐤𝐞𝐛𝐚𝐥𝐥𝐬",
+                callback_data="bag_pokeballs"
+            )
+        ]
+    ]
+
+    await update.message.reply_text(
+        "⍛ 𝐈𝐧𝐯𝐞𝐧𝐭𝐨𝐫𝐲 𝐈𝐭𝐞𝐦𝐬 :\n\n"
+        "⤷ ⛁ ✘ 𝐓𝐨𝐤𝐞𝐧𝐬 :\n"
+        "⤷ ⛁ 𝐏𝐨𝐤𝐞𝐜𝐨𝐢𝐧𝐬 :",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# BAG CALLBACKS
+# =========================================================
+
+async def bag_callback(update, context):
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data
+
+    # -------------------------
+    # MAIN BAG PAGE
+    # -------------------------
+    if data == "bag_main":
+        text = (
+            "🎒 𝐈𝐧𝐯𝐞𝐧𝐭𝐨𝐫𝐲 𝐈𝐭𝐞𝐦𝐬 :\n\n"
+            "⤷⛁ ✘ 𝐓𝐨𝐤𝐞𝐧𝐬 :\n"
+            "⤷⛁ 𝐏𝐨𝐤𝐞𝐜𝐨𝐢𝐧𝐬 :"
+        )
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "֎ 𝐌𝐞𝐠𝐚 𝐒𝐭𝐨𝐧𝐞",
+                    callback_data="bag_mega"
+                ),
+                InlineKeyboardButton(
+                    "⌘ 𝐈𝐭𝐞𝐦𝐬",
+                    callback_data="bag_items"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🀪 𝐓𝐮𝐭𝐨𝐫𝐬",
+                    callback_data="bag_tutors"
+                ),
+                InlineKeyboardButton(
+                    "💿 𝐓𝐌𝐬",
+                    callback_data="bag_tms"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "✪ 𝐙-𝐂𝐫𝐲𝐬𝐭𝐚𝐥",
+                    callback_data="bag_zcrystal"
+                ),
+                InlineKeyboardButton(
+                    "⎉ 𝐏𝐨𝐤𝐞𝐛𝐚𝐥𝐥𝐬",
+                    callback_data="bag_pokeballs"
+                )
+            ]
+        ]
+
+        await query.edit_message_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return
+
+    # -------------------------
+    # SECTION NAMES
+    # -------------------------
+    sections = {
+        "bag_mega": "֎ 𝐌𝐞𝐠𝐚 𝐒𝐭𝐨𝐧𝐞𝐬",
+        "bag_items": "⌘ 𝐈𝐭𝐞𝐦𝐬",
+        "bag_tutors": "🀪 𝐓𝐮𝐭𝐨𝐫𝐬",
+        "bag_tms": "💿 𝐓𝐌𝐬",
+        "bag_zcrystal": "✪ 𝐙-𝐂𝐫𝐲𝐬𝐭𝐚𝐥𝐬",
+        "bag_pokeballs": "⎉ 𝐏𝐨𝐤𝐞𝐛𝐚𝐥𝐥𝐬"
+    }
+
+    if data in sections:
+        text = (
+            f"{sections[data]} :\n\n"
+            "⤷ ✘ 𝐍𝐨 𝐢𝐭𝐞𝐦𝐬 𝐚𝐯𝐚𝐢𝐥𝐚𝐛𝐥𝐞."
+        )
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "◀ 𝐁𝐚𝐜𝐤",
+                    callback_data="bag_main"
+                )
+            ]
+        ]
+
+        await query.edit_message_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+       
+
+# =========================================================
 # WARNINGS
 # =========================================================
 
@@ -2026,7 +2165,7 @@ async def start_pokedex(update, context):
         return ConversationHandler.END
 
     await update.message.reply_text(
-        "🎓 𝐖𝐞𝐥𝐜𝐨𝐦𝐞, 𝐟𝐮𝐭𝐮𝐫𝐞 𝐓𝐫𝐚𝐢𝐧𝐞𝐫!\n\n"
+        "🍥 𝐖𝐞𝐥𝐜𝐨𝐦𝐞, 𝐟𝐮𝐭𝐮𝐫𝐞 𝐓𝐫𝐚𝐢𝐧𝐞𝐫!\n\n"
         "𝐖𝐡𝐚𝐭 𝐧𝐚𝐦𝐞 𝐰𝐨𝐮𝐥𝐝 𝐲𝐨𝐮 𝐥𝐢𝐤𝐞 𝐭𝐨 𝐮𝐬𝐞 𝐚𝐬 𝐲𝐨𝐮𝐫 "
         "𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐧𝐚𝐦𝐞?"
     )
@@ -2381,6 +2520,15 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("trainer", trainer))
+    app.add_handler(CommandHandler("bag", bag))
+  
+    app.add_handler(
+        CallbackQueryHandler(
+            bag_callback,
+            pattern="^bag_"
+        )
+    )
+ 
     app.add_handler(CommandHandler("stopdex", stopdex))
     app.add_handler(CommandHandler("ondex", ondex))
     pokedex_registration = ConversationHandler(
