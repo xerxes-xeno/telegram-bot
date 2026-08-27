@@ -1165,20 +1165,83 @@ async def ondex(update, context):
 async def start(update, context):
     save_user(update.effective_user.id)
 
-    await update.message.reply_text(
-        "╭━━━━━━━━━━━━━━━━━╮\n"
-        "         𝛸𝛴𝛤𝛸𝛴𝑆\n"
-        "╰━━━━━━━━━━━━━━━━━╯\n"
-        "𝐀𝐧 𝐨𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲 𝐛𝐨𝐭 𝐛𝐮𝐢𝐥𝐭 𝐭𝐨 𝐛𝐫𝐢𝐧𝐠\n"
-        "𝐆𝐚𝐦𝐢𝐧𝐠, 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 & 𝐌𝐮𝐬𝐢𝐜\n"
-        "𝐭𝐨𝐠𝐞𝐭𝐡𝐞𝐫 𝐢𝐧 𝐨𝐧𝐞 𝐩𝐥𝐚𝐜𝐞 — 𝐦𝐚𝐤𝐢𝐧𝐠 𝐲𝐨𝐮𝐫\n"
-        "𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲 𝐞𝐱𝐩𝐞𝐫𝐢𝐞𝐧𝐜𝐞 𝐬𝐦𝐚𝐫𝐭𝐞𝐫, 𝐬𝐦𝐨𝐨𝐭𝐡𝐞𝐫,\n"
-        "𝐚𝐧𝐝 𝐦𝐨𝐫𝐞 𝐞𝐧𝐠𝐚𝐠𝐢𝐧𝐠.\n\n"
-        "𝐇𝐞𝐫𝐞 𝐮 𝐠𝐞𝐭 𝐚𝐥𝐥 𝐭𝐡𝐞 𝐥𝐢𝐧𝐤𝐬 𝐚𝐧𝐝 𝐚𝐜𝐜𝐞𝐬𝐬 𝐭𝐨\n"
-        "𝐚𝐥𝐥 𝐭𝐡𝐞 𝐠𝐫𝐨𝐮𝐩𝐬 𝐚𝐧𝐝 𝐜𝐡𝐚𝐧𝐧𝐞𝐥𝐬 𝐨𝐟 𝐭𝐡𝐞 𝐗𝐞𝐫𝐱𝐞𝐬 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲.\n\n"
-        "https://t.me/XERXES_COMMUNITY\n\n"
-        "                ── ⋆⋅𖤓⋅⋆ ──"
+    keyboard = [
+    [
+        InlineKeyboardButton(
+            "𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
+            callback_data="start_commands"
+        ),
+        InlineKeyboardButton(
+            "𝐔𝐩𝐝𝐚𝐭𝐞𝐬",
+            callback_data="start_updates"
+        )
+    ],
+    [
+        InlineKeyboardButton(
+            "𝐀𝐝𝐝 𝐦𝐞 𝐭𝐨 𝐠𝐫𝐨𝐮𝐩",
+            url=f"https://t.me/{context.bot.username}?startgroup=true"
+        )
+    ]
+]
+
+await update.message.reply_text(
+    "╭━━━━━━━━━━━━━━━━━╮\n"
+    "         𝛸𝛴𝛤𝛸𝛴𝑆\n"
+    "╰━━━━━━━━━━━━━━━━━╯\n"
+    "𝐀𝐧 𝐨𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲 𝐛𝐨𝐭 𝐛𝐮𝐢𝐥𝐭 𝐭𝐨 𝐛𝐫𝐢𝐧𝐠\n"
+    "𝐏𝐨𝐤𝐞𝐦𝐨𝐧 , 𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 & 𝐌𝐮𝐬𝐢𝐜\n"
+    "𝐭𝐨𝐠𝐞𝐭𝐡𝐞𝐫 𝐢𝐧 𝐨𝐧𝐞 𝐩𝐥𝐚𝐜𝐞 — 𝐦𝐚𝐤𝐢𝐧𝐠 𝐲𝐨𝐮𝐫\n"
+    "𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲 𝐞𝐱𝐩𝐞𝐫𝐢𝐞𝐧𝐜𝐞 𝐬𝐦𝐚𝐫𝐭𝐞𝐫, 𝐬𝐦𝐨𝐨𝐭𝐡𝐞𝐫,\n"
+    "𝐚𝐧𝐝 𝐦𝐨𝐫𝐞 𝐞𝐧𝐠𝐚𝐠𝐢𝐧𝐠.\n\n"
+    "𝐇𝐞𝐫𝐞 𝐮 𝐠𝐞𝐭 𝐚𝐥𝐥 𝐭𝐡𝐞 𝐥𝐢𝐧𝐤𝐬 𝐚𝐧𝐝 𝐚𝐜𝐜𝐞𝐬𝐬 𝐭𝐨\n"
+    "𝐚𝐥𝐥 𝐭𝐡𝐞 𝐠𝐫𝐨𝐮𝐩𝐬 𝐚𝐧𝐝 𝐜𝐡𝐚𝐧𝐧𝐞𝐥𝐬 𝐨𝐟 𝐭𝐡𝐞 𝐗𝐞𝐫𝐱𝐞𝐬 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲.\n\n"
+    "https://t.me/XERXES_COMMUNITY\n\n"
+    "           ── ⋆⋅𖤓⋅⋆ ──",
+reply_markup=InlineKeyboardMarkup(keyboard)
 )
+    
+
+# =========================================================
+# START MENU CALLBACK
+# =========================================================
+
+async def start_menu_callback(update, context):
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "start_commands":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
+                    callback_data="commands_management"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
+                    callback_data="commands_pokemon"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "𝐌𝐮𝐬𝐢𝐜 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
+                    callback_data="commands_music"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="start_main"
+                )
+            ]
+        ]
+
+        await query.edit_message_text(
+            "𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
 
 # =========================================================
@@ -2519,6 +2582,14 @@ def main():
     app = Application.builder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
+    
+    app.add_handler(
+        CallbackQueryHandler(
+            start_menu_callback,
+            pattern="^(start_commands|start_main)$"
+        )
+    )
+  
     app.add_handler(CommandHandler("trainer", trainer))
     app.add_handler(CommandHandler("bag", bag))
   
