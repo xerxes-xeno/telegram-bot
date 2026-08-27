@@ -913,7 +913,7 @@ async def bag_callback(update, context):
     if data in sections:
         text = (
             f"{sections[data]} :\n\n"
-            "⤷ ✘ 𝐍𝐨 𝐢𝐭𝐞𝐦𝐬 𝐚𝐯𝐚𝐢𝐥𝐚𝐛𝐥𝐞."
+            "⤷ 𝝬 𝐍𝐨 𝐢𝐭𝐞𝐦𝐬 𝐚𝐯𝐚𝐢𝐥𝐚𝐛𝐥𝐞."
         )
 
         keyboard = [
