@@ -4,6 +4,9 @@ import sqlite3
 import asyncio
 import time
 import random
+import threading
+
+from flask import Flask, jsonify, request
 
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
@@ -28,6 +31,76 @@ from telegram.ext import (
 )
 
 DB_FILE = "/data/warnings.db"
+
+
+# =========================================================
+# MINI APP API
+# =========================================================
+
+api = Flask(__name__)
+
+
+@api.route("/api/profile")
+def get_profile():
+
+    user_id = request.args.get("user_id")
+
+    if not user_id:
+        return jsonify({
+            "error": "user_id is required"
+        }), 400
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT
+            trainer_id,
+            trainer_name,
+            hometown,
+            region,
+            wins,
+            losses,
+            batches
+        FROM users
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    user = cur.fetchone()
+
+    cur.execute(
+        """
+        SELECT pokemon
+        FROM pokedex
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    pokemon = cur.fetchone()
+
+    conn.close()
+
+    if not user:
+        return jsonify({
+            "error": "Trainer not found"
+        }), 404
+
+    return jsonify({
+        "trainer_id": user[0],
+        "name": user[1],
+        "hometown": user[2],
+        "region": user[3],
+        "wins": user[4] or 0,
+        "losses": user[5] or 0,
+        "badges": user[6] or 0,
+        "starter": pokemon[0] if pokemon else "Not selected"
+    })
+
+
 ADMIN_ID = 8504230656
 
 SPAM_LIMIT = 5
@@ -2195,11 +2268,28 @@ async def broadcast(update, context):
 
 
 # =========================================================
+# START MINI APP API
+# =========================================================
+
+def run_api():
+    port = int(os.environ.get("PORT", 8080))
+    api.run(
+        host="0.0.0.0",
+        port=port
+    )
+
+
+# =========================================================
 # START BOT
 # =========================================================
 
 def main():
 
+    threading.Thread(
+        target=run_api,
+        daemon=True
+    ).start()
+    
     init_db()
 
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
