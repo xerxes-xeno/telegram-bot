@@ -1226,6 +1226,10 @@ async def start_menu_callback(update, context):
     query = update.callback_query
     await query.answer()
 
+    # =====================================================
+    # COMMANDS MENU
+    # =====================================================
+
     if query.data == "start_commands":
 
         keyboard = [
@@ -1260,6 +1264,137 @@ async def start_menu_callback(update, context):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
+    # =====================================================
+    # MANAGEMENT COMMANDS
+    # =====================================================
+
+    elif query.data == "commands_management":
+
+        await query.edit_message_text(
+            "𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬\n\n"
+            "/ban\n"
+            "/unban\n"
+            "/kick\n"
+            "/mute\n"
+            "/unmute\n"
+            "/warn\n"
+            "/warnings\n"
+            "/resetwarns\n"
+            "/antilink\n"
+            "/antispam",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="start_commands"
+                    )
+                ]
+            ])
+        )
+
+    # =====================================================
+    # POKEMON COMMANDS
+    # =====================================================
+
+    elif query.data == "commands_pokemon":
+
+        await query.edit_message_text(
+            "𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬\n\n"
+            "/startpokedex\n"
+            "/trainer\n"
+            "/status\n"
+            "/bag\n"
+            "/stopdex\n"
+            "/ondex",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="start_commands"
+                    )
+                ]
+            ])
+        )
+
+    # =====================================================
+    # MUSIC COMMANDS
+    # =====================================================
+
+    elif query.data == "commands_music":
+
+        await query.edit_message_text(
+            "𝐌𝐮𝐬𝐢𝐜 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬\n\n"
+            "Music commands will be available here.",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="start_commands"
+                    )
+                ]
+            ])
+        )
+
+    # =====================================================
+    # UPDATES
+    # =====================================================
+
+    elif query.data == "start_updates":
+
+        await query.edit_message_text(
+            "𝐗𝐄𝐑𝐗𝐄𝐒 𝐔𝐩𝐝𝐚𝐭𝐞𝐬\n\n"
+            "🔹 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐏𝐨𝐤𝐞𝐃𝐞𝐱\n"
+            "🔹 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐒𝐲𝐬𝐭𝐞𝐦\n"
+            "🔹 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐁𝐚𝐭𝐭𝐥𝐞 𝐒𝐲𝐬𝐭𝐞𝐦\n"
+            "🔹 𝐈𝐧𝐯𝐞𝐧𝐭𝐨𝐫𝐲 & 𝐈𝐭𝐞𝐦𝐬\n"
+            "🔹 𝐅𝐮𝐭𝐮𝐫𝐞 𝐌𝐢𝐧𝐢 𝐀𝐩𝐩\n\n"
+            "𝐌𝐨𝐫𝐞 𝐮𝐩𝐝𝐚𝐭𝐞𝐬 𝐜𝐨𝐦𝐢𝐧𝐠 𝐬𝐨𝐨𝐧! 🔥",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="start_main"
+                    )
+                ]
+            ])
+        )
+
+    # =====================================================
+    # BACK TO MAIN MENU
+    # =====================================================
+
+    elif query.data == "start_main":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "𝐒𝐭𝐚𝐫𝐭 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐉𝐨𝐮𝐫𝐧𝐞𝐲",
+                    callback_data="start_pokemon_journey"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "𝐔𝐩𝐝𝐚𝐭𝐞𝐬",
+                    callback_data="start_updates"
+                ),
+                InlineKeyboardButton(
+                    "𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
+                    callback_data="start_commands"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "𝐀𝐝𝐝 𝐦𝐞 𝐭𝐨 𝐠𝐫𝐨𝐮𝐩",
+                    url=f"https://t.me/{context.bot.username}?startgroup=true"
+                )
+            ]
+        ]
+
+        await query.edit_message_text(
+            "𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐭𝐨 𝐗𝐄𝐑𝐗𝐄𝐒",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+    
 
 # =========================================================
 # ID
@@ -2615,7 +2750,7 @@ def main():
     app.add_handler(
         CallbackQueryHandler(
             start_menu_callback,
-            pattern="^(start_commands|start_main)$"
+            pattern="^(start_commands|start_main|start_updates|commands_management|commands_pokemon|commands_music)$"
         )
     )
   
