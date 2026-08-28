@@ -3999,6 +3999,48 @@ async def filter_handler(update, context):
 TRAINER_NAME, TRAINER_HOMETOWN, TRAINER_REGION = range(3)
 
 
+async def start_pokedex(update, context):
+
+    user_id = update.effective_user.id
+
+    # POKEDEX OFF CHECK
+    if not is_pokedex_enabled():
+        await update.message.reply_text(
+            "🔴 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐢𝐬 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐎𝐅𝐅."
+        )
+        return ConversationHandler.END
+
+    save_user(user_id)
+
+    # CHECK EXISTING TRAINER
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT trainer_name FROM users WHERE user_id=?",
+        (user_id,)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    # ALREADY REGISTERED
+    if result and result[0]:
+        await update.message.reply_text(
+            "⚠️ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 𝐓𝐫𝐚𝐢𝐧𝐞𝐫!\n\n"
+            "𝐘𝐨𝐮𝐫 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐉𝐨𝐮𝐫𝐧𝐞𝐲 𝐢𝐬 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐚𝐜𝐭𝐢𝐯𝐞. "
+            "𝐘𝐨𝐮𝐫 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐚𝐧𝐝 𝐩𝐫𝐨𝐠𝐫𝐞𝐬𝐬 𝐰𝐢𝐥𝐥 𝐫𝐞𝐦𝐚𝐢𝐧 𝐬𝐚𝐯𝐞𝐝. ✅"
+        )
+        return ConversationHandler.END
+
+    await update.message.reply_text(
+        "🍥 𝐖𝐞𝐥𝐜𝐨𝐦𝐞, 𝐟𝐮𝐭𝐮𝐫𝐞 𝐓𝐫𝐚𝐢𝐧𝐞𝐫!\n\n"
+        "𝐖𝐡𝐚𝐭 𝐧𝐚𝐦𝐞 𝐰𝐨𝐮𝐥𝐝 𝐲𝐨𝐮 𝐥𝐢𝐤𝐞 𝐭𝐨 𝐮𝐬𝐞 𝐚𝐬 𝐲𝐨𝐮𝐫 "
+        "𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐧𝐚𝐦𝐞?"
+    )
+
+    return TRAINER_NAME    
+
 async def start_pokemon_journey(update, context):
 
     query = update.callback_query
