@@ -662,6 +662,1548 @@ def set_pokedex_enabled(status):
 
 
 # =========================================================
+# POKEDEX HELP
+# =========================================================
+
+async def helpdex(update, context):
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "📖 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐃𝐚𝐭𝐚",
+                callback_data="dex_data"
+            ),
+            InlineKeyboardButton(
+                "⚔️ 𝐃𝐚𝐦𝐚𝐠𝐞 𝐂𝐚𝐥𝐜",
+                callback_data="dex_damage"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "📋 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐁𝐮𝐢𝐥𝐝",
+                callback_data="dex_build"
+            ),
+            InlineKeyboardButton(
+                "📊 𝐓𝐲𝐩𝐞",
+                callback_data="dex_type"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🌿 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
+                callback_data="dex_nature"
+            ),
+            InlineKeyboardButton(
+                "⭐ 𝐁𝐞𝐬𝐭 𝐍𝐚𝐭𝐮𝐫𝐞",
+                callback_data="dex_bestnature"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🏋️ 𝐄𝐕 𝐁𝐮𝐢𝐥𝐝",
+                callback_data="dex_ev"
+            ),
+            InlineKeyboardButton(
+                "🏆 𝐓𝐌 𝐋𝐢𝐬𝐭",
+                callback_data="dex_tm"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🎯 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬",
+                callback_data="dex_pokeballs"
+            ),
+            InlineKeyboardButton(
+                "⚔️ 𝐌𝐨𝐯𝐞𝐬",
+                callback_data="dex_moves"
+            )
+        ]
+    ]
+
+    await update.message.reply_text(
+        "📱 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤𝐞́𝐃𝐞𝐱\n\n"
+        "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
+        "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞.\n\n"
+        "𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+
+
+# =========================================================
+# POKEDEX HELP CALLBACK
+# =========================================================
+
+async def helpdex_callback(update, context):
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "dex_data":
+
+        await query.edit_message_text(
+            "📖 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐃𝐚𝐭𝐚\n\n"
+            "Use:\n"
+            "/data <Pokémon name>\n\n"
+            "Example:\n"
+            "/data Pikachu",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_damage":
+
+        await query.edit_message_text(
+            "⚔️ 𝐃𝐚𝐦𝐚𝐠𝐞 𝐂𝐚𝐥𝐜𝐮𝐥𝐚𝐭𝐨𝐫\n\n"
+            "Use /datadamage to get the damage calculator form.",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_build":
+
+        await query.edit_message_text(
+            "📋 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐁𝐮𝐢𝐥𝐝\n\n"
+            "Use /buildpoke to get the Pokémon build form.",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_type":
+
+        await query.edit_message_text(
+            "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞\n\n"
+            "Type effectiveness chart will be available here.",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_nature":
+
+        await query.edit_message_text(
+            "🌿 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐍𝐚𝐭𝐮𝐫𝐞𝐬\n\n"
+            "Select a nature category to view its natures.",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "𝐍𝐞𝐮𝐭𝐫𝐚𝐥",
+                        callback_data="nature_neutral"
+                    ),
+                    InlineKeyboardButton(
+                        "𝐀𝐭𝐭𝐚𝐜𝐤",
+                        callback_data="nature_attack"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                        callback_data="nature_defense"
+                    ),
+                    InlineKeyboardButton(
+                        "𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                        callback_data="nature_spattack"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                        callback_data="nature_spdefense"
+                    ),
+                    InlineKeyboardButton(
+                        "𝐒𝐩𝐞𝐞𝐝",
+                        callback_data="nature_speed"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐀𝐥𝐥 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
+                        callback_data="nature_all"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_bestnature":
+
+        await query.edit_message_text(
+            "⭐ 𝐁𝐞𝐬𝐭 𝐍𝐚𝐭𝐮𝐫𝐞\n\n"
+            "Use:\n"
+            "/bestnat <Pokémon name>\n\n"
+            "Example:\n"
+            "/bestnat Pikachu",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_ev":
+
+        await query.edit_message_text(
+            "🏋️ 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐆𝐮𝐢𝐝𝐞\n\n"
+            "Select a stat to see Pokémon used for EV training.",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton("𝐇𝐏", callback_data="ev_hp"),
+                    InlineKeyboardButton("𝐀𝐭𝐭𝐚𝐜𝐤", callback_data="ev_attack")
+                ],
+                [
+                    InlineKeyboardButton("𝐃𝐞𝐟𝐞𝐧𝐬𝐞", callback_data="ev_defense"),
+                    InlineKeyboardButton("𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤", callback_data="ev_spattack")
+                ],
+                [
+                    InlineKeyboardButton("𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞", callback_data="ev_spdefense"),
+                    InlineKeyboardButton("𝐒𝐩𝐞𝐞𝐝", callback_data="ev_speed")
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐇𝐨𝐰 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐖𝐨𝐫𝐤𝐬",
+                        callback_data="ev_how"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_tm":
+
+        await query.edit_message_text(
+            "🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭\n\n"
+            "171 official TMs are available across 6 pages.",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌𝐬",
+                        callback_data="tm_page_1"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_pokeballs":
+
+        await query.edit_message_text(
+            "🎯 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬 𝐆𝐮𝐢𝐝𝐞\n\n"
+            "Regular Ball\n"
+            "Great Ball\n"
+            "Ultra Ball\n"
+            "Level Ball\n"
+            "Fast Ball\n"
+            "Repeat Ball\n"
+            "Nest Ball\n"
+            "Net Ball\n"
+            "Quick Ball\n"
+            "Master Ball\n"
+            "Safari Ball",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_moves":
+
+        await query.edit_message_text(
+            "⚔️ 𝐌𝐨𝐯𝐞 𝐃𝐚𝐭𝐚\n\n"
+            "Use:\n"
+            "/move <move name>\n\n"
+            "Example:\n"
+            "/move Crunch",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_help_main":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "📖 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐃𝐚𝐭𝐚",
+                    callback_data="dex_data"
+                ),
+                InlineKeyboardButton(
+                    "⚔️ 𝐃𝐚𝐦𝐚𝐠𝐞 𝐂𝐚𝐥𝐜",
+                    callback_data="dex_damage"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "📋 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐁𝐮𝐢𝐥𝐝",
+                    callback_data="dex_build"
+                ),
+                InlineKeyboardButton(
+                    "📊 𝐓𝐲𝐩𝐞",
+                    callback_data="dex_type"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🌿 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
+                    callback_data="dex_nature"
+                ),
+                InlineKeyboardButton(
+                    "⭐ 𝐁𝐞𝐬𝐭 𝐍𝐚𝐭𝐮𝐫𝐞",
+                    callback_data="dex_bestnature"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🏋️ 𝐄𝐕 𝐁𝐮𝐢𝐥𝐝",
+                    callback_data="dex_ev"
+                ),
+                InlineKeyboardButton(
+                    "🏆 𝐓𝐌 𝐋𝐢𝐬𝐭",
+                    callback_data="dex_tm"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🎯 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬",
+                    callback_data="dex_pokeballs"
+                ),
+                InlineKeyboardButton(
+                    "⚔️ 𝐌𝐨𝐯𝐞𝐬",
+                    callback_data="dex_moves"
+                )
+            ]
+        ]
+
+        await query.edit_message_text(
+            "📱 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤𝐞́𝐃𝐞𝐱\n\n"
+            "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
+            "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞.\n\n"
+            "𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+
+# =========================================================
+# POKEMON DATA
+# =========================================================
+
+async def pokemon_data(update, context):
+
+    if not context.args:
+        await update.message.reply_text(
+            "⚠️ 𝐏𝐥𝐞𝐚𝐬𝐞 𝐞𝐧𝐭𝐞𝐫 𝐚 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐧𝐚𝐦𝐞.\n\n"
+            "𝐄𝐱𝐚𝐦𝐩𝐥𝐞:\n"
+            "/data Pikachu"
+        )
+        return
+
+    pokemon_name = " ".join(context.args).strip()
+
+    await update.message.reply_text(
+        f"📖 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐃𝐚𝐭𝐚\n\n"
+        f"𝐍𝐚𝐦𝐞: {pokemon_name}\n\n"
+        "⚠️ 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚𝐛𝐚𝐬𝐞 𝐢𝐬 𝐛𝐞𝐢𝐧𝐠 𝐩𝐫𝐞𝐩𝐚𝐫𝐞𝐝."
+    )
+
+
+# =========================================================
+# DAMAGE CALCULATOR FORM
+# =========================================================
+
+async def datadamage(update, context):
+
+    await update.message.reply_text(
+        "⚔️ 𝐃𝐀𝐌𝐀𝐆𝐄 𝐂𝐀𝐋𝐂𝐔𝐋𝐀𝐓𝐎𝐑 𝐅𝐎𝐑𝐌\n\n"
+        "Copy and paste this template, fill it in, and send it back:\n\n"
+        "--- 𝐀𝐓𝐓𝐀𝐂𝐊𝐄𝐑 ---\n"
+        "Name : \n"
+        "Nature : \n"
+        "Move : \n"
+        "HP IV/EV : 31 , 0\n"
+        "ATK IV/EV : 31 , 0\n"
+        "DEF IV/EV : 31 , 0\n"
+        "SPA IV/EV : 31 , 0\n"
+        "SPD IV/EV : 31 , 0\n"
+        "SPE IV/EV : 31 , 0\n\n"
+        "--- 𝐃𝐄𝐅𝐄𝐍𝐃𝐄𝐑 ---\n"
+        "Name : 0\n"
+        "Nature : \n"
+        "HP IV/EV : 31 , 0\n"
+        "ATK IV/EV : 31 , 0\n"
+        "DEF IV/EV : 31 , 0\n"
+        "SPA IV/EV : 31 , 0\n"
+        "SPD IV/EV : 31 , 0\n"
+        "SPE IV/EV : 31 , 0"
+    )
+
+
+# =========================================================
+# POKEMON BUILD FORM
+# =========================================================
+
+async def buildpoke(update, context):
+
+    await update.message.reply_text(
+        "📋 𝐏𝐎𝐊𝐄𝐌𝐎𝐍 𝐁𝐔𝐈𝐋𝐃 𝐅𝐎𝐑𝐌\n\n"
+        "Copy and paste this template, EDIT it in, and send it back:\n\n"
+        "--- 𝐁𝐔𝐈𝐋𝐃 ---\n"
+        "Name : \n"
+        "Nature : \n"
+        "HP IV/EV : 31 , 0\n"
+        "ATK IV/EV : 31 , 0\n"
+        "DEF IV/EV : 31 , 0\n"
+        "SPA IV/EV : 31 , 0\n"
+        "SPD IV/EV : 31 , 0\n"
+        "SPE IV/EV : 31 , 0"
+    )
+
+
+# =========================================================
+# POKEMON TYPE CHART
+# =========================================================
+
+async def pokemon_type(update, context):
+
+    keyboard = [
+        [
+            InlineKeyboardButton("🔥 Fire", callback_data="type_fire"),
+            InlineKeyboardButton("💧 Water", callback_data="type_water")
+        ],
+        [
+            InlineKeyboardButton("🌿 Grass", callback_data="type_grass"),
+            InlineKeyboardButton("⚡ Electric", callback_data="type_electric")
+        ],
+        [
+            InlineKeyboardButton("❄️ Ice", callback_data="type_ice"),
+            InlineKeyboardButton("🥊 Fighting", callback_data="type_fighting")
+        ],
+        [
+            InlineKeyboardButton("☠️ Poison", callback_data="type_poison"),
+            InlineKeyboardButton("⛰️ Ground", callback_data="type_ground")
+        ],
+        [
+            InlineKeyboardButton("🪽 Flying", callback_data="type_flying"),
+            InlineKeyboardButton("🔮 Psychic", callback_data="type_psychic")
+        ],
+        [
+            InlineKeyboardButton("🐛 Bug", callback_data="type_bug"),
+            InlineKeyboardButton("🪨 Rock", callback_data="type_rock")
+        ],
+        [
+            InlineKeyboardButton("👻 Ghost", callback_data="type_ghost"),
+            InlineKeyboardButton("🐉 Dragon", callback_data="type_dragon")
+        ],
+        [
+            InlineKeyboardButton("🌑 Dark", callback_data="type_dark"),
+            InlineKeyboardButton("⚙️ Steel", callback_data="type_steel")
+        ],
+        [
+            InlineKeyboardButton("✨ Fairy", callback_data="type_fairy"),
+            InlineKeyboardButton("⚪ Normal", callback_data="type_normal")
+        ]
+    ]
+
+    await update.message.reply_text(
+        "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞𝐧𝐞𝐬𝐬 𝐂𝐡𝐚𝐫𝐭\n\n"
+        "Select a type to see its effectiveness against other types:\n\n"
+        "💚 = Super Effective (2x)\n"
+        "💛 = Normal (1x)\n"
+        "💔 = Not Very Effective (0.5x)\n"
+        "🚫 = No Effect (0x)",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# POKEMON NATURES
+# =========================================================
+
+async def datanature(update, context):
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "1. 𝐍𝐞𝐮𝐭𝐫𝐚𝐥",
+                callback_data="nature_neutral"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "2. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                callback_data="nature_attack"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "3. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                callback_data="nature_defense"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "4. 𝐒𝐩𝐞𝐜𝐢𝐚𝐥 𝐀𝐭𝐭𝐚𝐜𝐤",
+                callback_data="nature_spattack"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "5. 𝐒𝐩𝐞𝐜𝐢𝐚𝐥 𝐃𝐞𝐟𝐞𝐧𝐜𝐞",
+                callback_data="nature_spdefense"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "6. 𝐒𝐩𝐞𝐞𝐝",
+                callback_data="nature_speed"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "7. 𝐀𝐥𝐥 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
+                callback_data="nature_all"
+            )
+        ]
+    ]
+
+    await update.message.reply_text(
+        "🌿 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐍𝐚𝐭𝐮𝐫𝐞𝐬\n\n"
+        "Natures affect a Pokémon's stat growth:\n"
+        "• 📈 +10% to one stat\n"
+        "• 📉 -10% to another stat\n"
+        "• ⚖️ Some natures are neutral (no effect)\n\n"
+        "Select a category to view natures:",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# BEST NATURE
+# =========================================================
+
+async def bestnat(update, context):
+
+    if not context.args:
+        await update.message.reply_text(
+            "⚠️ 𝐏𝐥𝐞𝐚𝐬𝐞 𝐞𝐧𝐭𝐞𝐫 𝐚 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐧𝐚𝐦𝐞.\n\n"
+            "𝐄𝐱𝐚𝐦𝐩𝐥𝐞:\n"
+            "/bestnat Pikachu"
+        )
+        return
+
+    pokemon_name = " ".join(context.args).strip()
+
+    await update.message.reply_text(
+        f"⭐ 𝐁𝐞𝐬𝐭 𝐍𝐚𝐭𝐮𝐫𝐞 — {pokemon_name}\n\n"
+        "⚠️ 𝐁𝐞𝐬𝐭 𝐧𝐚𝐭𝐮𝐫𝐞 𝐝𝐚𝐭𝐚𝐛𝐚𝐬𝐞 𝐜𝐨𝐧𝐧𝐞𝐜𝐭𝐢𝐨𝐧 𝐰𝐢𝐥𝐥 𝐛𝐞 𝐚𝐝𝐝𝐞𝐝."
+    )
+
+
+# =========================================================
+# EV TRAINING GUIDE
+# =========================================================
+
+async def evbuild(update, context):
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "𝐇𝐏",
+                callback_data="ev_hp"
+            ),
+            InlineKeyboardButton(
+                "𝐀𝐭𝐭𝐚𝐜𝐤",
+                callback_data="ev_attack"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "𝐃𝐞𝐟𝐞𝐧𝐜𝐞",
+                callback_data="ev_defense"
+            ),
+            InlineKeyboardButton(
+                "𝐒𝐩𝐞𝐜𝐢𝐚𝐥 𝐀𝐭𝐭𝐚𝐜𝐤",
+                callback_data="ev_spattack"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "𝐒𝐩𝐞𝐜𝐢𝐚𝐥 𝐃𝐞𝐟𝐞𝐧𝐜𝐞",
+                callback_data="ev_spdefense"
+            ),
+            InlineKeyboardButton(
+                "𝐒𝐩𝐞𝐞𝐝",
+                callback_data="ev_speed"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "𝐇𝐨𝐰 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐖𝐨𝐫𝐤𝐬",
+                callback_data="ev_how"
+            )
+        ]
+    ]
+
+    await update.message.reply_text(
+        "🏋️ 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐆𝐮𝐢𝐝𝐞\n\n"
+        "Each Pokémon defeated gives Effort Values (EVs) "
+        "that boost your Pokémon's stats.\n\n"
+        "Pokémon listed here give 3 EVs in their respective "
+        "stat when defeated.\n\n"
+        "Select a stat to see which Pokémon to battle for "
+        "EV training:",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# OFFICIAL TM DATA
+# =========================================================
+
+TM_PAGES = {
+
+    1: """
+🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 1/6)
+
+• TM001 - Take Down
+  ➥ PWR: 90 | Acc: 85 | Type: Physical
+
+• TM002 - Charm
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM003 - Fake Tears
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM004 - Agility
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM005 - Mud-Slap
+  ➥ PWR: 20 | Acc: 100 | Type: Special
+
+• TM006 - Scary Face
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM007 - Protect
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM008 - Fire Fang
+  ➥ PWR: 65 | Acc: 95 | Type: Physical
+
+• TM009 - Thunder Fang
+  ➥ PWR: 65 | Acc: 95 | Type: Physical
+
+• TM010 - Ice Fang
+  ➥ PWR: 65 | Acc: 95 | Type: Physical
+
+• TM011 - Water Pulse
+  ➥ PWR: 60 | Acc: 100 | Type: Special
+
+• TM012 - Low Kick
+  ➥ PWR: — | Acc: 100 | Type: Physical
+
+• TM013 - Acid Spray
+  ➥ PWR: 40 | Acc: 100 | Type: Special
+
+• TM014 - Acrobatics
+  ➥ PWR: 55 | Acc: 100 | Type: Physical
+
+• TM015 - Struggle Bug
+  ➥ PWR: 50 | Acc: 100 | Type: Special
+
+• TM016 - Psybeam
+  ➥ PWR: 65 | Acc: 100 | Type: Special
+
+• TM017 - Confuse Ray
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM018 - Thief
+  ➥ PWR: 60 | Acc: 100 | Type: Physical
+
+• TM019 - Disarming Voice
+  ➥ PWR: 40 | Acc: 100 | Type: Special
+
+• TM020 - Trailblaze
+  ➥ PWR: 50 | Acc: 100 | Type: Physical
+
+• TM021 - Pounce
+  ➥ PWR: 50 | Acc: 100 | Type: Physical
+
+• TM022 - Chilling Water
+  ➥ PWR: 50 | Acc: 100 | Type: Special
+
+• TM023 - Charge Beam
+  ➥ PWR: 50 | Acc: 90 | Type: Special
+
+• TM024 - Fire Spin
+  ➥ PWR: 35 | Acc: 85 | Type: Special
+
+• TM025 - Facade
+  ➥ PWR: 70 | Acc: 100 | Type: Physical
+
+• TM026 - Poison Tail
+  ➥ PWR: 50 | Acc: 100 | Type: Physical
+
+• TM027 - Aerial Ace
+  ➥ PWR: 60 | Acc: 100 | Type: Physical
+
+• TM028 - Bulldoze
+  ➥ PWR: 60 | Acc: 100 | Type: Physical
+
+• TM029 - Hex
+  ➥ PWR: 65 | Acc: 100 | Type: Special
+
+• TM030 - Snarl
+  ➥ PWR: 55 | Acc: 95 | Type: Special
+""",
+
+    2: """
+🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 2/6)
+
+• TM031 - Metal Claw
+  ➥ PWR: 50 | Acc: 95 | Type: Physical
+
+• TM032 - Swift
+  ➥ PWR: 60 | Acc: 100 | Type: Special
+
+• TM033 - Magical Leaf
+  ➥ PWR: 60 | Acc: 100 | Type: Special
+
+• TM034 - Icy Wind
+  ➥ PWR: 55 | Acc: 95 | Type: Special
+
+• TM035 - Mud Shot
+  ➥ PWR: 55 | Acc: 95 | Type: Special
+
+• TM036 - Rock Tomb
+  ➥ PWR: 60 | Acc: 95 | Type: Physical
+
+• TM037 - Draining Kiss
+  ➥ PWR: 50 | Acc: 100 | Type: Special
+
+• TM038 - Flame Charge
+  ➥ PWR: 50 | Acc: 100 | Type: Physical
+
+• TM039 - Low Sweep
+  ➥ PWR: 65 | Acc: 100 | Type: Physical
+
+• TM040 - Air Cutter
+  ➥ PWR: 60 | Acc: 95 | Type: Special
+
+• TM041 - Stored Power
+  ➥ PWR: 20 | Acc: 100 | Type: Special
+
+• TM042 - Night Shade
+  ➥ PWR: — | Acc: 100 | Type: Special
+
+• TM043 - Foul Play
+  ➥ PWR: 95 | Acc: 100 | Type: Physical
+
+• TM044 - Dragon Tail
+  ➥ PWR: 60 | Acc: 90 | Type: Physical
+
+• TM045 - Venoshock
+  ➥ PWR: 65 | Acc: 100 | Type: Special
+
+• TM046 - Avalanche
+  ➥ PWR: 60 | Acc: 100 | Type: Physical
+
+• TM047 - Endure
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM048 - Volt Switch
+  ➥ PWR: 70 | Acc: 100 | Type: Special
+
+• TM049 - Sunny Day
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM050 - Rain Dance
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM051 - Sandstorm
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM052 - Snowscape
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM053 - Smart Strike
+  ➥ PWR: 70 | Acc: 100 | Type: Physical
+
+• TM054 - Psyshock
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM055 - Dig
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM056 - Bullet Seed
+  ➥ PWR: 25 | Acc: 100 | Type: Physical
+
+• TM057 - False Swipe
+  ➥ PWR: 40 | Acc: 100 | Type: Physical
+
+• TM058 - Brick Break
+  ➥ PWR: 75 | Acc: 100 | Type: Physical
+
+• TM059 - Zen Headbutt
+  ➥ PWR: 80 | Acc: 90 | Type: Physical
+
+• TM060 - U-turn
+  ➥ PWR: 70 | Acc: 100 | Type: Physical
+""",
+
+    3: """
+🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 3/6)
+
+• TM061 - Shadow Claw
+  ➥ PWR: 70 | Acc: 100 | Type: Physical
+
+• TM062 - Foul Play
+  ➥ PWR: 95 | Acc: 100 | Type: Physical
+
+• TM063 - Psychic Fangs
+  ➥ PWR: 85 | Acc: 100 | Type: Physical
+
+• TM064 - Bulk Up
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM065 - Air Slash
+  ➥ PWR: 75 | Acc: 95 | Type: Special
+
+• TM066 - Body Slam
+  ➥ PWR: 85 | Acc: 100 | Type: Physical
+
+• TM067 - Fire Punch
+  ➥ PWR: 75 | Acc: 100 | Type: Physical
+
+• TM068 - Thunder Punch
+  ➥ PWR: 75 | Acc: 100 | Type: Physical
+
+• TM069 - Ice Punch
+  ➥ PWR: 75 | Acc: 100 | Type: Physical
+
+• TM070 - Sleep Talk
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM071 - Seed Bomb
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM072 - Electro Ball
+  ➥ PWR: — | Acc: 100 | Type: Special
+
+• TM073 - Drain Punch
+  ➥ PWR: 75 | Acc: 100 | Type: Physical
+
+• TM074 - Reflect
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM075 - Light Screen
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM076 - Rock Blast
+  ➥ PWR: 25 | Acc: 90 | Type: Physical
+
+• TM077 - Waterfall
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM078 - Dragon Claw
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM079 - Dazzling Gleam
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM080 - Metronome
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM081 - Grass Knot
+  ➥ PWR: — | Acc: 100 | Type: Special
+
+• TM082 - Thunder Wave
+  ➥ PWR: — | Acc: 90 | Type: Status
+
+• TM083 - Poison Jab
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM084 - Stomping Tantrum
+  ➥ PWR: 75 | Acc: 100 | Type: Physical
+
+• TM085 - Rest
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM086 - Rock Slide
+  ➥ PWR: 75 | Acc: 90 | Type: Physical
+
+• TM087 - Taunt
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM088 - Swords Dance
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM089 - Body Press
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM090 - Spikes
+  ➥ PWR: — | Acc: 100 | Type: Status
+""",
+
+    4: """
+🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 4/6)
+
+• TM091 - Toxic Spikes
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM092 - Imprison
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM093 - Flash Cannon
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM094 - Dark Pulse
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM095 - Leech Life
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM096 - Eerie Impulse
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM097 - Fly
+  ➥ PWR: 90 | Acc: 95 | Type: Physical
+
+• TM098 - Skill Swap
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM099 - Iron Head
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM100 - Dragon Dance
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM101 - Power Gem
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM102 - Gunk Shot
+  ➥ PWR: 120 | Acc: 80 | Type: Physical
+
+• TM103 - Substitute
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM104 - Iron Defense
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM105 - X-Scissor
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM106 - Drill Run
+  ➥ PWR: 80 | Acc: 95 | Type: Physical
+
+• TM107 - Will-O-Wisp
+  ➥ PWR: — | Acc: 85 | Type: Status
+
+• TM108 - Crunch
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM109 - Trick
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM110 - Liquidation
+  ➥ PWR: 85 | Acc: 100 | Type: Physical
+
+• TM111 - Giga Drain
+  ➥ PWR: 75 | Acc: 100 | Type: Special
+
+• TM112 - Aura Sphere
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM113 - Tailwind
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM114 - Shadow Ball
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM115 - Dragon Pulse
+  ➥ PWR: 85 | Acc: 100 | Type: Special
+
+• TM116 - Stealth Rock
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM117 - Hyper Voice
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM118 - Heat Wave
+  ➥ PWR: 95 | Acc: 90 | Type: Special
+
+• TM119 - Energy Ball
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM120 - Psychic
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+""",
+
+    5: """
+🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 5/6)
+
+• TM121 - Heavy Slam
+  ➥ PWR: — | Acc: 100 | Type: Physical
+
+• TM122 - Encore
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM123 - Surf
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM124 - Ice Spinner
+  ➥ PWR: 80 | Acc: 100 | Type: Physical
+
+• TM125 - Flamethrower
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM126 - Thunderbolt
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM127 - Play Rough
+  ➥ PWR: 90 | Acc: 90 | Type: Physical
+
+• TM128 - Amnesia
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM129 - Calm Mind
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM130 - Helping Hand
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM131 - Pollen Puff
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM132 - Baton Pass
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM133 - Earth Power
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM134 - Reversal
+  ➥ PWR: — | Acc: 100 | Type: Physical
+
+• TM135 - Ice Beam
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM136 - Electric Terrain
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM137 - Grassy Terrain
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM138 - Psychic Terrain
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM139 - Misty Terrain
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM140 - Nasty Plot
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM141 - Fire Blast
+  ➥ PWR: 110 | Acc: 85 | Type: Special
+
+• TM142 - Hydro Pump
+  ➥ PWR: 110 | Acc: 80 | Type: Special
+
+• TM143 - Blizzard
+  ➥ PWR: 110 | Acc: 70 | Type: Special
+
+• TM144 - Fire Pledge
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM145 - Water Pledge
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM146 - Grass Pledge
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+
+• TM147 - Wild Charge
+  ➥ PWR: 90 | Acc: 100 | Type: Physical
+
+• TM148 - Sludge Bomb
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM149 - Earthquake
+  ➥ PWR: 100 | Acc: 100 | Type: Physical
+
+• TM150 - Stone Edge
+  ➥ PWR: 100 | Acc: 80 | Type: Physical
+""",
+
+    6: """
+🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 6/6)
+
+• TM151 - Phantom Force
+  ➥ PWR: 90 | Acc: 100 | Type: Physical
+
+• TM152 - Giga Impact
+  ➥ PWR: 150 | Acc: 90 | Type: Physical
+
+• TM153 - Blast Burn
+  ➥ PWR: 150 | Acc: 90 | Type: Special
+
+• TM154 - Hurricane
+  ➥ PWR: 110 | Acc: 70 | Type: Special
+
+• TM155 - Frenzy Plant
+  ➥ PWR: 150 | Acc: 90 | Type: Special
+
+• TM156 - Outrage
+  ➥ PWR: 120 | Acc: 100 | Type: Physical
+
+• TM157 - Overheat
+  ➥ PWR: 130 | Acc: 90 | Type: Special
+
+• TM158 - Focus Blast
+  ➥ PWR: 120 | Acc: 70 | Type: Special
+
+• TM159 - Leaf Storm
+  ➥ PWR: 130 | Acc: 90 | Type: Special
+
+• TM160 - Hydro Cannon
+  ➥ PWR: 150 | Acc: 90 | Type: Special
+
+• TM161 - Trick Room
+  ➥ PWR: — | Acc: 100 | Type: Status
+
+• TM162 - Bug Buzz
+  ➥ PWR: 90 | Acc: 100 | Type: Special
+
+• TM163 - Hyper Beam
+  ➥ PWR: 150 | Acc: 90 | Type: Special
+
+• TM164 - Brave Bird
+  ➥ PWR: 120 | Acc: 100 | Type: Physical
+
+• TM165 - Flare Blitz
+  ➥ PWR: 120 | Acc: 100 | Type: Physical
+
+• TM166 - Thunder
+  ➥ PWR: 110 | Acc: 70 | Type: Special
+
+• TM167 - Close Combat
+  ➥ PWR: 120 | Acc: 100 | Type: Physical
+
+• TM168 - Solar Beam
+  ➥ PWR: 120 | Acc: 100 | Type: Special
+
+• TM169 - Draco Meteor
+  ➥ PWR: 130 | Acc: 90 | Type: Special
+
+• TM170 - Steel Beam
+  ➥ PWR: 140 | Acc: 95 | Type: Special
+
+• TM171 - Tera Blast
+  ➥ PWR: 80 | Acc: 100 | Type: Special
+"""
+}
+
+
+# =========================================================
+# DATATM
+# =========================================================
+
+async def datatm(update, context):
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌𝐬",
+                callback_data="tm_page_1"
+            )
+        ]
+    ]
+
+    await update.message.reply_text(
+        "🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# TM PAGE CALLBACK
+# =========================================================
+
+async def tm_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    page = int(query.data.split("_")[-1])
+
+    text = TM_PAGES.get(page)
+
+    if not text:
+        return
+
+    keyboard = []
+
+    navigation = []
+
+    if page > 1:
+        navigation.append(
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤",
+                callback_data=f"tm_page_{page - 1}"
+            )
+        )
+
+    if page < 6:
+        navigation.append(
+            InlineKeyboardButton(
+                "𝐍𝐞𝐱𝐭 ▶️",
+                callback_data=f"tm_page_{page + 1}"
+            )
+        )
+
+    if navigation:
+        keyboard.append(navigation)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# POKEBALLS GUIDE
+# =========================================================
+
+async def pokeballs(update, context):
+
+    await update.message.reply_text(
+        "🎯 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬 𝐆𝐮𝐢𝐝𝐞\n\n"
+        "𝐑𝐞𝐠𝐮𝐥𝐚𝐫 𝐁𝐚𝐥𝐥: Multiplier: x1\n\n"
+        "𝐆𝐫𝐞𝐚𝐭 𝐁𝐚𝐥𝐥: Multiplier: x1.5\n\n"
+        "𝐔𝐥𝐭𝐫𝐚 𝐁𝐚𝐥𝐥: Multiplier: x2\n\n"
+        "𝐋𝐞𝐯𝐞𝐥 𝐁𝐚𝐥𝐥: Multiplier:\n"
+        "• x8 if your Pokémon's level is ≥ 4× wild Pokémon\n"
+        "• x4 if ≥ 2× wild Pokémon\n"
+        "• x2 if higher than wild Pokémon\n"
+        "• x1 otherwise\n\n"
+        "𝐅𝐚𝐬𝐭 𝐁𝐚𝐥𝐥: Multiplier: x4 if base speed ≥ 100 "
+        "(or Magnemite, Grimer, Tangela), x1 otherwise\n\n"
+        "𝐑𝐞𝐩𝐞𝐚𝐭 𝐁𝐚𝐥𝐥: Multiplier: x3.5 if you have previously "
+        "caught the Pokémon, x1 otherwise\n\n"
+        "𝐍𝐞𝐬𝐭 𝐁𝐚𝐥𝐥: Multiplier: Works better on low level "
+        "Pokémon (up to x4)\n\n"
+        "𝐍𝐞𝐭 𝐁𝐚𝐥𝐥: Multiplier: x3.5 if the Pokémon is Water "
+        "or Bug type, x1 otherwise\n\n"
+        "𝐐𝐮𝐢𝐜𝐤 𝐁𝐚𝐥𝐥: Multiplier: x5 if used in the first "
+        "turn, x1 otherwise\n\n"
+        "𝐌𝐚𝐬𝐭𝐞𝐫 𝐁𝐚𝐥𝐥: Multiplier: x255 "
+        "(100% capture guaranteed)\n\n"
+        "𝐒𝐚𝐟𝐚𝐫𝐢 𝐁𝐚𝐥𝐥: Multiplier: x1.5 "
+        "(only used in Safari zone)"
+    )
+
+
+# =========================================================
+# MOVE DATABASE
+# =========================================================
+
+MOVE_DATA = {}
+
+
+# =========================================================
+# ADD TM MOVE
+# =========================================================
+
+def add_tm_move(
+    name,
+    move_type,
+    power,
+    accuracy,
+    category
+):
+    MOVE_DATA[name.lower()] = {
+        "name": name,
+        "type": move_type,
+        "power": power,
+        "accuracy": accuracy,
+        "category": category,
+        "pp": None,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": "Move data available."
+    }
+
+
+# =========================================================
+# TM MOVES
+# =========================================================
+
+add_tm_move("Take Down", "Normal", 90, 85, "Physical")
+add_tm_move("Charm", "Fairy", None, 100, "Status")
+add_tm_move("Fake Tears", "Dark", None, 100, "Status")
+add_tm_move("Agility", "Psychic", None, 100, "Status")
+add_tm_move("Mud-Slap", "Ground", 20, 100, "Special")
+add_tm_move("Scary Face", "Normal", None, 100, "Status")
+add_tm_move("Protect", "Normal", None, 100, "Status")
+add_tm_move("Fire Fang", "Fire", 65, 95, "Physical")
+add_tm_move("Thunder Fang", "Electric", 65, 95, "Physical")
+add_tm_move("Ice Fang", "Ice", 65, 95, "Physical")
+add_tm_move("Water Pulse", "Water", 60, 100, "Special")
+add_tm_move("Low Kick", "Fighting", None, 100, "Physical")
+add_tm_move("Acid Spray", "Poison", 40, 100, "Special")
+add_tm_move("Acrobatics", "Flying", 55, 100, "Physical")
+add_tm_move("Struggle Bug", "Bug", 50, 100, "Special")
+add_tm_move("Psybeam", "Psychic", 65, 100, "Special")
+add_tm_move("Confuse Ray", "Ghost", None, 100, "Status")
+add_tm_move("Thief", "Dark", 60, 100, "Physical")
+add_tm_move("Disarming Voice", "Fairy", 40, 100, "Special")
+add_tm_move("Trailblaze", "Grass", 50, 100, "Physical")
+add_tm_move("Pounce", "Bug", 50, 100, "Physical")
+add_tm_move("Chilling Water", "Water", 50, 100, "Special")
+add_tm_move("Charge Beam", "Electric", 50, 90, "Special")
+add_tm_move("Fire Spin", "Fire", 35, 85, "Special")
+add_tm_move("Facade", "Normal", 70, 100, "Physical")
+add_tm_move("Poison Tail", "Poison", 50, 100, "Physical")
+add_tm_move("Aerial Ace", "Flying", 60, None, "Physical")
+add_tm_move("Bulldoze", "Ground", 60, 100, "Physical")
+add_tm_move("Hex", "Ghost", 65, 100, "Special")
+add_tm_move("Snarl", "Dark", 55, 95, "Special")
+
+add_tm_move("Metal Claw", "Steel", 50, 95, "Physical")
+add_tm_move("Swift", "Normal", 60, None, "Special")
+add_tm_move("Magical Leaf", "Grass", 60, None, "Special")
+add_tm_move("Icy Wind", "Ice", 55, 95, "Special")
+add_tm_move("Mud Shot", "Ground", 55, 95, "Special")
+add_tm_move("Rock Tomb", "Rock", 60, 95, "Physical")
+add_tm_move("Draining Kiss", "Fairy", 50, 100, "Special")
+add_tm_move("Flame Charge", "Fire", 50, 100, "Physical")
+add_tm_move("Low Sweep", "Fighting", 65, 100, "Physical")
+add_tm_move("Air Cutter", "Flying", 60, 95, "Special")
+add_tm_move("Stored Power", "Psychic", 20, 100, "Special")
+add_tm_move("Night Shade", "Ghost", None, 100, "Special")
+add_tm_move("Foul Play", "Dark", 95, 100, "Physical")
+add_tm_move("Dragon Tail", "Dragon", 60, 90, "Physical")
+add_tm_move("Venoshock", "Poison", 65, 100, "Special")
+add_tm_move("Avalanche", "Ice", 60, 100, "Physical")
+add_tm_move("Endure", "Normal", None, None, "Status")
+add_tm_move("Volt Switch", "Electric", 70, 100, "Special")
+add_tm_move("Sunny Day", "Fire", None, None, "Status")
+add_tm_move("Rain Dance", "Water", None, None, "Status")
+add_tm_move("Sandstorm", "Rock", None, None, "Status")
+add_tm_move("Snowscape", "Ice", None, None, "Status")
+add_tm_move("Smart Strike", "Steel", 70, None, "Physical")
+add_tm_move("Psyshock", "Psychic", 80, 100, "Special")
+add_tm_move("Dig", "Ground", 80, 100, "Physical")
+add_tm_move("Bullet Seed", "Grass", 25, 100, "Physical")
+add_tm_move("False Swipe", "Normal", 40, 100, "Physical")
+add_tm_move("Brick Break", "Fighting", 75, 100, "Physical")
+add_tm_move("Zen Headbutt", "Psychic", 80, 90, "Physical")
+add_tm_move("U-turn", "Bug", 70, 100, "Physical")
+
+add_tm_move("Shadow Claw", "Ghost", 70, 100, "Physical")
+add_tm_move("Psychic Fangs", "Psychic", 85, 100, "Physical")
+add_tm_move("Bulk Up", "Fighting", None, None, "Status")
+add_tm_move("Air Slash", "Flying", 75, 95, "Special")
+add_tm_move("Body Slam", "Normal", 85, 100, "Physical")
+add_tm_move("Fire Punch", "Fire", 75, 100, "Physical")
+add_tm_move("Thunder Punch", "Electric", 75, 100, "Physical")
+add_tm_move("Ice Punch", "Ice", 75, 100, "Physical")
+add_tm_move("Sleep Talk", "Normal", None, None, "Status")
+add_tm_move("Seed Bomb", "Grass", 80, 100, "Physical")
+add_tm_move("Electro Ball", "Electric", None, 100, "Special")
+add_tm_move("Drain Punch", "Fighting", 75, 100, "Physical")
+add_tm_move("Reflect", "Psychic", None, None, "Status")
+add_tm_move("Light Screen", "Psychic", None, None, "Status")
+add_tm_move("Rock Blast", "Rock", 25, 90, "Physical")
+add_tm_move("Waterfall", "Water", 80, 100, "Physical")
+add_tm_move("Dragon Claw", "Dragon", 80, 100, "Physical")
+add_tm_move("Dazzling Gleam", "Fairy", 80, 100, "Special")
+add_tm_move("Metronome", "Normal", None, None, "Status")
+add_tm_move("Grass Knot", "Grass", None, 100, "Special")
+add_tm_move("Thunder Wave", "Electric", None, 90, "Status")
+add_tm_move("Poison Jab", "Poison", 80, 100, "Physical")
+add_tm_move("Stomping Tantrum", "Ground", 75, 100, "Physical")
+add_tm_move("Rest", "Psychic", None, None, "Status")
+add_tm_move("Rock Slide", "Rock", 75, 90, "Physical")
+add_tm_move("Taunt", "Dark", None, 100, "Status")
+add_tm_move("Swords Dance", "Normal", None, None, "Status")
+add_tm_move("Body Press", "Fighting", 80, 100, "Physical")
+add_tm_move("Spikes", "Ground", None, None, "Status")
+
+add_tm_move("Toxic Spikes", "Poison", None, None, "Status")
+add_tm_move("Imprison", "Psychic", None, None, "Status")
+add_tm_move("Flash Cannon", "Steel", 80, 100, "Special")
+add_tm_move("Dark Pulse", "Dark", 80, 100, "Special")
+add_tm_move("Leech Life", "Bug", 80, 100, "Physical")
+add_tm_move("Eerie Impulse", "Electric", None, 100, "Status")
+add_tm_move("Fly", "Flying", 90, 95, "Physical")
+add_tm_move("Skill Swap", "Psychic", None, None, "Status")
+add_tm_move("Iron Head", "Steel", 80, 100, "Physical")
+add_tm_move("Dragon Dance", "Dragon", None, None, "Status")
+add_tm_move("Power Gem", "Rock", 80, 100, "Special")
+add_tm_move("Gunk Shot", "Poison", 120, 80, "Physical")
+add_tm_move("Substitute", "Normal", None, None, "Status")
+add_tm_move("Iron Defense", "Steel", None, None, "Status")
+add_tm_move("X-Scissor", "Bug", 80, 100, "Physical")
+add_tm_move("Drill Run", "Ground", 80, 95, "Physical")
+add_tm_move("Will-O-Wisp", "Fire", None, 85, "Status")
+add_tm_move("Crunch", "Dark", 80, 100, "Physical")
+add_tm_move("Trick", "Psychic", None, 100, "Status")
+add_tm_move("Liquidation", "Water", 85, 100, "Physical")
+add_tm_move("Giga Drain", "Grass", 75, 100, "Special")
+add_tm_move("Aura Sphere", "Fighting", 80, None, "Special")
+add_tm_move("Tailwind", "Flying", None, None, "Status")
+add_tm_move("Shadow Ball", "Ghost", 80, 100, "Special")
+add_tm_move("Dragon Pulse", "Dragon", 85, 100, "Special")
+add_tm_move("Stealth Rock", "Rock", None, None, "Status")
+add_tm_move("Hyper Voice", "Normal", 90, 100, "Special")
+add_tm_move("Heat Wave", "Fire", 95, 90, "Special")
+add_tm_move("Energy Ball", "Grass", 90, 100, "Special")
+add_tm_move("Psychic", "Psychic", 90, 100, "Special")
+
+add_tm_move("Heavy Slam", "Steel", None, 100, "Physical")
+add_tm_move("Encore", "Normal", None, 100, "Status")
+add_tm_move("Surf", "Water", 90, 100, "Special")
+add_tm_move("Ice Spinner", "Ice", 80, 100, "Physical")
+add_tm_move("Flamethrower", "Fire", 90, 100, "Special")
+add_tm_move("Thunderbolt", "Electric", 90, 100, "Special")
+add_tm_move("Play Rough", "Fairy", 90, 90, "Physical")
+add_tm_move("Amnesia", "Psychic", None, None, "Status")
+add_tm_move("Calm Mind", "Psychic", None, None, "Status")
+add_tm_move("Helping Hand", "Normal", None, None, "Status")
+add_tm_move("Pollen Puff", "Bug", 90, 100, "Special")
+add_tm_move("Baton Pass", "Normal", None, None, "Status")
+add_tm_move("Earth Power", "Ground", 90, 100, "Special")
+add_tm_move("Reversal", "Fighting", None, 100, "Physical")
+add_tm_move("Ice Beam", "Ice", 90, 100, "Special")
+add_tm_move("Electric Terrain", "Electric", None, None, "Status")
+add_tm_move("Grassy Terrain", "Grass", None, None, "Status")
+add_tm_move("Psychic Terrain", "Psychic", None, None, "Status")
+add_tm_move("Misty Terrain", "Fairy", None, None, "Status")
+add_tm_move("Nasty Plot", "Dark", None, None, "Status")
+add_tm_move("Fire Blast", "Fire", 110, 85, "Special")
+add_tm_move("Hydro Pump", "Water", 110, 80, "Special")
+add_tm_move("Blizzard", "Ice", 110, 70, "Special")
+add_tm_move("Fire Pledge", "Fire", 80, 100, "Special")
+add_tm_move("Water Pledge", "Water", 80, 100, "Special")
+add_tm_move("Grass Pledge", "Grass", 80, 100, "Special")
+add_tm_move("Wild Charge", "Electric", 90, 100, "Physical")
+add_tm_move("Sludge Bomb", "Poison", 90, 100, "Special")
+add_tm_move("Earthquake", "Ground", 100, 100, "Physical")
+add_tm_move("Stone Edge", "Rock", 100, 80, "Physical")
+
+add_tm_move("Phantom Force", "Ghost", 90, 100, "Physical")
+add_tm_move("Giga Impact", "Normal", 150, 90, "Physical")
+add_tm_move("Blast Burn", "Fire", 150, 90, "Special")
+add_tm_move("Hurricane", "Flying", 110, 70, "Special")
+add_tm_move("Frenzy Plant", "Grass", 150, 90, "Special")
+add_tm_move("Outrage", "Dragon", 120, 100, "Physical")
+add_tm_move("Overheat", "Fire", 130, 90, "Special")
+add_tm_move("Focus Blast", "Fighting", 120, 70, "Special")
+add_tm_move("Leaf Storm", "Grass", 130, 90, "Special")
+add_tm_move("Hydro Cannon", "Water", 150, 90, "Special")
+add_tm_move("Trick Room", "Psychic", None, None, "Status")
+add_tm_move("Bug Buzz", "Bug", 90, 100, "Special")
+add_tm_move("Hyper Beam", "Normal", 150, 90, "Special")
+add_tm_move("Brave Bird", "Flying", 120, 100, "Physical")
+add_tm_move("Flare Blitz", "Fire", 120, 100, "Physical")
+add_tm_move("Thunder", "Electric", 110, 70, "Special")
+add_tm_move("Close Combat", "Fighting", 120, 100, "Physical")
+add_tm_move("Solar Beam", "Grass", 120, 100, "Special")
+add_tm_move("Draco Meteor", "Dragon", 130, 90, "Special")
+add_tm_move("Steel Beam", "Steel", 140, 95, "Special")
+add_tm_move("Tera Blast", "Normal", 80, 100, "Special")
+
+
+# =========================================================
+# MOVE COMMAND
+# =========================================================
+
+async def move(update, context):
+
+    if not context.args:
+        await update.message.reply_text(
+            "⚠️ 𝐏𝐥𝐞𝐚𝐬𝐞 𝐞𝐧𝐭𝐞𝐫 𝐚 𝐦𝐨𝐯𝐞 𝐧𝐚𝐦𝐞.\n\n"
+            "𝐄𝐱𝐚𝐦𝐩𝐥𝐞:\n"
+            "/move Crunch"
+        )
+        return
+
+    move_name = " ".join(context.args).strip().lower()
+
+    data = MOVE_DATA.get(move_name)
+
+    if not data:
+        await update.message.reply_text(
+            f"❌ 𝐌𝐨𝐯𝐞 𝐧𝐨𝐭 𝐟𝐨𝐮𝐧𝐝.\n\n"
+            f"𝐒𝐞𝐚𝐫𝐜𝐡𝐞𝐝: {move_name.title()}"
+        )
+        return
+
+    power = data["power"] if data["power"] is not None else "—"
+    accuracy = (
+        data["accuracy"]
+        if data["accuracy"] is not None
+        else "—"
+    )
+
+    await update.message.reply_text(
+        f"⚔️ 𝐌𝐨𝐯𝐞: {data['name']}\n\n"
+        f"🔹 𝐓𝐲𝐩𝐞: {data['type']}\n"
+        f"🔹 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲: {data['category']}\n"
+        f"🔹 𝐏𝐨𝐰𝐞𝐫: {power}\n"
+        f"🔹 𝐀𝐜𝐜𝐮𝐫𝐚𝐜𝐲: {accuracy}\n"
+        f"🔹 𝐏𝐏: {data['pp'] if data['pp'] else '—'}\n"
+        f"🔹 𝐏𝐫𝐢𝐨𝐫𝐢𝐭𝐲: {data['priority']}\n"
+        f"🔹 𝐓𝐚𝐫𝐠𝐞𝐭: {data['target']}\n\n"
+        f"📝 {data['description']}"
+    )
+
+
+# =========================================================
 # POKEDEX DATABASE
 # =========================================================
 
@@ -2746,7 +4288,32 @@ def main():
     app = Application.builder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
-    
+    app.add_handler(CommandHandler("helpdex", helpdex))
+    app.add_handler(CommandHandler("data", pokemon_data))
+    app.add_handler(CommandHandler("datadamage", datadamage))
+    app.add_handler(CommandHandler("buildpoke", buildpoke))
+    app.add_handler(CommandHandler("type", pokemon_type)) 
+    app.add_handler(CommandHandler("datanature", datanature))
+    app.add_handler(CommandHandler("bestnat", bestnat))
+    app.add_handler(CommandHandler("evbuild", evbuild))
+    app.add_handler(CommandHandler("datatm", datatm))
+    app.add_handler(CommandHandler("pokeballs", pokeballs))
+    app.add_handler(CommandHandler("move", move))
+  
+    app.add_handler(
+        CallbackQueryHandler(
+            tm_callback,
+            pattern="^tm_page_[1-6]$"
+        )
+    )
+ 
+    app.add_handler(
+        CallbackQueryHandler(
+            helpdex_callback,
+            pattern="^(dex_|nature_|ev_|tm_)"
+        )
+    )
+
     app.add_handler(
         CallbackQueryHandler(
             start_menu_callback,
