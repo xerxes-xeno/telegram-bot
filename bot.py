@@ -2212,6 +2212,18 @@ async def filter_handler(update, context):
 TRAINER_NAME, TRAINER_HOMETOWN, TRAINER_REGION = range(3)
 
 
+async def start_pokemon_journey(update, context):
+    query = update.callback_query
+    await query.answer()
+
+    await query.message.reply_text(
+        "🍥 𝐖𝐞𝐥𝐜𝐨𝐦𝐞, 𝐟𝐮𝐭𝐮𝐫𝐞 𝐓𝐫𝐚𝐢𝐧𝐞𝐫!\n\n"
+        "𝐖𝐡𝐚𝐭 𝐧𝐚𝐦𝐞 𝐰𝐨𝐮𝐥𝐝 𝐲𝐨𝐮 𝐥𝐢𝐤𝐞 𝐭𝐨 𝐮𝐬𝐞 𝐚𝐬 𝐲𝐨𝐮𝐫 "
+        "𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐧𝐚𝐦𝐞?"
+    )
+
+    return TRAINER_NAME
+
 async def start_pokedex(update, context):
 
     user_id = update.effective_user.id
@@ -2602,13 +2614,6 @@ def main():
     
     app.add_handler(
         CallbackQueryHandler(
-            start_pokemon_journey,
-            pattern="^start_pokemon_journey$"
-        )
-    )
-    
-    app.add_handler(
-        CallbackQueryHandler(
             start_menu_callback,
             pattern="^(start_commands|start_main)$"
         )
@@ -2627,9 +2632,13 @@ def main():
     app.add_handler(CommandHandler("stopdex", stopdex))
     app.add_handler(CommandHandler("ondex", ondex))
     pokedex_registration = ConversationHandler(
-        entry_points=[
-            CommandHandler("startpokedex", start_pokedex)
-        ],
+    entry_points=[
+        CommandHandler("startpokedex", start_pokedex),
+        CallbackQueryHandler(
+            start_pokemon_journey,
+            pattern="^start_pokemon_journey$"
+        )
+    ],
         states={
             TRAINER_NAME: [
                 MessageHandler(
