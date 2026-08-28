@@ -310,6 +310,61 @@ def init_db():
 
 
 # =========================================================
+# TRAINER PROFILE COMMAND
+# =========================================================
+
+async def trainer(update, context):
+
+    user_id = update.effective_user.id
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT trainer_id, trainer_name, hometown, region,
+               wins, losses, batches
+        FROM users
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    if not result or not result[1]:
+        await update.message.reply_text(
+            "⚠️ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐧𝐨𝐭 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐲𝐞𝐭.\n\n"
+            "𝐔𝐬𝐞 /startpokedex 𝐭𝐨 𝐛𝐞𝐠𝐢𝐧 𝐲𝐨𝐮𝐫 "
+            "𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐉𝐨𝐮𝐫𝐧𝐞𝐲."
+        )
+        return
+
+    trainer_id = result[0] or generate_trainer_id(user_id)
+    trainer_name = result[1]
+    hometown = result[2] or "Unknown"
+    region = result[3] or "Unknown"
+    wins = result[4] or 0
+    losses = result[5] or 0
+    batches = result[6] or 0
+
+    await update.message.reply_text(
+        "╭━━━━━━━━━━━━━━━━━━╮\n"
+        "       🧑‍🎤 𝐓𝐑𝐀𝐈𝐍𝐄𝐑 𝐏𝐑𝐎𝐅𝐈𝐋𝐄\n"
+        "╰━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🆔 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐈𝐃: {trainer_id}\n"
+        f"👤 𝐍𝐚𝐦𝐞: {trainer_name}\n"
+        f"🏠 𝐇𝐨𝐦𝐞𝐭𝐨𝐰𝐧: {hometown}\n"
+        f"🌎 𝐑𝐞𝐠𝐢𝐨𝐧: {region}\n\n"
+        f"🏆 𝐖𝐢𝐧𝐬: {wins}\n"
+        f"💀 𝐋𝐨𝐬𝐬𝐞𝐬: {losses}\n"
+        f"🎖️ 𝐁𝐚𝐝𝐠𝐞𝐬: {batches}\n\n"
+        "🟢 𝐒𝐭𝐚𝐭𝐮𝐬: 𝐀𝐜𝐭𝐢𝐯𝐞"
+    )
+
+
+# =========================================================
 # TRAINER ID
 # =========================================================
 
@@ -2939,6 +2994,61 @@ async def start_menu_callback(update, context):
     
 
 # =========================================================
+# TRAINER STATUS
+# =========================================================
+
+async def status(update, context):
+
+    user_id = update.effective_user.id
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT trainer_id, trainer_name, hometown, region,
+               wins, losses, batches
+        FROM users
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    if not result or not result[1]:
+        await update.message.reply_text(
+            "⚠️ 𝐘𝐨𝐮 𝐡𝐚𝐯𝐞 𝐧𝐨𝐭 𝐬𝐭𝐚𝐚𝐫𝐭𝐞𝐝 𝐲𝐨𝐮𝐫 "
+            "𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐉𝐨𝐮𝐫𝐧𝐞𝐲 𝐲𝐞𝐭.\n\n"
+            "𝐔𝐬𝐞 /startpokedex 𝐭𝐨 𝐛𝐞𝐠𝐢𝐧."
+        )
+        return
+
+    trainer_id = result[0] or generate_trainer_id(user_id)
+    trainer_name = result[1]
+    hometown = result[2] or "Unknown"
+    region = result[3] or "Unknown"
+    wins = result[4] or 0
+    losses = result[5] or 0
+    batches = result[6] or 0
+
+    await update.message.reply_text(
+        "╭━━━━━━━━━━━━━━━━━━╮\n"
+        "       🧑‍🎤 𝐓𝐑𝐀𝐈𝐍𝐄𝐑 𝐒𝐓𝐀𝐓𝐔𝐒\n"
+        "╰━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🆔 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐈𝐃: {trainer_id}\n"
+        f"👤 𝐍𝐚𝐦𝐞: {trainer_name}\n"
+        f"🏠 𝐇𝐨𝐦𝐞𝐭𝐨𝐰𝐧: {hometown}\n"
+        f"🌎 𝐑𝐞𝐠𝐢𝐨𝐧: {region}\n\n"
+        f"🏆 𝐖𝐢𝐧𝐬: {wins}\n"
+        f"💀 𝐋𝐨𝐬𝐬𝐞𝐬: {losses}\n"
+        f"🎖️ 𝐁𝐚𝐝𝐠𝐞𝐬: {batches}\n\n"
+        "🟢 𝐉𝐨𝐮𝐫𝐧𝐞𝐲: 𝐀𝐜𝐭𝐢𝐯𝐞"
+    )
+
+
+# =========================================================
 # ID
 # =========================================================
 
@@ -3890,31 +4000,13 @@ TRAINER_NAME, TRAINER_HOMETOWN, TRAINER_REGION = range(3)
 
 
 async def start_pokemon_journey(update, context):
+
     query = update.callback_query
     await query.answer()
 
-    await query.message.reply_text(
-        "🍥 𝐖𝐞𝐥𝐜𝐨𝐦𝐞, 𝐟𝐮𝐭𝐮𝐫𝐞 𝐓𝐫𝐚𝐢𝐧𝐞𝐫!\n\n"
-        "𝐖𝐡𝐚𝐭 𝐧𝐚𝐦𝐞 𝐰𝐨𝐮𝐥𝐝 𝐲𝐨𝐮 𝐥𝐢𝐤𝐞 𝐭𝐨 𝐮𝐬𝐞 𝐚𝐬 𝐲𝐨𝐮𝐫 "
-        "𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐧𝐚𝐦𝐞?"
-    )
-
-    return TRAINER_NAME
-
-async def start_pokedex(update, context):
-
     user_id = update.effective_user.id
 
-    # POKEDEX OFF CHECK
-    if not is_pokedex_enabled():
-        await update.message.reply_text(
-            "🔴 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐢𝐬 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐎𝐅𝐅."
-        )
-        return ConversationHandler.END
-
-    save_user(user_id)
-
-    # ALREADY REGISTERED
+    # CHECK EXISTING TRAINER
     conn = db()
     cur = conn.cursor()
 
@@ -3926,14 +4018,16 @@ async def start_pokedex(update, context):
     result = cur.fetchone()
     conn.close()
 
+    # ALREADY REGISTERED
     if result and result[0]:
-        await update.message.reply_text(
-            "𝐘𝐨𝐮 𝐚𝐫𝐞 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 𝐭𝐫𝐚𝐢𝐧𝐞𝐫 𝐢𝐧 "
-            "𝐏𝐨𝐤𝐞𝐰𝐨𝐫𝐥𝐝 𝐨𝐟 𝛸𝛴𝛤𝛸𝛴𝑆 ❗"
+        await query.message.reply_text(
+            "⚠️ 𝐘𝐨𝐮 𝐚𝐫𝐞 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐫𝐞𝐠𝐢𝐬𝐭𝐞𝐫𝐞𝐝 𝐚𝐬 𝐚 𝐓𝐫𝐚𝐢𝐧𝐞𝐫!\n\n"
+            "𝐘𝐨𝐮𝐫 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐉𝐨𝐮𝐫𝐧𝐞𝐲 𝐢𝐬 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐚𝐜𝐭𝐢𝐯𝐞. "
+            "𝐘𝐨𝐮𝐫 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐚𝐧𝐝 𝐩𝐫𝐨𝐠𝐫𝐞𝐬𝐬 𝐰𝐢𝐥𝐥 𝐫𝐞𝐦𝐚𝐢𝐧 𝐬𝐚𝐯𝐞𝐝. ✅"
         )
         return ConversationHandler.END
 
-    await update.message.reply_text(
+    await query.message.reply_text(
         "🍥 𝐖𝐞𝐥𝐜𝐨𝐦𝐞, 𝐟𝐮𝐭𝐮𝐫𝐞 𝐓𝐫𝐚𝐢𝐧𝐞𝐫!\n\n"
         "𝐖𝐡𝐚𝐭 𝐧𝐚𝐦𝐞 𝐰𝐨𝐮𝐥𝐝 𝐲𝐨𝐮 𝐥𝐢𝐤𝐞 𝐭𝐨 𝐮𝐬𝐞 𝐚𝐬 𝐲𝐨𝐮𝐫 "
         "𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐧𝐚𝐦𝐞?"
@@ -4322,6 +4416,7 @@ def main():
     )
   
     app.add_handler(CommandHandler("trainer", trainer))
+    app.add_handler(CommandHandler("status", status))
     app.add_handler(CommandHandler("bag", bag))
   
     app.add_handler(
