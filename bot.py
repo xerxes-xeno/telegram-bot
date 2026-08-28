@@ -1166,23 +1166,29 @@ async def start(update, context):
     save_user(update.effective_user.id)
 
     keyboard = [
-    [
-        InlineKeyboardButton(
-            "𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
-            callback_data="start_commands"
-        ),
-        InlineKeyboardButton(
-            "𝐔𝐩𝐝𝐚𝐭𝐞𝐬",
-            callback_data="start_updates"
-        )
-    ],
-    [
-        InlineKeyboardButton(
-            "𝐀𝐝𝐝 𝐦𝐞 𝐭𝐨 𝐠𝐫𝐨𝐮𝐩",
-            url=f"https://t.me/{context.bot.username}?startgroup=true"
-        )
+        [
+            InlineKeyboardButton(
+                "𝐒𝐭𝐚𝐫𝐭 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐉𝐨𝐮𝐫𝐧𝐞𝐲",
+                callback_data="start_pokemon_journey"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "𝐔𝐩𝐝𝐚𝐭𝐞𝐬",
+                callback_data="start_updates"
+            ),
+            InlineKeyboardButton(
+                "𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
+                callback_data="start_commands"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "𝐀𝐝𝐝 𝐦𝐞 𝐭𝐨 𝐠𝐫𝐨𝐮𝐩",
+                url=f"https://t.me/{context.bot.username}?startgroup=true"
+            )
+        ]
     ]
-]
     
     await update.message.reply_text(
         "╭━━━━━━━━━━━━━━━━━╮\n"
@@ -1200,6 +1206,17 @@ async def start(update, context):
     reply_markup=InlineKeyboardMarkup(keyboard)
     )
     
+
+# =========================================================
+# START POKEMON JOURNEY BUTTON
+# =========================================================
+
+async def start_pokemon_journey(update, context):
+    query = update.callback_query
+    await query.answer()
+
+    await start_pokedex(update, context)
+
 
 # =========================================================
 # START MENU CALLBACK
@@ -2582,6 +2599,13 @@ def main():
     app = Application.builder().token(token).build()
 
     app.add_handler(CommandHandler("start", start))
+    
+    app.add_handler(
+        CallbackQueryHandler(
+            start_pokemon_journey,
+            pattern="^start_pokemon_journey$"
+        )
+    )
     
     app.add_handler(
         CallbackQueryHandler(
