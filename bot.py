@@ -777,6 +777,18 @@ def set_pokedex_enabled(status):
 
 
 # =========================================================
+# GET PHOTO FILE ID
+# =========================================================
+
+async def get_photo_id(update, context):
+    photo = update.message.photo[-1]
+
+    await update.message.reply_text(
+        f"File ID:\n\n{photo.file_id}"
+    )
+
+
+# =========================================================
 # POKEDEX HELP
 # =========================================================
 
@@ -4547,6 +4559,14 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("helpdex", helpdex))
+
+    app.add_handler(
+        MessageHandler(
+            filters.PHOTO,
+            get_photo_id
+        )
+    )
+
     app.add_handler(CommandHandler("data", pokemon_data))
     app.add_handler(CommandHandler("datadamage", datadamage))
     app.add_handler(CommandHandler("buildpoke", buildpoke))
