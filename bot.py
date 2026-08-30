@@ -2453,7 +2453,7 @@ def generate_ivs():
 # BAG / INVENTORY
 # =========================================================
 
-BAG_IMAGE = "YOUR_TELEGRAM_BAG_IMAGE_FILE_ID"
+BAG_IMAGE = "https://i.ibb.co/RGCT0M3q/file-00000000b8e882118a09a4b6e97258d4.png"
 
 
 async def bag(update, context):
