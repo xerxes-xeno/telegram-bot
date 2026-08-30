@@ -836,7 +836,8 @@ async def helpdex(update, context):
     ]
 
     await update.message.reply_photo(
-        photo="https://i.ibb.co/Tq4rTzgd/file-0000000028088211ad0490ec9a36bae1.png",
+        photo="https://i.ibb.co/Tq4rTzgd/file-0000000028088211ad0490ec9a36bae1.png"
+```1,
         caption=(
             "☏ 𝛸𝛴𝛤𝛸𝛴𝑆 𝛨𝜀𝜄𝛲 𝐶𝜀𝜂𝜏𝜀𝛤\n\n"
             "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
