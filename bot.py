@@ -2065,10 +2065,18 @@ async def tm_callback(update, context):
     if navigation:
         keyboard.append(navigation)
 
-    await query.edit_message_caption(
-    caption=text,
-    reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+    markup = InlineKeyboardMarkup(keyboard)
+
+    if query.message.photo:
+        await query.edit_message_caption(
+            caption=text,
+            reply_markup=markup
+        )
+    else:
+        await query.edit_message_text(
+            text,
+            reply_markup=markup
+        )
 
 
 # =========================================================
