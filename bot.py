@@ -14,6 +14,8 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from urllib.request import urlopen
 
+import requests
+
 from telegram import (
     Update,
     ChatPermissions,
@@ -22,7 +24,7 @@ from telegram import (
     WebAppInfo
 )
 
-from telegram.ext import (
+from telegram.ext (
     Application,
     CommandHandler,
     ContextTypes,
@@ -33,6 +35,168 @@ from telegram.ext import (
 )
 
 DB_FILE = "/data/warnings.db"
+
+
+# =========================================================
+# BAG / INVENTORY IMAGE
+# =========================================================
+
+BAG_IMAGE_URL = (
+    "https://i.ibb.co/RGCT0M3q/"
+    "file-00000000b8e882118a09a4b6e97258d4.png"
+)
+
+
+def create_bag_card():
+
+    response = requests.get(BAG_IMAGE_URL)
+    response.raise_for_status()
+
+    original = Image.open(
+        BytesIO(response.content)
+    ).convert("RGBA")
+
+    # Image ke neeche space
+    canvas = Image.new(
+        "RGBA",
+        (
+            original.width,
+            original.height + 230
+        ),
+        (20, 20, 25, 255)
+    )
+
+    # Original image
+    canvas.paste(
+        original,
+        (0, 0)
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
+    # =====================================================
+    # QUOTE STYLE BOX
+    # =====================================================
+
+    box_x = 35
+    box_y = original.height + 20
+    box_w = original.width - 70
+    box_h = 180
+
+    # Outer box
+    draw.rounded_rectangle(
+        (
+            box_x,
+            box_y,
+            box_x + box_w,
+            box_y + box_h
+        ),
+        radius=18,
+        outline=(180, 180, 180, 255),
+        width=3
+    )
+
+    # Quote line
+    draw.line(
+        (
+            box_x + 15,
+            box_y + 18,
+            box_x + 15,
+            box_y + box_h - 18
+        ),
+        fill=(180, 180, 180, 255),
+        width=5
+    )
+
+    # Text
+    draw.text(
+        (
+            box_x + 35,
+            box_y + 25
+        ),
+        "Inventory Items",
+        fill="white"
+    )
+
+    draw.text(
+        (
+            box_x + 35,
+            box_y + 75
+        ),
+        "Tokens :",
+        fill="white"
+    )
+
+    draw.text(
+        (
+            box_x + 35,
+            box_y + 120
+        ),
+        "Pokecoins :",
+        fill="white"
+    )
+
+    return canvas
+
+
+# =========================================================
+# BAG COMMAND
+# =========================================================
+
+async def bag(update, context):
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "֎ 𝐌𝐞𝐠𝐚 𝐒𝐭𝐨𝐧𝐞",
+                callback_data="bag_mega"
+            ),
+            InlineKeyboardButton(
+                "⌘ 𝐈𝐭𝐞𝐦𝐬",
+                callback_data="bag_items"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🀪 𝐓𝐮𝐭𝐨𝐫𝐬",
+                callback_data="bag_tutors"
+            ),
+            InlineKeyboardButton(
+                "💿 𝐓𝐌𝐬",
+                callback_data="bag_tms"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "✪ 𝐙-𝐂𝐫𝐲𝐬𝐭𝐚𝐥",
+                callback_data="bag_zcrystal"
+            ),
+            InlineKeyboardButton(
+                "⎉ 𝐏𝐨𝐤𝐞𝐛𝐚𝐥𝐥𝐬",
+                callback_data="bag_pokeballs"
+            )
+        ]
+    ]
+
+    # Image + quote card
+    card = create_bag_card()
+
+    image_buffer = BytesIO()
+
+    card.save(
+        image_buffer,
+        format="PNG"
+    )
+
+    image_buffer.seek(0)
+    image_buffer.name = "inventory.png"
+
+    await update.message.reply_photo(
+        photo=image_buffer,
+        reply_markup=InlineKeyboardMarkup(
+            keyboard
+        )
+    )
 
 
 # =========================================================
@@ -2390,7 +2554,7 @@ def generate_ivs():
 
 
 # =========================================================
-# BAG / INVENTORY
+# BAG / INVENTORY COMMAND
 # =========================================================
 
 async def bag(update, context):
@@ -2428,10 +2592,23 @@ async def bag(update, context):
         ]
     ]
 
-    await update.message.reply_text(
-        "⍛ 𝐈𝐧𝐯𝐞𝐧𝐭𝐨𝐫𝐲 𝐈𝐭𝐞𝐦𝐬 :\n\n"
-        "⤷ ⛁ ✘ 𝐓𝐨𝐤𝐞𝐧𝐬 :\n"
-        "⤷ ⛁ 𝐏𝐨𝐤𝐞𝐜𝐨𝐢𝐧𝐬 :",
+    # Create Bag image card
+    card = create_bag_card()
+
+    # Convert image to Telegram-compatible file
+    image_buffer = BytesIO()
+
+    card.save(
+        image_buffer,
+        format="PNG"
+    )
+
+    image_buffer.seek(0)
+    image_buffer.name = "inventory.png"
+
+    # Send image with buttons
+    await update.message.reply_photo(
+        photo=image_buffer,
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
