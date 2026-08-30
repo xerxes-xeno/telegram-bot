@@ -2,3 +2,4 @@ python-telegram-bot==22.3
 pillow
 flask
 flask-cors
+requests
