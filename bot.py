@@ -911,20 +911,20 @@ async def helpdex_callback(update, context):
 
     elif query.data == "dex_type":
 
-    await query.edit_message_caption(
-        caption=(
-            "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞\n\n"
-            "Type effectiveness chart will be available here."
-        ),
-        reply_markup=InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton(
-                    "◀️ 𝐁𝐚𝐜𝐤",
-                    callback_data="dex_help_main"
-                )
-            ]
-        ])
-    )
+        await query.edit_message_caption(
+            caption=(
+                "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞\n\n"
+                "Type effectiveness chart will be available here."
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
 
 elif query.data == "dex_nature":
 
