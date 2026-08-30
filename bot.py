@@ -847,181 +847,6 @@ async def helpdex(update, context):
     )
 
 
-# =========================================================
-# POKEDEX HELP CALLBACK
-# =========================================================
-
-async def helpdex_callback(update, context):
-    query = update.callback_query
-    await query.answer()
-
-    if query.data == "dex_data":
-
-        await query.edit_message_caption(
-            caption=(
-                "📖 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐃𝐚𝐭𝐚\n\n"
-                "Use:\n"
-                "/data <Pokémon name>\n\n"
-                "Example:\n"
-                "/data Pikachu"
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
-        )
-
-    elif query.data == "dex_damage":
-
-        await query.edit_message_caption(
-            caption=(
-                "⚔️ 𝐃𝐚𝐦𝐚𝐠𝐞 𝐂𝐚𝐥𝐜𝐮𝐥𝐚𝐭𝐨𝐫\n\n"
-                "Use /datadamage to get the damage calculator form."
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
-        )
-
-    elif query.data == "dex_build":
-
-        await query.edit_message_caption(
-            caption=(
-                "📋 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐁𝐮𝐢𝐥𝐝\n\n"
-                "Use /buildpoke to get the Pokémon build form."
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
-        )
-
-    elif query.data == "dex_type":
-
-        await query.edit_message_caption(
-            caption=(
-                "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞\n\n"
-                "Type effectiveness chart will be available here."
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
-        )
-
-elif query.data == "dex_nature":
-
-    await query.edit_message_caption(
-        caption=(
-            "🌿 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐍𝐚𝐭𝐮𝐫𝐞𝐬\n\n"
-            "Select a nature category to view its natures."
-        ),
-        reply_markup=InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton(
-                    "𝐍𝐞𝐮𝐭𝐫𝐚𝐥",
-                    callback_data="nature_neutral"
-                ),
-                InlineKeyboardButton(
-                    "𝐀𝐭𝐭𝐚𝐜𝐤",
-                    callback_data="nature_attack"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
-                    callback_data="nature_defense"
-                ),
-                InlineKeyboardButton(
-                    "𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
-                    callback_data="nature_spattack"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
-                    callback_data="nature_spdefense"
-                ),
-                InlineKeyboardButton(
-                    "𝐒𝐩𝐞𝐞𝐝",
-                    callback_data="nature_speed"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "𝐀𝐥𝐥 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
-                    callback_data="nature_all"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "◀️ 𝐁𝐚𝐜𝐤",
-                    callback_data="dex_help_main"
-                )
-            ]
-        ])
-    )
-
-elif query.data == "dex_bestnature":
-
-    await query.edit_message_caption(
-        caption=(
-            "⭐ 𝐁𝐞𝐬𝐭 𝐍𝐚𝐭𝐮𝐫𝐞\n\n"
-            "Use:\n"
-            "/bestnat <Pokémon name>\n\n"
-            "Example:\n"
-            "/bestnat Pikachu"
-        ),
-        reply_markup=InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton(
-                    "◀️ 𝐁𝐚𝐜𝐤",
-                    callback_data="dex_help_main"
-                )
-            ]
-        ])
-    )
-
-elif query.data == "dex_ev":
-
-    await query.edit_message_caption(
-        caption=(
-            "🏋️ 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐆𝐮𝐢𝐝𝐞\n\n"
-            "Select a stat to see Pokémon used for EV training."
-        ),
-        reply_markup=InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton(
-                    "𝐇𝐏",
-                    callback_data="ev_hp"
-                ),
-                InlineKeyboardButton(
-                    "𝐀𝐭𝐭𝐚𝐜𝐤",
-                    callback_data="ev_attack"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
-                    callback_data="ev_defense"
-                ),
                 InlineKeyboardButton(
                     "𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
                     callback_data="ev_spattack"
@@ -1137,57 +962,349 @@ elif query.data == "dex_help_main":
         ],
         [
             InlineKeyboardButton(
-                "📋 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐁𝐮𝐢𝐥𝐝",
-                callback_data="dex_build"
+
+
+# =========================================================
+# POKEDEX HELP CALLBACK
+# =========================================================
+
+async def helpdex_callback(update, context):
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "dex_data":
+
+        await query.edit_message_caption(
+            caption=(
+                "📖 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐃𝐚𝐭𝐚\n\n"
+                "Use:\n"
+                "/data <Pokémon name>\n\n"
+                "Example:\n"
+                "/data Pikachu"
             ),
-            InlineKeyboardButton(
-                "📊 𝐓𝐲𝐩𝐞",
-                callback_data="dex_type"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🌿 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
-                callback_data="dex_nature"
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_damage":
+
+        await query.edit_message_caption(
+            caption=(
+                "⚔️ 𝐃𝐚𝐦𝐚𝐠𝐞 𝐂𝐚𝐥𝐜𝐮𝐥𝐚𝐭𝐨𝐫\n\n"
+                "Use /datadamage to get the damage calculator form."
             ),
-            InlineKeyboardButton(
-                "⭐ 𝐁𝐞𝐬𝐭 𝐍𝐚𝐭𝐮𝐫𝐞",
-                callback_data="dex_bestnature"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🏋️ 𝐄𝐕 𝐁𝐮𝐢𝐥𝐝",
-                callback_data="dex_ev"
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_build":
+
+        await query.edit_message_caption(
+            caption=(
+                "📋 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐁𝐮𝐢𝐥𝐝\n\n"
+                "Use /buildpoke to get the Pokémon build form."
             ),
-            InlineKeyboardButton(
-                "🏆 𝐓𝐌 𝐋𝐢𝐬𝐭",
-                callback_data="dex_tm"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🎯 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬",
-                callback_data="dex_pokeballs"
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_type":
+
+        await query.edit_message_caption(
+            caption=(
+                "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞\n\n"
+                "Type effectiveness chart will be available here."
             ),
-            InlineKeyboardButton(
-                "⚔️ 𝐌𝐨𝐯𝐞𝐬",
-                callback_data="dex_moves"
-            )
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_nature":
+
+        await query.edit_message_caption(
+            caption=(
+                "🌿 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐍𝐚𝐭𝐮𝐫𝐞𝐬\n\n"
+                "Select a nature category to view its natures."
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "𝐍𝐞𝐮𝐭𝐫𝐚𝐥",
+                        callback_data="nature_neutral"
+                    ),
+                    InlineKeyboardButton(
+                        "𝐀𝐭𝐭𝐚𝐜𝐤",
+                        callback_data="nature_attack"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                        callback_data="nature_defense"
+                    ),
+                    InlineKeyboardButton(
+                        "𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                        callback_data="nature_spattack"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                        callback_data="nature_spdefense"
+                    ),
+                    InlineKeyboardButton(
+                        "𝐒𝐩𝐞𝐞𝐝",
+                        callback_data="nature_speed"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐀𝐥𝐥 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
+                        callback_data="nature_all"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_bestnature":
+
+        await query.edit_message_caption(
+            caption=(
+                "⭐ 𝐁𝐞𝐬𝐭 𝐍𝐚𝐭𝐮𝐫𝐞\n\n"
+                "Use:\n"
+                "/bestnat <Pokémon name>\n\n"
+                "Example:\n"
+                "/bestnat Pikachu"
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_ev":
+
+        await query.edit_message_caption(
+            caption=(
+                "🏋️ 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐆𝐮𝐢𝐝𝐞\n\n"
+                "Select a stat to see Pokémon used for EV training."
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "𝐇𝐏",
+                        callback_data="ev_hp"
+                    ),
+                    InlineKeyboardButton(
+                        "𝐀𝐭𝐭𝐚𝐜𝐤",
+                        callback_data="ev_attack"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                        callback_data="ev_defense"
+                    ),
+                    InlineKeyboardButton(
+                        "𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                        callback_data="ev_spattack"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                        callback_data="ev_spdefense"
+                    ),
+                    InlineKeyboardButton(
+                        "𝐒𝐩𝐞𝐞𝐝",
+                        callback_data="ev_speed"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "𝐇𝐨𝐰 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐖𝐨𝐫𝐤𝐬",
+                        callback_data="ev_how"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_tm":
+
+        await query.edit_message_caption(
+            caption=(
+                "🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭\n\n"
+                "171 official TMs are available across 6 pages."
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌𝐬",
+                        callback_data="tm_page_1"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_pokeballs":
+
+        await query.edit_message_caption(
+            caption=(
+                "🎯 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬 𝐆𝐮𝐢𝐝𝐞\n\n"
+                "Regular Ball\n"
+                "Great Ball\n"
+                "Ultra Ball\n"
+                "Level Ball\n"
+                "Fast Ball\n"
+                "Repeat Ball\n"
+                "Nest Ball\n"
+                "Net Ball\n"
+                "Quick Ball\n"
+                "Master Ball\n"
+                "Safari Ball"
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_moves":
+
+        await query.edit_message_caption(
+            caption=(
+                "⚔️ 𝐌𝐨𝐯𝐞 𝐃𝐚𝐭𝐚\n\n"
+                "Use:\n"
+                "/move <move name>\n\n"
+                "Example:\n"
+                "/move Crunch"
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
+        )
+
+    elif query.data == "dex_help_main":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "📖 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐃𝐚𝐭𝐚",
+                    callback_data="dex_data"
+                ),
+                InlineKeyboardButton(
+                    "⚔️ 𝐃𝐚𝐦𝐚𝐠𝐞 𝐂𝐚𝐥𝐜",
+                    callback_data="dex_damage"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "📋 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐁𝐮𝐢𝐥𝐝",
+                    callback_data="dex_build"
+                ),
+                InlineKeyboardButton(
+                    "📊 𝐓𝐲𝐩𝐞",
+                    callback_data="dex_type"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🌿 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
+                    callback_data="dex_nature"
+                ),
+                InlineKeyboardButton(
+                    "⭐ 𝐁𝐞𝐬𝐭 𝐍𝐚𝐭𝐮𝐫𝐞",
+                    callback_data="dex_bestnature"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🏋️ 𝐄𝐕 𝐁𝐮𝐢𝐥𝐝",
+                    callback_data="dex_ev"
+                ),
+                InlineKeyboardButton(
+                    "🏆 𝐓𝐌 𝐋𝐢𝐬𝐭",
+                    callback_data="dex_tm"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🎯 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬",
+                    callback_data="dex_pokeballs"
+                ),
+                InlineKeyboardButton(
+                    "⚔️ 𝐌𝐨𝐯𝐞𝐬",
+                    callback_data="dex_moves"
+                )
+            ]
         ]
-    ]
 
-    await query.edit_message_caption(
-        caption=(
-            "☏ 𝛸𝛴𝛤𝛸𝛴𝑆 𝛨𝜀𝜄𝛲 𝐶𝜀𝜂𝜏𝜀𝛤\n\n"
-            "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
-            "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞.\n\n"
-            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:"
-        ),
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+        await query.edit_message_caption(
+            caption=(
+                "☏ 𝛸𝛴𝛤𝛸𝛴𝑆 𝛨𝜀𝜄𝛲 𝐶𝜀𝜂𝜏𝜀𝛤\n\n"
+                "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
+                "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞.\n\n"
+                "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:"
+            ),
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
-
+                
 # =========================================================
 # POKEMON DATA
 # =========================================================
