@@ -24,7 +24,7 @@ from telegram import (
     WebAppInfo
 )
 
-from telegram.ext (
+from telegram.ext import (
     Application,
     CommandHandler,
     ContextTypes,
