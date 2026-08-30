@@ -14,8 +14,6 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from urllib.request import urlopen
 
-import requests
-
 from telegram import (
     Update,
     ChatPermissions,
@@ -36,109 +34,7 @@ from telegram.ext import (
 
 DB_FILE = "/data/warnings.db"
 
-
-# =========================================================
-# BAG / INVENTORY IMAGE
-# =========================================================
-
-BAG_IMAGE_URL = (
-    "https://i.ibb.co/RGCT0M3q/"
-    "file-00000000b8e882118a09a4b6e97258d4.png"
-)
-
-
-def create_bag_card():
-
-    response = requests.get(BAG_IMAGE_URL)
-    response.raise_for_status()
-
-    original = Image.open(
-        BytesIO(response.content)
-    ).convert("RGBA")
-
-    # Image ke neeche space
-    canvas = Image.new(
-        "RGBA",
-        (
-            original.width,
-            original.height + 230
-        ),
-        (20, 20, 25, 255)
-    )
-
-    # Original image
-    canvas.paste(
-        original,
-        (0, 0)
-    )
-
-    draw = ImageDraw.Draw(canvas)
-
-    # =====================================================
-    # QUOTE STYLE BOX
-    # =====================================================
-
-    box_x = 35
-    box_y = original.height + 20
-    box_w = original.width - 70
-    box_h = 180
-
-    # Outer box
-    draw.rounded_rectangle(
-        (
-            box_x,
-            box_y,
-            box_x + box_w,
-            box_y + box_h
-        ),
-        radius=18,
-        outline=(180, 180, 180, 255),
-        width=3
-    )
-
-    # Quote line
-    draw.line(
-        (
-            box_x + 15,
-            box_y + 18,
-            box_x + 15,
-            box_y + box_h - 18
-        ),
-        fill=(180, 180, 180, 255),
-        width=5
-    )
-
-    # Text
-    draw.text(
-        (
-            box_x + 35,
-            box_y + 25
-        ),
-        "Inventory Items",
-        fill="white"
-    )
-
-    draw.text(
-        (
-            box_x + 35,
-            box_y + 75
-        ),
-        "Tokens :",
-        fill="white"
-    )
-
-    draw.text(
-        (
-            box_x + 35,
-            box_y + 120
-        ),
-        "Pokecoins :",
-        fill="white"
-    )
-
-    return canvas
-
-
+ 
 # =========================================================
 # BAG COMMAND
 # =========================================================
@@ -2557,81 +2453,7 @@ def generate_ivs():
 # BAG / INVENTORY
 # =========================================================
 
-BAG_IMAGE_URL = (
-    "https://i.ibb.co/RGCT0M3q/"
-    "file-00000000b8e882118a09a4b6e97258d4.png"
-)
-
-
-def create_bag_card():
-
-    response = requests.get(BAG_IMAGE_URL)
-    response.raise_for_status()
-
-    original = Image.open(
-        BytesIO(response.content)
-    ).convert("RGBA")
-
-    canvas = Image.new(
-        "RGBA",
-        (
-            original.width,
-            original.height + 230
-        ),
-        (20, 20, 25, 255)
-    )
-
-    canvas.paste(original, (0, 0))
-
-    draw = ImageDraw.Draw(canvas)
-
-    box_x = 35
-    box_y = original.height + 20
-    box_w = original.width - 70
-    box_h = 180
-
-    draw.rounded_rectangle(
-        (
-            box_x,
-            box_y,
-            box_x + box_w,
-            box_y + box_h
-        ),
-        radius=18,
-        outline=(180, 180, 180, 255),
-        width=3
-    )
-
-    draw.line(
-        (
-            box_x + 15,
-            box_y + 18,
-            box_x + 15,
-            box_y + box_h - 18
-        ),
-        fill=(180, 180, 180, 255),
-        width=5
-    )
-
-    draw.text(
-        (box_x + 35, box_y + 25),
-        "Inventory Items",
-        fill="white"
-    )
-
-    draw.text(
-        (box_x + 35, box_y + 75),
-        "Tokens :",
-        fill="white"
-    )
-
-    draw.text(
-        (box_x + 35, box_y + 120),
-        "Pokecoins :",
-        fill="white"
-    )
-
-    return canvas
+BAG_IMAGE = "YOUR_TELEGRAM_BAG_IMAGE_FILE_ID"
 
 
 async def bag(update, context):
@@ -2669,22 +2491,20 @@ async def bag(update, context):
         ]
     ]
 
-    card = create_bag_card()
-
-    image_buffer = BytesIO()
-
-    card.save(
-        image_buffer,
-        format="PNG"
+    caption = (
+        "🎒 <b>𝐈𝐧𝐯𝐞𝐧𝐭𝐨𝐫𝐲 𝐈𝐭𝐞𝐦𝐬 :</b>\n\n"
+        "<blockquote>"
+        "⤷ ⛁ ✘ 𝐗 𝐓𝐨𝐤𝐞𝐧𝐬 :\n"
+        "⤷ ⛁ 𝐏𝐨𝐤𝐞𝐜𝐨𝐢𝐧𝐬 :"
+        "</blockquote>"
     )
 
-    image_buffer.seek(0)
-    image_buffer.name = "inventory.png"
-
     await update.message.reply_photo(
-        photo=image_buffer,
+        photo=BAG_IMAGE,
+        caption=caption,
+        parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(keyboard)
-            )
+    )
 
 
 # =========================================================
