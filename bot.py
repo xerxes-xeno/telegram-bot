@@ -4568,7 +4568,7 @@ def main():
     app.add_handler(
         CallbackQueryHandler(
             helpdex_callback,
-            pattern="^(dex_|nature_|ev_|tm_)"
+            pattern="^(dex_|nature_|ev_)"
         )
     )
 
