@@ -835,13 +835,16 @@ async def helpdex(update, context):
         ]
     ]
 
-    await update.message.reply_text(
-        "📱 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤𝐞́𝐃𝐞𝐱\n\n"
-        "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
-        "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞.\n\n"
-        "𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:",
+    await update.message.reply_photo(
+        photo="https://i.ibb.co/Tq4rTzgd/file-0000000028088211ad0490ec9a36bae1.png",
+        caption=(
+            "☏ 𝛸𝛴𝛤𝛸𝛴𝑆 𝛨𝜀𝜄𝛲 𝐶𝜀𝜂𝜏𝜀𝛤\n\n"
+            "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
+            "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞.\n\n"
+            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:"
+        ),
         reply_markup=InlineKeyboardMarkup(keyboard)
-            )
+    )
 
 
 # =========================================================
@@ -1137,10 +1140,10 @@ async def helpdex_callback(update, context):
         ]
 
         await query.edit_message_text(
-            "📱 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤𝐞́𝐃𝐞𝐱\n\n"
+            "☏ 𝛸𝛴𝛤𝛸𝛴𝑆 𝛨𝜀𝜄𝛲 𝐶𝜀𝜂𝜏𝜀𝛤\n\n"
             "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
             "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞.\n\n"
-            "𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:",
+            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
