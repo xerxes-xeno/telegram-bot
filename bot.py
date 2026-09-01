@@ -1137,7 +1137,7 @@ async def helpdex_callback(update, context):
             ])
         )
 
-    elif query.data == "dex_help_main":
+        elif query.data == "dex_help_main":
 
         keyboard = [
             [
@@ -1195,10 +1195,13 @@ async def helpdex_callback(update, context):
         await query.edit_message_caption(
             caption=(
                 "☏ 𝛸𝛴𝛤𝛸𝛴𝑆 𝛨𝜀𝜄𝛲 𝐶𝜀𝜂𝜏𝜀𝛤\n\n"
-                "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
-                "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞.\n\n"
+                "<blockquote>"
+                "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝\n"
+                "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞."
+                "</blockquote>\n\n"
                 "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:"
             ),
+            parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
@@ -2185,7 +2188,6 @@ TM_PAGES = {
 }
 
 
-
 # =========================================================
 # DATATM
 # =========================================================
@@ -2687,7 +2689,7 @@ def generate_ivs():
 # BAG / INVENTORY
 # =========================================================
 
-BAG_IMAGE = "https://i.ibb.co/RGCT0M3q/file-00000000b8e882118a09a4b6e97258d4.png"
+BAG_IMAGE = "AgACAgUAAxkBAAIC2mqWtPMeFxE5s1wOgNrNk34U998fAAKCEmsbwvaYVPUgDtJxSrjGAQADAgADeQADPQQ"
 
 
 async def bag(update, context):
