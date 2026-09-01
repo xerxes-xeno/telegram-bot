@@ -1234,7 +1234,13 @@ async def datadamage(update, context):
 
     await update.message.reply_text(
         "⚔️ 𝐃𝐀𝐌𝐀𝐆𝐄 𝐂𝐀𝐋𝐂𝐔𝐋𝐀𝐓𝐎𝐑 𝐅𝐎𝐑𝐌\n\n"
-        "Copy and paste this template, fill it in, and send it back:\n\n"
+
+        "<blockquote>"
+        "𝐂𝐨𝐩𝐲 𝐚𝐧𝐝 𝐩𝐚𝐬𝐭𝐞 𝐭𝐡𝐢𝐬 𝐭𝐞𝐦𝐩𝐥𝐚𝐭𝐞, "
+        "𝐟𝐢𝐥𝐥 𝐢𝐭 𝐢𝐧, 𝐚𝐧𝐝 𝐬𝐞𝐧𝐝 𝐢𝐭 𝐛𝐚𝐜𝐤:"
+        "</blockquote>\n\n"
+
+        "<pre>"
         "--- 𝐀𝐓𝐓𝐀𝐂𝐊𝐄𝐑 ---\n"
         "Name : \n"
         "Nature : \n"
@@ -1245,8 +1251,9 @@ async def datadamage(update, context):
         "SPA IV/EV : 31 , 0\n"
         "SPD IV/EV : 31 , 0\n"
         "SPE IV/EV : 31 , 0\n\n"
+
         "--- 𝐃𝐄𝐅𝐄𝐍𝐃𝐄𝐑 ---\n"
-        "Name : 0\n"
+        "Name : \n"
         "Nature : \n"
         "HP IV/EV : 31 , 0\n"
         "ATK IV/EV : 31 , 0\n"
@@ -1254,9 +1261,10 @@ async def datadamage(update, context):
         "SPA IV/EV : 31 , 0\n"
         "SPD IV/EV : 31 , 0\n"
         "SPE IV/EV : 31 , 0"
-    ),
-    parse_mode="HTML"        
-)
+        "</pre>",
+
+        parse_mode="HTML"
+    )
 
 
 # =========================================================
