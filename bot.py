@@ -1435,34 +1435,76 @@ async def nature_callback(update, context):
     query = update.callback_query
     await query.answer()
 
+    # =====================================================
+    # NEUTRAL NATURE MENU
+    # =====================================================
+
     if query.data == "nature_neutral":
 
         keyboard = [
             [
-                InlineKeyboardButton("𝐇𝐚𝐫𝐝𝐲", callback_data="neutral_hardy"),
-                InlineKeyboardButton("𝐃𝐨𝐜𝐢𝐥𝐞", callback_data="neutral_docile"),
-                InlineKeyboardButton("𝐒𝐞𝐫𝐢𝐨𝐮𝐬", callback_data="neutral_serious")
+                InlineKeyboardButton(
+                    "𝐇𝐚𝐫𝐝𝐲",
+                    callback_data="neutral_hardy"
+                ),
+                InlineKeyboardButton(
+                    "𝐃𝐨𝐜𝐢𝐥𝐞",
+                    callback_data="neutral_docile"
+                ),
+                InlineKeyboardButton(
+                    "𝐒𝐞𝐫𝐢𝐨𝐮𝐬",
+                    callback_data="neutral_serious"
+                )
             ],
             [
-                InlineKeyboardButton("𝐁𝐚𝐬𝐡𝐟𝐮𝐥", callback_data="neutral_bashful"),
-                InlineKeyboardButton("𝐐𝐮𝐢𝐫𝐤𝐲", callback_data="neutral_quirky")
+                InlineKeyboardButton(
+                    "𝐁𝐚𝐬𝐡𝐟𝐮𝐥",
+                    callback_data="neutral_bashful"
+                ),
+                InlineKeyboardButton(
+                    "𝐐𝐮𝐢𝐫𝐤𝐲",
+                    callback_data="neutral_quirky"
+                )
             ],
             [
-                InlineKeyboardButton("◀️ 𝐁𝐚𝐜𝐤", callback_data="nature_main")
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="nature_main"
+                )
             ]
         ]
 
-        await query.edit_message_text(
+        text = (
             "<blockquote>"
             "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄𝐒\n\n"
             "𝐓𝐡𝐞𝐬𝐞 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐝𝐨 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
-            "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭. 𝐓𝐡𝐞𝐲 𝐤𝐞𝐞𝐩 𝐭𝐡𝐞 𝐬𝐭𝐚𝐭𝐬 𝐛𝐚𝐥𝐚𝐧𝐜𝐞𝐝."
+            "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭. 𝐓𝐡𝐞𝐲 𝐤𝐞𝐞𝐩 𝐭𝐡𝐞 "
+            "𝐬𝐭𝐚𝐭𝐬 𝐛𝐚𝐥𝐚𝐧𝐜𝐞𝐝."
             "</blockquote>\n\n"
-            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐍𝐚𝐭𝐮𝐫𝐞:",
-
-            parse_mode="HTML",
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐍𝐚𝐭𝐮𝐫𝐞:"
         )
+
+        # PHOTO MESSAGE
+        if query.message.photo:
+
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+
+        # NORMAL TEXT MESSAGE
+        else:
+
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+
+    # =====================================================
+    # INDIVIDUAL NEUTRAL NATURE
+    # =====================================================
 
     elif query.data in [
         "neutral_hardy",
@@ -1472,92 +1514,42 @@ async def nature_callback(update, context):
         "neutral_quirky"
     ]:
 
-        await query.edit_message_text(
-            "<blockquote>"
-            "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄\n\n"
-            "𝐓𝐡𝐢𝐬 𝐍𝐚𝐭𝐮𝐫𝐞 𝐝𝐨𝐞𝐬 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
-            "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭."
-            "</blockquote>\n\n"
-            "⚖️ 𝐍𝐚𝐭𝐮𝐫𝐞: 𝐍𝐞𝐮𝐭𝐫𝐚𝐥\n"
-            "⤷ 𝐍𝐨 𝐬𝐭𝐚𝐭 𝐠𝐚𝐢𝐧𝐬 𝐨𝐫 𝐥𝐨𝐬𝐬𝐞𝐬.",
-
-            parse_mode="HTML",
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="nature_neutral"
-                    )
-                ]
-            ])
-         )
-
-
-# =========================================================
-# NATURE CALLBACK
-# =========================================================
-
-async def nature_callback(update, context):
-
-    query = update.callback_query
-    await query.answer()
-
-    if query.data == "nature_neutral":
-
         keyboard = [
             [
-                InlineKeyboardButton("𝐇𝐚𝐫𝐝𝐲", callback_data="neutral_hardy"),
-                InlineKeyboardButton("𝐃𝐨𝐜𝐢𝐥𝐞", callback_data="neutral_docile"),
-                InlineKeyboardButton("𝐒𝐞𝐫𝐢𝐨𝐮𝐬", callback_data="neutral_serious")
-            ],
-            [
-                InlineKeyboardButton("𝐁𝐚𝐬𝐡𝐟𝐮𝐥", callback_data="neutral_bashful"),
-                InlineKeyboardButton("𝐐𝐮𝐢𝐫𝐤𝐲", callback_data="neutral_quirky")
-            ],
-            [
-                InlineKeyboardButton("◀️ 𝐁𝐚𝐜𝐤", callback_data="nature_main")
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="nature_neutral"
+                )
             ]
         ]
 
-        await query.edit_message_text(
-            "<blockquote>"
-            "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄𝐒\n\n"
-            "𝐓𝐡𝐞𝐬𝐞 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐝𝐨 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
-            "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭. 𝐓𝐡𝐞𝐲 𝐤𝐞𝐞𝐩 𝐭𝐡𝐞 𝐬𝐭𝐚𝐭𝐬 𝐛𝐚𝐥𝐚𝐧𝐜𝐞𝐝."
-            "</blockquote>\n\n"
-            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐍𝐚𝐭𝐮𝐫𝐞:",
-
-            parse_mode="HTML",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-
-    elif query.data in [
-        "neutral_hardy",
-        "neutral_docile",
-        "neutral_serious",
-        "neutral_bashful",
-        "neutral_quirky"
-    ]:
-
-        await query.edit_message_text(
+        text = (
             "<blockquote>"
             "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄\n\n"
             "𝐓𝐡𝐢𝐬 𝐍𝐚𝐭𝐮𝐫𝐞 𝐝𝐨𝐞𝐬 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
             "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭."
             "</blockquote>\n\n"
             "⚖️ 𝐍𝐚𝐭𝐮𝐫𝐞: 𝐍𝐞𝐮𝐭𝐫𝐚𝐥\n"
-            "⤷ 𝐍𝐨 𝐬𝐭𝐚𝐭 𝐠𝐚𝐢𝐧𝐬 𝐨𝐫 𝐥𝐨𝐬𝐬𝐞𝐬.",
+            "⤷ 𝐍𝐨 𝐬𝐭𝐚𝐭 𝐠𝐚𝐢𝐧𝐬 𝐨𝐫 𝐥𝐨𝐬𝐬𝐞𝐬."
+        )
 
-            parse_mode="HTML",
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="nature_neutral"
-                    )
-                ]
-            ])
-         )
+        # PHOTO MESSAGE
+        if query.message.photo:
+
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+
+        # NORMAL TEXT MESSAGE
+        else:
+
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
 
 
 # =========================================================
