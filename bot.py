@@ -926,21 +926,65 @@ async def helpdex_callback(update, context):
 
     elif query.data == "dex_type":
 
+        keyboard = [
+            [
+                InlineKeyboardButton("🔥 𝐅𝐢𝐫𝐞", callback_data="type_fire"),
+                InlineKeyboardButton("💧 𝐖𝐚𝐭𝐞𝐫", callback_data="type_water"),
+                InlineKeyboardButton("🌿 𝐆𝐫𝐚𝐬𝐬", callback_data="type_grass")
+            ],
+            [
+                InlineKeyboardButton("⚡ 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜", callback_data="type_electric"),
+                InlineKeyboardButton("❄️ 𝐈𝐜𝐞", callback_data="type_ice"),
+                InlineKeyboardButton("🥊 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠", callback_data="type_fighting")
+            ],
+            [
+                InlineKeyboardButton("☠️ 𝐏𝐨𝐢𝐬𝐨𝐧", callback_data="type_poison"),
+                InlineKeyboardButton("🌍 𝐆𝐫𝐨𝐮𝐧𝐝", callback_data="type_ground"),
+                InlineKeyboardButton("🪽 𝐅𝐥𝐲𝐢𝐧𝐠", callback_data="type_flying")
+            ],
+            [
+                InlineKeyboardButton("🔮 𝐏𝐬𝐲𝐜𝐡𝐢𝐜", callback_data="type_psychic"),
+                InlineKeyboardButton("🐛 𝐁𝐮𝐠", callback_data="type_bug"),
+                InlineKeyboardButton("🪨 𝐑𝐨𝐜𝐤", callback_data="type_rock")
+            ],
+            [
+                InlineKeyboardButton("👻 𝐆𝐡𝐨𝐬𝐭", callback_data="type_ghost"),
+                InlineKeyboardButton("🐉 𝐃𝐫𝐚𝐠𝐨𝐧", callback_data="type_dragon"),
+                InlineKeyboardButton("🌑 𝐃𝐚𝐫𝐤", callback_data="type_dark")
+            ],
+            [
+                InlineKeyboardButton("⚙️ 𝐒𝐭𝐞𝐞𝐥", callback_data="type_steel"),
+                InlineKeyboardButton("🧚 𝐅𝐚𝐢𝐫𝐲", callback_data="type_fairy"),
+                InlineKeyboardButton("⚪ 𝐍𝐨𝐫𝐦𝐚𝐥", callback_data="type_normal")
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="dex_help_main"
+                )
+            ]
+        ]
+
         await query.edit_message_caption(
             caption=(
-                "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞\n\n"
-                "Type effectiveness chart will be available here."
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
-        )
+                "📊 𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐓𝐘𝐏𝐄 𝐆𝐔𝐈𝐃𝐄\n\n"
 
+                "<blockquote>"
+                "𝐄𝐯𝐞𝐫𝐲 𝐓𝐲𝐩𝐞 𝐡𝐚𝐬 𝐢𝐭𝐬 𝐨𝐰𝐧 𝐬𝐭𝐫𝐞𝐧𝐠𝐭𝐡𝐬, "
+                "𝐰𝐞𝐚𝐤𝐧𝐞𝐬𝐬𝐞𝐬 𝐚𝐧𝐝 𝐢𝐦𝐦𝐮𝐧𝐢𝐭𝐢𝐞𝐬."
+                "</blockquote>\n\n"
+
+                "💚 𝐒𝐮𝐩𝐞𝐫 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 — 𝟐×\n"
+                "💛 𝐍𝐨𝐫𝐦𝐚𝐥 — 𝟏×\n"
+                "💔 𝐍𝐨𝐭 𝐕𝐞𝐫𝐲 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 — 𝟎.𝟓×\n"
+                "🚫 𝐍𝐨 𝐄𝐟𝐟𝐞𝐜𝐭 — 𝟎×\n\n"
+
+                "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐓𝐲𝐩𝐞:"
+            ),
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+    
     elif query.data == "dex_nature":
 
         await query.edit_message_caption(
@@ -1301,57 +1345,69 @@ async def buildpoke(update, context):
 
 
 # =========================================================
-# POKEMON TYPE CHART
+# POKEMON TYPE
 # =========================================================
 
-async def pokemon_type(update, context):
+async def datatype(update, context):
 
     keyboard = [
         [
-            InlineKeyboardButton("🔥 Fire", callback_data="type_fire"),
-            InlineKeyboardButton("💧 Water", callback_data="type_water")
+            InlineKeyboardButton("🔥 𝐅𝐢𝐫𝐞", callback_data="type_fire"),
+            InlineKeyboardButton("💧 𝐖𝐚𝐭𝐞𝐫", callback_data="type_water"),
+            InlineKeyboardButton("🌿 𝐆𝐫𝐚𝐬𝐬", callback_data="type_grass")
         ],
         [
-            InlineKeyboardButton("🌿 Grass", callback_data="type_grass"),
-            InlineKeyboardButton("⚡ Electric", callback_data="type_electric")
+            InlineKeyboardButton("⚡ 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜", callback_data="type_electric"),
+            InlineKeyboardButton("❄️ 𝐈𝐜𝐞", callback_data="type_ice"),
+            InlineKeyboardButton("🥊 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠", callback_data="type_fighting")
         ],
         [
-            InlineKeyboardButton("❄️ Ice", callback_data="type_ice"),
-            InlineKeyboardButton("🥊 Fighting", callback_data="type_fighting")
+            InlineKeyboardButton("☠️ 𝐏𝐨𝐢𝐬𝐨𝐧", callback_data="type_poison"),
+            InlineKeyboardButton("🌍 𝐆𝐫𝐨𝐮𝐧𝐝", callback_data="type_ground"),
+            InlineKeyboardButton("🪽 𝐅𝐥𝐲𝐢𝐧𝐠", callback_data="type_flying")
         ],
         [
-            InlineKeyboardButton("☠️ Poison", callback_data="type_poison"),
-            InlineKeyboardButton("⛰️ Ground", callback_data="type_ground")
+            InlineKeyboardButton("🔮 𝐏𝐬𝐲𝐜𝐡𝐢𝐜", callback_data="type_psychic"),
+            InlineKeyboardButton("🐛 𝐁𝐮𝐠", callback_data="type_bug"),
+            InlineKeyboardButton("🪨 𝐑𝐨𝐜𝐤", callback_data="type_rock")
         ],
         [
-            InlineKeyboardButton("🪽 Flying", callback_data="type_flying"),
-            InlineKeyboardButton("🔮 Psychic", callback_data="type_psychic")
+            InlineKeyboardButton("👻 𝐆𝐡𝐨𝐬𝐭", callback_data="type_ghost"),
+            InlineKeyboardButton("🐉 𝐃𝐫𝐚𝐠𝐨𝐧", callback_data="type_dragon"),
+            InlineKeyboardButton("🌑 𝐃𝐚𝐫𝐤", callback_data="type_dark")
         ],
         [
-            InlineKeyboardButton("🐛 Bug", callback_data="type_bug"),
-            InlineKeyboardButton("🪨 Rock", callback_data="type_rock")
+            InlineKeyboardButton("⚙️ 𝐒𝐭𝐞𝐞𝐥", callback_data="type_steel"),
+            InlineKeyboardButton("🧚 𝐅𝐚𝐢𝐫𝐲", callback_data="type_fairy"),
+            InlineKeyboardButton("⚪ 𝐍𝐨𝐫𝐦𝐚𝐥", callback_data="type_normal")
         ],
         [
-            InlineKeyboardButton("👻 Ghost", callback_data="type_ghost"),
-            InlineKeyboardButton("🐉 Dragon", callback_data="type_dragon")
-        ],
-        [
-            InlineKeyboardButton("🌑 Dark", callback_data="type_dark"),
-            InlineKeyboardButton("⚙️ Steel", callback_data="type_steel")
-        ],
-        [
-            InlineKeyboardButton("✨ Fairy", callback_data="type_fairy"),
-            InlineKeyboardButton("⚪ Normal", callback_data="type_normal")
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤",
+                callback_data="dex_help_main"
+            )
         ]
     ]
 
-    await update.message.reply_text(
-        "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞𝐧𝐞𝐬𝐬 𝐂𝐡𝐚𝐫𝐭\n\n"
-        "Select a type to see its effectiveness against other types:\n\n"
-        "💚 = Super Effective (2x)\n"
-        "💛 = Normal (1x)\n"
-        "💔 = Not Very Effective (0.5x)\n"
-        "🚫 = No Effect (0x)",
+    await update.message.reply_photo(
+        photo="AgACAgUAAyEFAAMBCNz_jgACTV9qlr8QjvxidG07cEdtZmR5Rj4SmAAC0xhrGwN5uFRH74ImepzUAgEAAwIAA3kAAz0E",
+        caption=(
+            "📊 𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐓𝐘𝐏𝐄 𝐆𝐔𝐈𝐃𝐄\n\n"
+
+            "<blockquote>"
+            "𝐋𝐞𝐚𝐫𝐧 𝐡𝐨𝐰 𝐞𝐚𝐜𝐡 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞 "
+            "𝐩𝐞𝐫𝐟𝐨𝐫𝐦𝐬 𝐢𝐧 𝐛𝐚𝐭𝐭𝐥𝐞𝐬 — 𝐟𝐫𝐨𝐦 𝐬𝐮𝐩𝐞𝐫 "
+            "𝐞𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 𝐡𝐢𝐭𝐬 𝐭𝐨 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐢𝐦𝐦𝐮𝐧𝐢𝐭𝐢𝐞𝐬."
+            "</blockquote>\n\n"
+
+            "💚 𝐒𝐮𝐩𝐞𝐫 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 — 𝟐×\n"
+            "💛 𝐍𝐨𝐫𝐦𝐚𝐥 — 𝟏×\n"
+            "💔 𝐍𝐨𝐭 𝐕𝐞𝐫𝐲 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 — 𝟎.𝟓×\n"
+            "🚫 𝐍𝐨 𝐄𝐟𝐟𝐞𝐜𝐭 — 𝟎×\n\n"
+
+            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐓𝐲𝐩𝐞 𝐛𝐞𝐥𝐨𝐰:"
+        ),
+        parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
@@ -4743,7 +4799,7 @@ def main():
     app.add_handler(CommandHandler("data", pokemon_data))
     app.add_handler(CommandHandler("datadamage", datadamage))
     app.add_handler(CommandHandler("buildpoke", buildpoke))
-    app.add_handler(CommandHandler("type", pokemon_type)) 
+    app.add_handler(CommandHandler("datatype", datatype))
     app.add_handler(CommandHandler("datanature", datanature))
     app.add_handler(CommandHandler("bestnat", bestnat))
     app.add_handler(CommandHandler("evbuild", evbuild))
