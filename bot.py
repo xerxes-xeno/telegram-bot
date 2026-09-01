@@ -1137,7 +1137,7 @@ async def helpdex_callback(update, context):
             ])
         )
 
-     elif query.data == "dex_help_main":
+    elif query.data == "dex_help_main":
 
         keyboard = [
             [
