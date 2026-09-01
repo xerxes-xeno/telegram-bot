@@ -1481,6 +1481,7 @@ TM_PAGES = {
     1: """
 🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 1/6)
 
+<blockquote>
 • TM001 - Take Down
   ➥ PWR: 90 | Acc: 85 | Type: Physical
 
@@ -1570,11 +1571,13 @@ TM_PAGES = {
 
 • TM030 - Snarl
   ➥ PWR: 55 | Acc: 95 | Type: Special
+</blockquote>
 """,
 
     2: """
 🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 2/6)
 
+<blockquote>
 • TM031 - Metal Claw
   ➥ PWR: 50 | Acc: 95 | Type: Physical
 
@@ -1664,16 +1667,15 @@ TM_PAGES = {
 
 • TM060 - U-turn
   ➥ PWR: 70 | Acc: 100 | Type: Physical
+</blockquote>
 """,
 
     3: """
 🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 3/6)
 
+<blockquote>
 • TM061 - Shadow Claw
   ➥ PWR: 70 | Acc: 100 | Type: Physical
-
-• TM062 - Foul Play
-  ➥ PWR: 95 | Acc: 100 | Type: Physical
 
 • TM063 - Psychic Fangs
   ➥ PWR: 85 | Acc: 100 | Type: Physical
@@ -1758,11 +1760,13 @@ TM_PAGES = {
 
 • TM090 - Spikes
   ➥ PWR: — | Acc: 100 | Type: Status
+</blockquote>
 """,
 
     4: """
 🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 4/6)
 
+<blockquote>
 • TM091 - Toxic Spikes
   ➥ PWR: — | Acc: 100 | Type: Status
 
@@ -1852,11 +1856,13 @@ TM_PAGES = {
 
 • TM120 - Psychic
   ➥ PWR: 90 | Acc: 100 | Type: Special
+</blockquote>
 """,
 
     5: """
 🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 5/6)
 
+<blockquote>
 • TM121 - Heavy Slam
   ➥ PWR: — | Acc: 100 | Type: Physical
 
@@ -1946,11 +1952,13 @@ TM_PAGES = {
 
 • TM150 - Stone Edge
   ➥ PWR: 100 | Acc: 80 | Type: Physical
+</blockquote>
 """,
 
     6: """
 🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭 (Page 6/6)
 
+<blockquote>
 • TM151 - Phantom Force
   ➥ PWR: 90 | Acc: 100 | Type: Physical
 
@@ -2013,8 +2021,10 @@ TM_PAGES = {
 
 • TM171 - Tera Blast
   ➥ PWR: 80 | Acc: 100 | Type: Special
+</blockquote>
 """
 }
+
 
 
 # =========================================================
@@ -2082,11 +2092,13 @@ async def tm_callback(update, context):
     if query.message.photo:
         await query.edit_message_caption(
             caption=text,
+            parse_mode="HTML",
             reply_markup=markup
         )
     else:
         await query.edit_message_text(
             text,
+            parse_mode="HTML",
             reply_markup=markup
         )
 
