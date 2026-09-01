@@ -4772,13 +4772,6 @@ def main():
 
     app.add_handler(
         CallbackQueryHandler(
-            evbuild_callback,
-            pattern=r"^ev_"
-        )
-    )
-    
-    app.add_handler(
-        CallbackQueryHandler(
             start_menu_callback,
             pattern="^(start_commands|start_main|start_updates|commands_management|commands_pokemon|commands_music)$"
         )
