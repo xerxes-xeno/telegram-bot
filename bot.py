@@ -1427,91 +1427,70 @@ async def datanature(update, context):
 
 
 # =========================================================
-# NATURE → NEUTRAL
+# NATURE CALLBACK
 # =========================================================
 
-elif query.data == "nature_neutral":
+async def nature_callback(update, context):
 
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "𝐇𝐚𝐫𝐝𝐲",
-                callback_data="neutral_hardy"
-            ),
-            InlineKeyboardButton(
-                "𝐃𝐨𝐜𝐢𝐥𝐞",
-                callback_data="neutral_docile"
-            ),
-            InlineKeyboardButton(
-                "𝐒𝐞𝐫𝐢𝐨𝐮𝐬",
-                callback_data="neutral_serious"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "𝐁𝐚𝐬𝐡𝐟𝐮𝐥",
-                callback_data="neutral_bashful"
-            ),
-            InlineKeyboardButton(
-                "𝐐𝐮𝐢𝐫𝐤𝐲",
-                callback_data="neutral_quirky"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "◀️ 𝐁𝐚𝐜𝐤",
-                callback_data="nature_main"
-            )
-        ]
-    ]
+    query = update.callback_query
+    await query.answer()
 
-    await query.edit_message_text(
-        "<blockquote>"
-        "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄𝐒\n\n"
-        "𝐓𝐡𝐞𝐬𝐞 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐝𝐨 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
-        "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭. 𝐓𝐡𝐞𝐲 𝐤𝐞𝐞𝐩 𝐭𝐡𝐞 𝐬𝐭𝐚𝐭𝐬 𝐛𝐚𝐥𝐚𝐧𝐜𝐞𝐝."
-        "</blockquote>\n\n"
-        "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐍𝐚𝐭𝐮𝐫𝐞:",
+    if query.data == "nature_neutral":
 
-        parse_mode="HTML",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-
-
-# =========================================================
-# NEUTRAL NATURE DETAILS
-# =========================================================
-
-elif query.data in [
-    "neutral_hardy",
-    "neutral_docile",
-    "neutral_serious",
-    "neutral_bashful",
-    "neutral_quirky"
-]:
-
-    await query.edit_message_text(
-        "<blockquote>"
-        "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄\n\n"
-        "𝐓𝐡𝐢𝐬 𝐍𝐚𝐭𝐮𝐫𝐞 𝐝𝐨𝐞𝐬 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
-        "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭."
-        "</blockquote>\n\n"
-
-        "⚖️ 𝐍𝐚𝐭𝐮𝐫𝐞: 𝐍𝐞𝐮𝐭𝐫𝐚𝐥\n"
-        "⤷ 𝐍𝐨 𝐬𝐭𝐚𝐭 𝐠𝐚𝐢𝐧𝐬 𝐨𝐫 𝐥𝐨𝐬𝐬𝐞𝐬.\n\n"
-
-        "𝐇𝐚𝐫𝐝𝐲 • 𝐃𝐨𝐜𝐢𝐥𝐞 • 𝐒𝐞𝐫𝐢𝐨𝐮𝐬 • 𝐁𝐚𝐬𝐡𝐟𝐮𝐥 • 𝐐𝐮𝐢𝐫𝐤𝐲",
-
-        parse_mode="HTML",
-        reply_markup=InlineKeyboardMarkup([
+        keyboard = [
             [
-                InlineKeyboardButton(
-                    "◀️ 𝐁𝐚𝐜𝐤",
-                    callback_data="nature_neutral"
-                )
+                InlineKeyboardButton("𝐇𝐚𝐫𝐝𝐲", callback_data="neutral_hardy"),
+                InlineKeyboardButton("𝐃𝐨𝐜𝐢𝐥𝐞", callback_data="neutral_docile"),
+                InlineKeyboardButton("𝐒𝐞𝐫𝐢𝐨𝐮𝐬", callback_data="neutral_serious")
+            ],
+            [
+                InlineKeyboardButton("𝐁𝐚𝐬𝐡𝐟𝐮𝐥", callback_data="neutral_bashful"),
+                InlineKeyboardButton("𝐐𝐮𝐢𝐫𝐤𝐲", callback_data="neutral_quirky")
+            ],
+            [
+                InlineKeyboardButton("◀️ 𝐁𝐚𝐜𝐤", callback_data="nature_main")
             ]
-        ])
-)
+        ]
+
+        await query.edit_message_text(
+            "<blockquote>"
+            "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄𝐒\n\n"
+            "𝐓𝐡𝐞𝐬𝐞 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐝𝐨 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
+            "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭. 𝐓𝐡𝐞𝐲 𝐤𝐞𝐞𝐩 𝐭𝐡𝐞 𝐬𝐭𝐚𝐭𝐬 𝐛𝐚𝐥𝐚𝐧𝐜𝐞𝐝."
+            "</blockquote>\n\n"
+            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐍𝐚𝐭𝐮𝐫𝐞:",
+
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    elif query.data in [
+        "neutral_hardy",
+        "neutral_docile",
+        "neutral_serious",
+        "neutral_bashful",
+        "neutral_quirky"
+    ]:
+
+        await query.edit_message_text(
+            "<blockquote>"
+            "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄\n\n"
+            "𝐓𝐡𝐢𝐬 𝐍𝐚𝐭𝐮𝐫𝐞 𝐝𝐨𝐞𝐬 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
+            "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭."
+            "</blockquote>\n\n"
+            "⚖️ 𝐍𝐚𝐭𝐮𝐫𝐞: 𝐍𝐞𝐮𝐭𝐫𝐚𝐥\n"
+            "⤷ 𝐍𝐨 𝐬𝐭𝐚𝐭 𝐠𝐚𝐢𝐧𝐬 𝐨𝐫 𝐥𝐨𝐬𝐬𝐞𝐬.",
+
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="nature_neutral"
+                    )
+                ]
+            ])
+         )
 
 
 # =========================================================
@@ -4787,8 +4766,8 @@ def main():
  
     app.add_handler(
         CallbackQueryHandler(
-            helpdex_callback,
-            pattern="^(dex_|nature_|neutral_|ev_)"
+            nature_callback,
+            pattern=r"^(nature_|neutral_)"
         )
     )
 
