@@ -851,10 +851,13 @@ async def helpdex(update, context):
         photo="AgACAgUAAyEFAAMBCNz_jgACS9FqkmIgY76ky8pI5Gh7d6EfZIit6AACexJrG8L2mFSKvokScixrtAEAAwIAA3kAAz0E",
         caption=(
             "☏ 𝛸𝛴𝛤𝛸𝛴𝑆 𝛨𝜀𝜄𝛲 𝐶𝜀𝜂𝜏𝜀𝛤\n\n"
-            "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝 "
-            "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞.\n\n"
+            "<blockquote>"
+            "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝\n"
+            "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞."
+            "</blockquote>\n\n"
             "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚𝐧 𝐨𝐩𝐭𝐢𝐨𝐧 𝐛𝐞𝐥𝐨𝐰:"
         ),
+        parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
@@ -1251,7 +1254,9 @@ async def datadamage(update, context):
         "SPA IV/EV : 31 , 0\n"
         "SPD IV/EV : 31 , 0\n"
         "SPE IV/EV : 31 , 0"
-    )
+    ),
+    parse_mode="HTML"        
+)
 
 
 # =========================================================
@@ -1262,7 +1267,13 @@ async def buildpoke(update, context):
 
     await update.message.reply_text(
         "📋 𝐏𝐎𝐊𝐄𝐌𝐎𝐍 𝐁𝐔𝐈𝐋𝐃 𝐅𝐎𝐑𝐌\n\n"
-        "Copy and paste this template, EDIT it in, and send it back:\n\n"
+
+        "<blockquote>"
+        "𝐂𝐨𝐩𝐲 𝐚𝐧𝐝 𝐩𝐚𝐬𝐭𝐞 𝐭𝐡𝐢𝐬 𝐭𝐞𝐦𝐩𝐥𝐚𝐭𝐞, "
+        "𝐄𝐃𝐈𝐓 𝐢𝐭, 𝐚𝐧𝐝 𝐬𝐞𝐧𝐝 𝐢𝐭 𝐛𝐚𝐜𝐤:"
+        "</blockquote>\n\n"
+
+        "<pre>"
         "--- 𝐁𝐔𝐈𝐋𝐃 ---\n"
         "Name : \n"
         "Nature : \n"
@@ -1272,7 +1283,10 @@ async def buildpoke(update, context):
         "SPA IV/EV : 31 , 0\n"
         "SPD IV/EV : 31 , 0\n"
         "SPE IV/EV : 31 , 0"
-    )
+        "</pre>",
+
+        parse_mode="HTML"
+)
 
 
 # =========================================================
