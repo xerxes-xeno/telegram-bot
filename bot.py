@@ -4755,7 +4755,14 @@ def main():
             pattern="^tm_page_[1-6]$"
         )
     )
- 
+   
+    app.add_handler(
+        CallbackQueryHandler(
+            helpdex_callback,
+            pattern=r"^dex_"
+        )
+    )
+
     app.add_handler(
         CallbackQueryHandler(
             nature_callback,
@@ -4763,6 +4770,13 @@ def main():
         )
     )
 
+    app.add_handler(
+        CallbackQueryHandler(
+            evbuild_callback,
+            pattern=r"^ev_"
+        )
+    )
+    
     app.add_handler(
         CallbackQueryHandler(
             start_menu_callback,
