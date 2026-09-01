@@ -1405,14 +1405,113 @@ async def datanature(update, context):
     ]
 
     await update.message.reply_text(
-        "🌿 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐍𝐚𝐭𝐮𝐫𝐞𝐬\n\n"
-        "Natures affect a Pokémon's stat growth:\n"
-        "• 📈 +10% to one stat\n"
-        "• 📉 -10% to another stat\n"
-        "• ⚖️ Some natures are neutral (no effect)\n\n"
-        "Select a category to view natures:",
+        "⛇ 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐍𝐚𝐭𝐮𝐫𝐞𝐬\n\n"
+
+        "<blockquote>"
+        "𝐄𝐯𝐞𝐫𝐲 𝐍𝐚𝐭𝐮𝐫𝐞 𝐬𝐡𝐚𝐩𝐞𝐬 𝐡𝐨𝐰 𝐚 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐠𝐫𝐨𝐰𝐬 𝐚𝐧𝐝 𝐛𝐚𝐭𝐭𝐥𝐞𝐬."
+        "</blockquote>\n\n"
+
+        "<blockquote>"
+        "𝐒𝐨𝐦𝐞 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐛𝐨𝐨𝐬𝐭 𝐨𝐧𝐞 𝐬𝐭𝐚𝐭 𝐚𝐧𝐝 𝐫𝐞𝐝𝐮𝐜𝐞 𝐚𝐧𝐨𝐭𝐡𝐞𝐫."
+        "</blockquote>\n\n"
+
+        "<blockquote>"
+        "𝐍𝐞𝐮𝐭𝐫𝐚𝐥 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐤𝐞𝐞𝐩 𝐭𝐡𝐞 𝐬𝐭𝐚𝐭𝐬 𝐮𝐧𝐜𝐡𝐚𝐧𝐠𝐞𝐝."
+        "</blockquote>\n\n"
+
+        "⤷ 𝐂𝐡𝐨𝐨𝐬𝐞 𝐚 𝐜𝐚𝐭𝐞𝐠𝐨𝐫𝐲 𝐛𝐞𝐥𝐨𝐰:",
+    
+        parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+
+# =========================================================
+# NATURE → NEUTRAL
+# =========================================================
+
+elif query.data == "nature_neutral":
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "𝐇𝐚𝐫𝐝𝐲",
+                callback_data="neutral_hardy"
+            ),
+            InlineKeyboardButton(
+                "𝐃𝐨𝐜𝐢𝐥𝐞",
+                callback_data="neutral_docile"
+            ),
+            InlineKeyboardButton(
+                "𝐒𝐞𝐫𝐢𝐨𝐮𝐬",
+                callback_data="neutral_serious"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "𝐁𝐚𝐬𝐡𝐟𝐮𝐥",
+                callback_data="neutral_bashful"
+            ),
+            InlineKeyboardButton(
+                "𝐐𝐮𝐢𝐫𝐤𝐲",
+                callback_data="neutral_quirky"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤",
+                callback_data="nature_main"
+            )
+        ]
+    ]
+
+    await query.edit_message_text(
+        "<blockquote>"
+        "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄𝐒\n\n"
+        "𝐓𝐡𝐞𝐬𝐞 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐝𝐨 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
+        "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭. 𝐓𝐡𝐞𝐲 𝐤𝐞𝐞𝐩 𝐭𝐡𝐞 𝐬𝐭𝐚𝐭𝐬 𝐛𝐚𝐥𝐚𝐧𝐜𝐞𝐝."
+        "</blockquote>\n\n"
+        "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐍𝐚𝐭𝐮𝐫𝐞:",
+
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# NEUTRAL NATURE DETAILS
+# =========================================================
+
+elif query.data in [
+    "neutral_hardy",
+    "neutral_docile",
+    "neutral_serious",
+    "neutral_bashful",
+    "neutral_quirky"
+]:
+
+    await query.edit_message_text(
+        "<blockquote>"
+        "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄\n\n"
+        "𝐓𝐡𝐢𝐬 𝐍𝐚𝐭𝐮𝐫𝐞 𝐝𝐨𝐞𝐬 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
+        "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭."
+        "</blockquote>\n\n"
+
+        "⚖️ 𝐍𝐚𝐭𝐮𝐫𝐞: 𝐍𝐞𝐮𝐭𝐫𝐚𝐥\n"
+        "⤷ 𝐍𝐨 𝐬𝐭𝐚𝐭 𝐠𝐚𝐢𝐧𝐬 𝐨𝐫 𝐥𝐨𝐬𝐬𝐞𝐬.\n\n"
+
+        "𝐇𝐚𝐫𝐝𝐲 • 𝐃𝐨𝐜𝐢𝐥𝐞 • 𝐒𝐞𝐫𝐢𝐨𝐮𝐬 • 𝐁𝐚𝐬𝐡𝐟𝐮𝐥 • 𝐐𝐮𝐢𝐫𝐤𝐲",
+
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="nature_neutral"
+                )
+            ]
+        ])
+)
 
 
 # =========================================================
@@ -4622,7 +4721,7 @@ def main():
     app.add_handler(
         CallbackQueryHandler(
             helpdex_callback,
-            pattern="^(dex_|nature_|ev_)"
+            pattern="^(dex_|nature_|neutral_|ev_)"
         )
     )
 
