@@ -942,7 +942,7 @@ async def helpdex_callback(update, context):
     
     elif query.data == "dex_nature":
 
-    keyboard = [
+        keyboard = [
         [
             InlineKeyboardButton("⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤", callback_data="nature_attack"),
             InlineKeyboardButton("✨ 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤", callback_data="nature_spattack")
