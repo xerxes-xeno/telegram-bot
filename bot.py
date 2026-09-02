@@ -924,37 +924,21 @@ async def helpdex_callback(update, context):
             ])
         )
     
-    elif query.data == "dex_type":
-
+    elif query.data == dex_type:
+    
         await query.edit_message_caption(
             caption=(
                 "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞\n\n"
-
-                "<blockquote>"
-                "𝐄𝐯𝐞𝐫𝐲 𝐓𝐲𝐩𝐞 𝐡𝐚𝐬 𝐢𝐭𝐬 𝐨𝐰𝐧 𝐬𝐭𝐫𝐞𝐧𝐠𝐭𝐡𝐬, "
-                "𝐰𝐞𝐚𝐤𝐧𝐞𝐬𝐬𝐞𝐬 𝐚𝐧𝐝 𝐢𝐦𝐦𝐮𝐧𝐢𝐭𝐢𝐞𝐬."
-                "</blockquote>\n\n"
-
+                "<blockquote> 𝐄𝐯𝐞𝐫𝐲 𝐓𝐲𝐩𝐞 𝐡𝐚𝐬 𝐢𝐭𝐬 𝐨𝐰𝐧 𝐬𝐭𝐫𝐞𝐧𝐠𝐭𝐡𝐬, "
+                "𝐰𝐞𝐚𝐤𝐧𝐞𝐬𝐬𝐞𝐬 𝐚𝐧𝐝 𝐢𝐦𝐦𝐮𝐧𝐢𝐭𝐢𝐞𝐬. </blockquote>\n\n"
                 "⌘ 𝐂𝐨𝐦𝐦𝐚𝐧𝐝: /datatype\n\n"
-                "⤷ 𝐔𝐬𝐞 𝐭𝐡𝐞 𝐜𝐨𝐦𝐦𝐚𝐧𝐝 𝐛𝐞𝐥𝐨𝐰 𝐭𝐨 𝐨𝐩𝐞𝐧 "
-                "𝐭𝐡𝐞 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐓𝐲𝐩𝐞 𝐆𝐮𝐢𝐝𝐞."
+                "⤷ 𝐔𝐬𝐞 /datatype 𝐭𝐨 𝐨𝐩𝐞𝐧 𝐭𝐡𝐞 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐓𝐲𝐩𝐞 𝐆𝐮𝐢𝐝𝐞."
             ),
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "📊 𝐎𝐩𝐞𝐧 /𝐝𝐚𝐭𝐚𝐭𝐲𝐩𝐞",
-                        callback_data="open_datatype"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
+                [InlineKeyboardButton("◀️ 𝐁𝐚𝐜𝐤", callback_data=dex_help_main)]
             ])
-        )
+        )    
     
     elif query.data == "dex_nature":
 
@@ -1350,13 +1334,7 @@ async def datatype(update, context):
         [
             InlineKeyboardButton("⚙️ 𝐒𝐭𝐞𝐞𝐥", callback_data="type_steel"),
             InlineKeyboardButton("🧚 𝐅𝐚𝐢𝐫𝐲", callback_data="type_fairy"),
-            InlineKeyboardButton("⚪ 𝐍𝐨𝐫𝐦𝐚𝐥", callback_data="type_normal")
-        ],
-        [
-            InlineKeyboardButton(
-                "◀️ 𝐁𝐚𝐜𝐤",
-                callback_data="dex_help_main"
-            )
+            InlineKeyboardButton("⚪ 𝐍𝐨𝐫𝐦𝐚𝐥", callback_data="type_normal"
         ]
     ]
 
