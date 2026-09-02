@@ -1334,7 +1334,7 @@ async def datatype(update, context):
         [
             InlineKeyboardButton("⚙️ 𝐒𝐭𝐞𝐞𝐥", callback_data="type_steel"),
             InlineKeyboardButton("🧚 𝐅𝐚𝐢𝐫𝐲", callback_data="type_fairy"),
-            InlineKeyboardButton("⚪ 𝐍𝐨𝐫𝐦𝐚𝐥", callback_data="type_normal)"
+            InlineKeyboardButton("⚪ 𝐍𝐨𝐫𝐦𝐚𝐥", callback_data="type_normal")
         ]
     ]
 
