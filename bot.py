@@ -2696,6 +2696,542 @@ async def evbuild(update, context):
 
 
 # =========================================================
+# EV TRAINING GUIDE
+# =========================================================
+
+async def evbuild(update, context):
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "❤️ 𝐇𝐏",
+                callback_data="ev_hp"
+            ),
+            InlineKeyboardButton(
+                "⚡ 𝐒𝐩𝐞𝐞𝐝",
+                callback_data="ev_speed"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤",
+                callback_data="ev_attack"
+            ),
+            InlineKeyboardButton(
+                "🛡️ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                callback_data="ev_defense"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🔮 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                callback_data="ev_spattack"
+            ),
+            InlineKeyboardButton(
+                "✨ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                callback_data="ev_spdefense"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "❓ 𝐇𝐨𝐰 𝐄𝐕𝐬 𝐖𝐨𝐫𝐤",
+                callback_data="ev_how"
+            )
+        ]
+    ]
+
+    text = (
+        "<blockquote>"
+        "🏋️ <b>𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+        
+        "Effort Values, or <b>EVs</b>, are hidden training "
+        "points that influence how a Pokémon's stats develop.\n\n"
+        
+        "Every training choice matters. By targeting specific "
+        "stats, Trainers can shape their Pokémon for different "
+        "battle roles, strategies, and team compositions.\n\n"
+        
+        "📖 <b>TRAINING PRINCIPLE</b>\n"
+        "Defeat the right Pokémon, accumulate the desired EVs, "
+        "and build a stat spread suited to your strategy.\n\n"
+        
+        "⤷ <b>Select a stat below to access its EV Training "
+        "Archive.</b>"
+        "</blockquote>"
+    )
+
+    await update.message.reply_text(
+        text,
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# EV TRAINING CALLBACK
+# =========================================================
+
+async def ev_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data
+
+    # =====================================================
+    # HELPER — EDIT CURRENT MESSAGE
+    # =====================================================
+
+    async def edit_page(text, keyboard):
+
+        markup = InlineKeyboardMarkup(keyboard)
+
+        if query.message.photo:
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=markup
+            )
+        else:
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=markup
+            )
+
+    # =====================================================
+    # EV MAIN MENU
+    # =====================================================
+
+    if data == "ev_main":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "❤️ 𝐇𝐏",
+                    callback_data="ev_hp"
+                ),
+                InlineKeyboardButton(
+                    "⚡ 𝐒𝐩𝐞𝐞𝐝",
+                    callback_data="ev_speed"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤",
+                    callback_data="ev_attack"
+                ),
+                InlineKeyboardButton(
+                    "🛡️ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                    callback_data="ev_defense"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🔮 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                    callback_data="ev_spattack"
+                ),
+                InlineKeyboardButton(
+                    "✨ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                    callback_data="ev_spdefense"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "❓ 𝐇𝐨𝐰 𝐄𝐕𝐬 𝐖𝐨𝐫𝐤",
+                    callback_data="ev_how"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐇𝐞𝐥𝐩𝐝𝐞𝐱",
+                    callback_data="dex_help_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "🏋️ <b>𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+            "Effort Values are hidden training values that "
+            "influence a Pokémon's final stat distribution.\n\n"
+            "Choose the stat you want to train and discover "
+            "suitable Pokémon for that EV path."
+            "</blockquote>\n\n"
+            "🎯 <b>𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐒𝐭𝐚𝐭:</b>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # HP
+    # =====================================================
+
+    if data == "ev_hp":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐄𝐕 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐢𝐞𝐬",
+                callback_data="ev_main"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "❤️ <b>𝐇𝐏 𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆</b>\n\n"
+            "Focus your training on HP to improve a Pokémon's "
+            "overall durability.\n\n"
+            "🎯 <b>𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐓𝐚𝐫𝐠𝐞𝐭𝐬</b>\n"
+            "The following Pokémon are listed as HP-focused "
+            "training targets in the XERXES EV Archive."
+            "</blockquote>\n\n"
+
+            "🟦 <b>𝐍𝐨𝐫𝐦𝐚𝐥 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Nidoqueen\n"
+            "• Clefable\n"
+            "• Wigglytuff\n"
+            "• Azumarill\n"
+            "• Blissey\n"
+            "• Slaking\n"
+            "• Exploud\n"
+            "• Walrein\n"
+            "• Lickilicky\n"
+            "• Seismitoad\n\n"
+
+            "🟨 <b>𝐋𝐞𝐠𝐞𝐧𝐝𝐚𝐫𝐲 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Mew\n"
+            "• Celebi\n"
+            "• Jirachi\n"
+            "• Giratina (Origin / Altered)\n"
+            "• Manaphy\n"
+            "• Shaymin\n"
+            "• Arceus (Normal)\n"
+            "• Victini\n"
+            "• Xerneas\n"
+            "• Yveltal\n"
+            "• Zygarde (All Forms)\n"
+            "• Silvally\n"
+            "• Guzzlord\n\n"
+
+            "🟪 <b>𝐆𝐞𝐧𝐞𝐫𝐚𝐭𝐢𝐨𝐧 𝟖</b>\n"
+            "• Eternatus\n"
+            "• Eternamax\n"
+            "• Regidrago\n"
+            "• Calyrex\n\n"
+
+            "<blockquote>"
+            "📊 <b>𝐄𝐕 𝐋𝐈𝐌𝐈𝐓𝐒</b>\n"
+            "Maximum in one stat: <b>252 EVs</b>\n"
+            "Maximum total: <b>510 EVs</b>"
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # ATTACK
+    # =====================================================
+
+    if data == "ev_attack":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐄𝐕 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐢𝐞𝐬",
+                callback_data="ev_main"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "⚔️ <b>𝐀𝐓𝐓𝐀𝐂𝐊 𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆</b>\n\n"
+            "Direct your training toward Attack to strengthen "
+            "a Pokémon's physical offensive potential.\n\n"
+            "🎯 <b>𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐓𝐚𝐫𝐠𝐞𝐭𝐬</b>\n"
+            "These Pokémon are included as Attack-focused "
+            "targets in the XERXES EV Archive."
+            "</blockquote>\n\n"
+
+            "🟦 <b>𝐍𝐨𝐫𝐦𝐚𝐥 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Nidoking\n• Machamp\n• Victreebel\n• Dragonite\n"
+            "• Tyranitar\n• Blaziken\n• Swampert\n• Shiftry\n"
+            "• Salamence\n• Staraptor\n• Luxray\n• Garchomp\n"
+            "• Rhyperior\n• Electivire\n• Mamoswine\n• Gallade\n"
+            "• Emboar\n• Stoutland\n• Unfezant\n• Gigalith\n"
+            "• Conkeldurr\n• Leavanny\n• Krookodile\n• Eelektross\n"
+            "• Haxorus\n• Decidueye\n• Incineroar\n• Toucannon\n"
+            "• Tsareena\n\n"
+
+            "🟨 <b>𝐋𝐞𝐠𝐞𝐧𝐝𝐚𝐫𝐲 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Groudon\n• Regigigas\n• Tornadus (Incarnate Forme)\n"
+            "• Thundurus (Incarnate Forme)\n"
+            "• Landorus (Therian Forme)\n• Terrakion\n"
+            "• Zekrom\n• Kyurem (Black)\n• Tapu Bulu\n• Solgaleo\n"
+            "• Kartana\n• Necrozma Dusk Mane\n• Melmetal\n\n"
+
+            "🟪 <b>𝐆𝐞𝐧𝐞𝐫𝐚𝐭𝐢𝐨𝐧 𝟖</b>\n"
+            "• Galarian Zapdos\n• Grimmsnarl\n"
+            "• Urshifu (Single / Rapid Strike Style)\n"
+            "• Zarude\n• Glastrier\n• Rillaboom\n\n"
+
+            "<blockquote>"
+            "⚔️ <b>𝐁𝐔𝐈𝐋𝐃 𝐍𝐎𝐓𝐄</b>\n"
+            "Attack investment is commonly suited to "
+            "physical-focused Pokémon."
+            "</blockquote>\n\n"
+
+            "📊 <b>Limit:</b> 252 EVs per stat • 510 EVs total"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # DEFENSE
+    # =====================================================
+
+    if data == "ev_defense":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐄𝐕 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐢𝐞𝐬",
+                callback_data="ev_main"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🛡️ <b>𝐃𝐄𝐅𝐄𝐍𝐒𝐄 𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆</b>\n\n"
+            "Invest in Defense to improve a Pokémon's ability "
+            "to withstand physical attacks.\n\n"
+            "🎯 <b>𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐓𝐚𝐫𝐠𝐞𝐭𝐬</b>"
+            "</blockquote>\n\n"
+
+            "🟦 <b>𝐍𝐨𝐫𝐦𝐚𝐥 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Poliwrath\n• Golem\n• Aggron\n• Metagross\n"
+            "• Klinklang\n• Chesnaught\n• Kommo-o\n\n"
+
+            "🟨 <b>𝐋𝐞𝐠𝐞𝐧𝐝𝐚𝐫𝐲 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Regirock\n• Cobalion\n• Stakataka\n\n"
+
+            "🟪 <b>𝐆𝐞𝐧𝐞𝐫𝐚𝐭𝐢𝐨𝐧 𝟖</b>\n"
+            "• Corviknight\n• Coalossal\n• Obstagoon\n\n"
+
+            "<blockquote>"
+            "🛡️ <b>𝐁𝐔𝐈𝐋𝐃 𝐍𝐎𝐓𝐄</b>\n"
+            "Defense-focused EV spreads are useful for "
+            "Pokémon designed to handle physical pressure."
+            "</blockquote>\n\n"
+
+            "📊 <b>Limit:</b> 252 EVs per stat • 510 EVs total"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # SPECIAL ATTACK
+    # =====================================================
+
+    if data == "ev_spattack":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐄𝐕 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐢𝐞𝐬",
+                callback_data="ev_main"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🔮 <b>𝐒𝐏. 𝐀𝐓𝐓𝐀𝐂𝐊 𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆</b>\n\n"
+            "Focus on Sp. Attack to maximize a Pokémon's "
+            "special offensive capability.\n\n"
+            "🎯 <b>𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐓𝐚𝐫𝐠𝐞𝐭𝐬</b>"
+            "</blockquote>\n\n"
+
+            "🟦 <b>𝐍𝐨𝐫𝐦𝐚𝐥 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Charizard\n• Vileplume\n• Alakazam\n• Gengar\n"
+            "• Typhlosion\n• Ampharos\n• Beautifly\n• Gardevoir\n"
+            "• Empoleon\n• Roserade\n• Magnezone\n• Magmortar\n"
+            "• Porygon-Z\n• Samurott\n• Reuniclus\n• Vanilluxe\n"
+            "• Chandelure\n• Hydreigon\n• Volcarona\n• Delphox\n"
+            "• Primarina\n• Vikavolt\n\n"
+
+            "🟨 <b>𝐋𝐞𝐠𝐞𝐧𝐝𝐚𝐫𝐲 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Zapdos\n• Moltres\n• Mewtwo\n• Latios\n• Kyogre\n"
+            "• Dialga\n• Palkia\n• Heatran\n"
+            "• Thundurus (Therian Forme)\n• Reshiram\n"
+            "• Landorus (Incarnate Forme)\n• Kyurem (White)\n"
+            "• Keldeo (Ordinary / Resolute)\n"
+            "• Hoopa (Confined / Unbound)\n• Volcanion\n"
+            "• Tapu Lele\n• Lunala\n• Xurkitree\n"
+            "• Necrozma Dawn Wings\n• Magearna\n"
+            "• Naganadel\n• Blacephalon\n\n"
+
+            "🟪 <b>𝐆𝐞𝐧𝐞𝐫𝐚𝐭𝐢𝐨𝐧 𝟖</b>\n"
+            "• Galarian Articuno\n• Spectrier\n"
+            "• Calyrex (Shadow Rider)\n• Mr. Rime\n• Hatterene\n\n"
+
+            "<blockquote>"
+            "🔮 <b>𝐁𝐔𝐈𝐋𝐃 𝐍𝐎𝐓𝐄</b>\n"
+            "Sp. Attack investment is ideal for Pokémon "
+            "that rely on special moves for damage."
+            "</blockquote>\n\n"
+
+            "📊 <b>Limit:</b> 252 EVs per stat • 510 EVs total"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # SPECIAL DEFENSE
+    # =====================================================
+
+    if data == "ev_spdefense":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐄𝐕 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐢𝐞𝐬",
+                callback_data="ev_main"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "✨ <b>𝐒𝐏. 𝐃𝐄𝐅𝐄𝐍𝐒𝐄 𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆</b>\n\n"
+            "Strengthen special resilience by investing "
+            "your training into Sp. Defense EVs.\n\n"
+            "🎯 <b>𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐓𝐚𝐫𝐠𝐞𝐭𝐬</b>"
+            "</blockquote>\n\n"
+
+            "🟦 <b>𝐍𝐨𝐫𝐦𝐚𝐥 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Blastoise\n• Bellossom\n• Politoed\n• Dustox\n"
+            "• Ludicolo\n• Gothitelle\n• Florges\n• Goodra\n\n"
+
+            "🟨 <b>𝐋𝐞𝐠𝐞𝐧𝐝𝐚𝐫𝐲 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Articuno\n• Lugia\n• Ho-Oh\n• Regice\n• Latias\n"
+            "• Cresselia\n• Virizion\n• Tapu Fini\n• Nihilego\n\n"
+
+            "🟪 <b>𝐆𝐞𝐧𝐞𝐫𝐚𝐭𝐢𝐨𝐧 𝟖</b>\n"
+            "• Galarian Moltres\n• Orbeetle\n\n"
+
+            "<blockquote>"
+            "✨ <b>𝐁𝐔𝐈𝐋𝐃 𝐍𝐎𝐓𝐄</b>\n"
+            "Sp. Defense investment is useful for Pokémon "
+            "built to absorb special attacks."
+            "</blockquote>\n\n"
+
+            "📊 <b>Limit:</b> 252 EVs per stat • 510 EVs total"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # SPEED
+    # =====================================================
+
+    if data == "ev_speed":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐄𝐕 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐢𝐞𝐬",
+                callback_data="ev_main"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "⚡ <b>𝐒𝐏𝐄𝐄𝐃 𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆</b>\n\n"
+            "Speed-focused EV training helps a Pokémon reach "
+            "higher Speed and compete more effectively for "
+            "turn order.\n\n"
+            "🎯 <b>𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐓𝐚𝐫𝐠𝐞𝐭𝐬</b>"
+            "</blockquote>\n\n"
+
+            "🟦 <b>𝐍𝐨𝐫𝐦𝐚𝐥 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Pidgeot\n• Raichu\n• Crobat\n• Jumpluff\n"
+            "• Sceptile\n• Serperior\n• Greninja\n• Talonflame\n\n"
+
+            "🟨 <b>𝐋𝐞𝐠𝐞𝐧𝐝𝐚𝐫𝐲 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧</b>\n"
+            "• Deoxys (Speed Forme)\n• Shaymin\n• Scolipede\n"
+            "• Tornadus (Therian Forme)\n• Tapu Koko\n"
+            "• Pheromosa\n• Zeraora\n\n"
+
+            "🟪 <b>𝐆𝐞𝐧𝐞𝐫𝐚𝐭𝐢𝐨𝐧 𝟖</b>\n"
+            "• Cinderace\n• Inteleon\n"
+            "• Zacian (Crowned Sword / Hero of Many Battles)\n"
+            "• Zamazenta (Crowned Shield / Hero of Many Battles)\n"
+            "• Regieleki\n\n"
+
+            "<blockquote>"
+            "⚡ <b>𝐁𝐀𝐓𝐓𝐋𝐄 𝐍𝐎𝐓𝐄</b>\n"
+            "Speed investment is commonly valuable for "
+            "offensive Pokémon that depend on acting first."
+            "</blockquote>\n\n"
+
+            "📊 <b>Limit:</b> 252 EVs per stat • 510 EVs total"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # HOW EVs WORK
+    # =====================================================
+
+    if data == "ev_how":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐄𝐕 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐢𝐞𝐬",
+                callback_data="ev_main"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "❓ <b>𝐇𝐎𝐖 𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆 𝐖𝐎𝐑𝐊𝐒</b>\n\n"
+            "<b>Effort Values (EVs)</b> are hidden training "
+            "values that contribute to a Pokémon's stat growth. "
+            "Different Pokémon and training methods can direct "
+            "EVs toward different stats."
+            "</blockquote>\n\n"
+
+            "📊 <b>𝐄𝐕 𝐋𝐈𝐌𝐈𝐓𝐒</b>\n"
+            "• Maximum in one stat: <b>252 EVs</b>\n"
+            "• Maximum total: <b>510 EVs</b>\n\n"
+
+            "🧪 <b>𝐌𝐀𝐈𝐍 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆 𝐌𝐄𝐓𝐇𝐎𝐃𝐒</b>\n"
+            "• <b>Power Items</b> — Increase EV gain toward "
+            "their associated stat in games that support them.\n"
+            "• <b>Pokérus</b> — In supported games, this mechanic "
+            "increases EV gain from battles.\n"
+            "• <b>SOS Battles</b> — Certain games allow chained "
+            "encounters to accelerate EV training.\n"
+            "• <b>Vitamins</b> — Items such as HP Up and Protein "
+            "can provide EVs directly.\n\n"
+
+            "<blockquote>"
+            "🎯 <b>𝐓𝐑𝐀𝐈𝐍 𝐖𝐈𝐓𝐇 𝐀 𝐏𝐋𝐀𝐍</b>\n"
+            "Choose your intended EV spread before training. "
+            "A planned distribution lets your Pokémon's stats "
+            "match its intended battle role."
+            "</blockquote>\n\n"
+
+            "🧹 <b>𝐑𝐄𝐌𝐎𝐕𝐈𝐍𝐆 𝐄𝐕𝐬</b>\n"
+            "When supported, EV-reducing Berries such as "
+            "Pomeg and Kelpsy can help correct unwanted EVs."
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+
+# =========================================================
 # OFFICIAL TM DATA
 # =========================================================
 
@@ -5847,6 +6383,13 @@ def main():
         )
     )
 
+    app.add_handler(
+        CallbackQueryHandler(
+            ev_callback,
+            pattern=r"^ev_"
+        )
+    )
+    
     app.add_handler(
         CallbackQueryHandler(
             start_menu_callback,
