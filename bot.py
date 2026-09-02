@@ -942,56 +942,42 @@ async def helpdex_callback(update, context):
     
     elif query.data == "dex_nature":
 
-        await query.edit_message_caption(
-            caption=(
-                "🌿 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐍𝐚𝐭𝐮𝐫𝐞𝐬\n\n"
-                "Select a nature category to view its natures."
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "𝐍𝐞𝐮𝐭𝐫𝐚𝐥",
-                        callback_data="nature_neutral"
-                    ),
-                    InlineKeyboardButton(
-                        "𝐀𝐭𝐭𝐚𝐜𝐤",
-                        callback_data="nature_attack"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
-                        callback_data="nature_defense"
-                    ),
-                    InlineKeyboardButton(
-                        "𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
-                        callback_data="nature_spattack"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
-                        callback_data="nature_spdefense"
-                    ),
-                    InlineKeyboardButton(
-                        "𝐒𝐩𝐞𝐞𝐝",
-                        callback_data="nature_speed"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "𝐀𝐥𝐥 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
-                        callback_data="nature_all"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
-        )
+    keyboard = [
+        [
+            InlineKeyboardButton("⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤", callback_data="nature_attack"),
+            InlineKeyboardButton("✨ 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤", callback_data="nature_spattack")
+        ],
+        [
+            InlineKeyboardButton("🛡️ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞", callback_data="nature_defense"),
+            InlineKeyboardButton("✨ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞", callback_data="nature_spdefense")
+        ],
+        [
+            InlineKeyboardButton("⚡ 𝐒𝐩𝐞𝐞𝐝", callback_data="nature_speed"),
+            InlineKeyboardButton("⚪ 𝐍𝐞𝐮𝐭𝐫𝐚𝐥", callback_data="nature_neutral")
+        ],
+        [
+            InlineKeyboardButton("◀️ 𝐁𝐚𝐜𝐤", callback_data="dex_help_main")
+        ]
+    ]
+
+    await query.edit_message_caption(
+        caption=(
+            "<blockquote>"
+            "🌿 <b>𝐍𝐀𝐓𝐔𝐑𝐄 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+            "Every Nature shapes a Pokémon's battle profile "
+            "by increasing one stat while decreasing another.\n\n"
+            "⚔️ <b>Attack</b> — Physical power\n"
+            "✨ <b>Sp. Attack</b> — Special power\n"
+            "🛡️ <b>Defense</b> — Physical durability\n"
+            "✨ <b>Sp. Defense</b> — Special durability\n"
+            "⚡ <b>Speed</b> — Battle priority\n"
+            "⚪ <b>Neutral</b> — No stat trade-off\n\n"
+            "⤷ <b>Select a category to explore.</b>"
+            "</blockquote>"
+        ),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )   
 
     elif query.data == "dex_bestnature":
 
@@ -1648,65 +1634,56 @@ async def datanature(update, context):
     keyboard = [
         [
             InlineKeyboardButton(
-                "1. 𝐍𝐞𝐮𝐭𝐫𝐚𝐥",
-                callback_data="nature_neutral"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "2. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                "⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤",
                 callback_data="nature_attack"
-            )
-        ],
-        [
+            ),
             InlineKeyboardButton(
-                "3. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
-                callback_data="nature_defense"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "4. 𝐒𝐩𝐞𝐜𝐢𝐚𝐥 𝐀𝐭𝐭𝐚𝐜𝐤",
+                "✨ 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
                 callback_data="nature_spattack"
             )
         ],
         [
             InlineKeyboardButton(
-                "5. 𝐒𝐩𝐞𝐜𝐢𝐚𝐥 𝐃𝐞𝐟𝐞𝐧𝐜𝐞",
+                "🛡️ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                callback_data="nature_defense"
+            ),
+            InlineKeyboardButton(
+                "✨ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
                 callback_data="nature_spdefense"
             )
         ],
         [
             InlineKeyboardButton(
-                "6. 𝐒𝐩𝐞𝐞𝐝",
+                "⚡ 𝐒𝐩𝐞𝐞𝐝",
                 callback_data="nature_speed"
+            ),
+            InlineKeyboardButton(
+                "⚪ 𝐍𝐞𝐮𝐭𝐫𝐚𝐥",
+                callback_data="nature_neutral"
             )
         ],
         [
             InlineKeyboardButton(
-                "7. 𝐀𝐥𝐥 𝐍𝐚𝐭𝐮𝐫𝐞𝐬",
-                callback_data="nature_all"
+                "◀️ 𝐁𝐚𝐜𝐤",
+                callback_data="dex_help_main"
             )
         ]
     ]
 
+    text = (
+        "<blockquote>"
+        "🌿 <b>𝐍𝐀𝐓𝐔𝐑𝐄 𝐂𝐎𝐌𝐏𝐄𝐍𝐃𝐈𝐔𝐌</b>\n\n"
+        "Every Nature influences a Pokémon's "
+        "battle profile by favoring one stat while "
+        "shifting another.\n\n"
+        "Choose a stat category below to explore "
+        "its associated Natures."
+        "</blockquote>\n\n"
+        "⤷ <b>𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐜𝐚𝐭𝐞𝐠𝐨𝐫𝐲:</b>"
+    )
+
     await update.message.reply_text(
-        "⛇ 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐍𝐚𝐭𝐮𝐫𝐞𝐬\n\n"
-
-        "<blockquote>"
-        "𝐄𝐯𝐞𝐫𝐲 𝐍𝐚𝐭𝐮𝐫𝐞 𝐬𝐡𝐚𝐩𝐞𝐬 𝐡𝐨𝐰 𝐚 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐠𝐫𝐨𝐰𝐬 𝐚𝐧𝐝 𝐛𝐚𝐭𝐭𝐥𝐞𝐬."
-        "</blockquote>\n\n"
-
-        "<blockquote>"
-        "𝐒𝐨𝐦𝐞 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐛𝐨𝐨𝐬𝐭 𝐨𝐧𝐞 𝐬𝐭𝐚𝐭 𝐚𝐧𝐝 𝐫𝐞𝐝𝐮𝐜𝐞 𝐚𝐧𝐨𝐭𝐡𝐞𝐫."
-        "</blockquote>\n\n"
-
-        "<blockquote>"
-        "𝐍𝐞𝐮𝐭𝐫𝐚𝐥 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐤𝐞𝐞𝐩 𝐭𝐡𝐞 𝐬𝐭𝐚𝐭𝐬 𝐮𝐧𝐜𝐡𝐚𝐧𝐠𝐞𝐝."
-        "</blockquote>\n\n"
-
-        "⤷ 𝐂𝐡𝐨𝐨𝐬𝐞 𝐚 𝐜𝐚𝐭𝐞𝐠𝐨𝐫𝐲 𝐛𝐞𝐥𝐨𝐰:",
-    
+        text,
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
@@ -1721,40 +1698,69 @@ async def nature_callback(update, context):
     query = update.callback_query
     await query.answer()
 
+    data = query.data
+
     # =====================================================
-    # NEUTRAL NATURE MENU
+    # HELPER — EDIT CURRENT MESSAGE
     # =====================================================
 
-    if query.data == "nature_neutral":
+    async def edit_page(text, keyboard):
+
+        markup = InlineKeyboardMarkup(keyboard)
+
+        if query.message.photo:
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=markup
+            )
+        else:
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=markup
+            )
+
+    # =====================================================
+    # NATURE CATEGORY MENU
+    # =====================================================
+
+    if data == "nature_main":
 
         keyboard = [
             [
                 InlineKeyboardButton(
-                    "𝐇𝐚𝐫𝐝𝐲",
-                    callback_data="neutral_hardy"
+                    "⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤",
+                    callback_data="nature_attack"
                 ),
                 InlineKeyboardButton(
-                    "𝐃𝐨𝐜𝐢𝐥𝐞",
-                    callback_data="neutral_docile"
-                ),
-                InlineKeyboardButton(
-                    "𝐒𝐞𝐫𝐢𝐨𝐮𝐬",
-                    callback_data="neutral_serious"
+                    "✨ 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                    callback_data="nature_spattack"
                 )
             ],
             [
                 InlineKeyboardButton(
-                    "𝐁𝐚𝐬𝐡𝐟𝐮𝐥",
-                    callback_data="neutral_bashful"
+                    "🛡️ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                    callback_data="nature_defense"
                 ),
                 InlineKeyboardButton(
-                    "𝐐𝐮𝐢𝐫𝐤𝐲",
-                    callback_data="neutral_quirky"
+                    "✨ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                    callback_data="nature_spdefense"
                 )
             ],
             [
                 InlineKeyboardButton(
-                    "◀️ 𝐁𝐚𝐜𝐤",
+                    "⚡ 𝐒𝐩𝐞𝐞𝐝",
+                    callback_data="nature_speed"
+                ),
+                InlineKeyboardButton(
+                    "⚪ 𝐍𝐞𝐮𝐭𝐫𝐚𝐥",
+                    callback_data="nature_neutral"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐇𝐞𝐥𝐩𝐝𝐞𝐱",
                     callback_data="dex_help_main"
                 )
             ]
@@ -1762,103 +1768,854 @@ async def nature_callback(update, context):
 
         text = (
             "<blockquote>"
-            "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄𝐒\n\n"
-            "𝐓𝐡𝐞𝐬𝐞 𝐍𝐚𝐭𝐮𝐫𝐞𝐬 𝐝𝐨 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
-            "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭. 𝐓𝐡𝐞𝐲 𝐤𝐞𝐞𝐩 𝐭𝐡𝐞 "
-            "𝐬𝐭𝐚𝐭𝐬 𝐛𝐚𝐥𝐚𝐧𝐜𝐞𝐝."
+            "🌿 <b>𝐍𝐀𝐓𝐔𝐑𝐄 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+            "A Pokémon's Nature can shape its battle "
+            "profile by strengthening one stat while "
+            "weakening another.\n\n"
+            "Explore each stat group below to discover "
+            "the Natures associated with it."
             "</blockquote>\n\n"
-            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐍𝐚𝐭𝐮𝐫𝐞:"
+            "⤷ <b>𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐜𝐚𝐭𝐞𝐠𝐨𝐫𝐲:</b>"
         )
 
-        # PHOTO MESSAGE
-        if query.message.photo:
-
-            await query.edit_message_caption(
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(keyboard)
-            )
-
-        # NORMAL TEXT MESSAGE
-        else:
-
-            await query.edit_message_text(
-                text=text,
-                parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(keyboard)
-            )
+        await edit_page(text, keyboard)
+        return
 
     # =====================================================
-    # INDIVIDUAL NEUTRAL NATURE
+    # ATTACK CATEGORY
     # =====================================================
 
-    elif query.data in [
-        "neutral_hardy",
-        "neutral_docile",
-        "neutral_serious",
-        "neutral_bashful",
-        "neutral_quirky"
-    ]:
+    if data == "nature_attack":
 
         keyboard = [
             [
                 InlineKeyboardButton(
+                    "𝐋𝐨𝐧𝐞𝐥𝐲",
+                    callback_data="nature_lonely"
+                ),
+                InlineKeyboardButton(
+                    "𝐀𝐝𝐚𝐦𝐚𝐧𝐭",
+                    callback_data="nature_adamant"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "𝐍𝐚𝐮𝐠𝐡𝐭𝐲",
+                    callback_data="nature_naughty"
+                ),
+                InlineKeyboardButton(
+                    "𝐁𝐫𝐚𝐯𝐞",
+                    callback_data="nature_brave"
+                )
+            ],
+            [
+                InlineKeyboardButton(
                     "◀️ 𝐁𝐚𝐜𝐤",
-                    callback_data="nature_neutral"
+                    callback_data="nature_main"
                 )
             ]
         ]
 
         text = (
             "<blockquote>"
-            "⚖️ 𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄\n\n"
-            "𝐓𝐡𝐢𝐬 𝐍𝐚𝐭𝐮𝐫𝐞 𝐝𝐨𝐞𝐬 𝐧𝐨𝐭 𝐛𝐨𝐨𝐬𝐭 𝐨𝐫 𝐫𝐞𝐝𝐮𝐜𝐞 "
-            "𝐚𝐧𝐲 𝐬𝐭𝐚𝐭."
-            "</blockquote>\n\n"
-            "⚖️ 𝐍𝐚𝐭𝐮𝐫𝐞: 𝐍𝐞𝐮𝐭𝐫𝐚𝐥\n"
-            "⤷ 𝐍𝐨 𝐬𝐭𝐚𝐭 𝐠𝐚𝐢𝐧𝐬 𝐨𝐫 𝐥𝐨𝐬𝐬𝐞𝐬."
+            "⚔️ <b>𝐀𝐓𝐓𝐀𝐂𝐊 𝐍𝐀𝐓𝐔𝐑𝐄𝐒</b>\n\n"
+            "These Natures put greater emphasis on "
+            "physical attacking strength while lowering "
+            "a different stat.\n\n"
+            "⬆️ Attack receives the boost\n"
+            "⬇️ One other stat takes the reduction\n\n"
+            "✦ Select a Nature to see its battle profile."
+            "</blockquote>"
         )
 
-        # PHOTO MESSAGE
-        if query.message.photo:
-
-            await query.edit_message_caption(
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(keyboard)
-            )
-
-        # NORMAL TEXT MESSAGE
-        else:
-
-            await query.edit_message_text(
-                text=text,
-                parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(keyboard)
-            )
-
-
-# =========================================================
-# BEST NATURE
-# =========================================================
-
-async def bestnat(update, context):
-
-    if not context.args:
-        await update.message.reply_text(
-            "⚠️ 𝐏𝐥𝐞𝐚𝐬𝐞 𝐞𝐧𝐭𝐞𝐫 𝐚 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐧𝐚𝐦𝐞.\n\n"
-            "𝐄𝐱𝐚𝐦𝐩𝐥𝐞:\n"
-            "/bestnat Pikachu"
-        )
+        await edit_page(text, keyboard)
         return
 
-    pokemon_name = " ".join(context.args).strip()
+    # =====================================================
+    # LONELY
+    # =====================================================
 
-    await update.message.reply_text(
-        f"⭐ 𝐁𝐞𝐬𝐭 𝐍𝐚𝐭𝐮𝐫𝐞 — {pokemon_name}\n\n"
-        "⚠️ 𝐁𝐞𝐬𝐭 𝐧𝐚𝐭𝐮𝐫𝐞 𝐝𝐚𝐭𝐚𝐛𝐚𝐬𝐞 𝐜𝐨𝐧𝐧𝐞𝐜𝐭𝐢𝐨𝐧 𝐰𝐢𝐥𝐥 𝐛𝐞 𝐚𝐝𝐝𝐞𝐝."
-    )
+    if data == "nature_lonely":
 
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_attack"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐋𝐎𝐍𝐄𝐋𝐘 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Attack (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Defense (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Favors physical offense while giving up "
+            "some protection against physical attacks.\n\n"
+            "✦ A useful choice for aggressive physical builds."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # ADAMANT
+    # =====================================================
+
+    if data == "nature_adamant":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_attack"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐀𝐃𝐀𝐌𝐀𝐍𝐓 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Attack (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Sp. Attack (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Designed for Pokémon whose main source "
+            "of damage comes from physical moves.\n\n"
+            "✦ Excellent when special attacking power "
+            "is not part of the build."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # NAUGHTY
+    # =====================================================
+
+    if data == "nature_naughty":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_attack"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐍𝐀𝐔𝐆𝐇𝐓𝐘 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Attack (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Sp. Defense (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Pushes physical damage higher at the expense "
+            "of some resistance to special attacks.\n\n"
+            "✦ Suits offensive Pokémon that prioritize power."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # BRAVE
+    # =====================================================
+
+    if data == "nature_brave":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_attack"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐁𝐑𝐀𝐕𝐄 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Attack (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Speed (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Trades Speed for greater physical strength, "
+            "making it suitable for slower attackers.\n\n"
+            "✦ Particularly useful when acting later is acceptable."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # DEFENSE CATEGORY
+    # =====================================================
+
+    if data == "nature_defense":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "𝐁𝐨𝐥𝐝",
+                    callback_data="nature_bold"
+                ),
+                InlineKeyboardButton(
+                    "𝐈𝐦𝐩𝐢𝐬𝐡",
+                    callback_data="nature_impish"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "𝐋𝐚𝐱",
+                    callback_data="nature_lax"
+                ),
+                InlineKeyboardButton(
+                    "𝐑𝐞𝐥𝐚𝐱𝐞𝐝",
+                    callback_data="nature_relaxed"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="nature_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "🛡️ <b>𝐃𝐄𝐅𝐄𝐍𝐒𝐄 𝐍𝐀𝐓𝐔𝐑𝐄𝐒</b>\n\n"
+            "These Natures improve physical durability "
+            "by reducing the value of another stat.\n\n"
+            "⬆️ Defense receives the boost\n"
+            "⬇️ One other stat is reduced\n\n"
+            "✦ Pick a Nature to examine its battle role."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # BOLD
+    # =====================================================
+
+    if data == "nature_bold":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_defense"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐁𝐎𝐋𝐃 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Defense (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Attack (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Strengthens physical durability while reducing "
+            "the power of physical attacks.\n\n"
+            "✦ A solid option for defensive and support builds."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # IMPISH
+    # =====================================================
+
+    if data == "nature_impish":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_defense"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐈𝐌𝐏𝐈𝐒𝐇 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Defense (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Sp. Attack (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Built for physical toughness without relying "
+            "on special attacking power.\n\n"
+            "✦ Great for bulky Pokémon using physical moves."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # LAX
+    # =====================================================
+
+    if data == "nature_lax":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_defense"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐋𝐀𝐗 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Defense (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Sp. Defense (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Leans toward physical protection while giving "
+            "up some special defensive strength.\n\n"
+            "✦ Useful when physical survivability is the priority."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # RELAXED
+    # =====================================================
+
+    if data == "nature_relaxed":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_defense"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐑𝐄𝐋𝐀𝐗𝐄𝐃 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Defense (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Speed (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Adds physical sturdiness while accepting a "
+            "slower pace in battle.\n\n"
+            "✦ Well suited to slower defensive Pokémon."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # SP. ATTACK CATEGORY
+    # =====================================================
+
+    if data == "nature_spattack":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "𝐌𝐨𝐝𝐞𝐬𝐭",
+                    callback_data="nature_modest"
+                ),
+                InlineKeyboardButton(
+                    "𝐌𝐢𝐥𝐝",
+                    callback_data="nature_mild"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "𝐑𝐚𝐬𝐡",
+                    callback_data="nature_rash"
+                ),
+                InlineKeyboardButton(
+                    "𝐐𝐮𝐢𝐞𝐭",
+                    callback_data="nature_quiet"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="nature_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "✨ <b>𝐒𝐏. 𝐀𝐓𝐓𝐀𝐂𝐊 𝐍𝐀𝐓𝐔𝐑𝐄𝐒</b>\n\n"
+            "These Natures amplify special attacking power "
+            "while making another stat slightly less effective.\n\n"
+            "⬆️ Sp. Attack receives the boost\n"
+            "⬇️ Another stat takes the reduction\n\n"
+            "✦ Select a Nature to explore its profile."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # MODEST
+    # =====================================================
+
+    if data == "nature_modest":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_spattack"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐌𝐎𝐃𝐄𝐒𝐓 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Sp. Attack (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Attack (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Focuses a Pokémon's offensive potential on "
+            "special moves rather than physical attacks.\n\n"
+            "✦ A strong match for dedicated special attackers."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # MILD
+    # =====================================================
+
+    if data == "nature_mild":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_spattack"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐌𝐈𝐋𝐃 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Sp. Attack (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Defense (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Pushes special damage upward while sacrificing "
+            "some physical resilience.\n\n"
+            "✦ Fits offensive special builds that value pressure."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # RASH
+    # =====================================================
+
+    if data == "nature_rash":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_spattack"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐑𝐀𝐒𝐇 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Sp. Attack (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Sp. Defense (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Concentrates on special offensive output while "
+            "giving up some protection from special attacks.\n\n"
+            "✦ Best when offensive power takes priority."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # QUIET
+    # =====================================================
+
+    if data == "nature_quiet":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_spattack"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐐𝐔𝐈𝐄𝐓 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Sp. Attack (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Speed (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Trades Speed for stronger special attacks, "
+            "favoring Pokémon comfortable with slower turns.\n\n"
+            "✦ Works naturally with slow special attackers."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # SP. DEFENSE CATEGORY
+    # =====================================================
+
+    if data == "nature_spdefense":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "𝐂𝐚𝐥𝐦",
+                    callback_data="nature_calm"
+                ),
+                InlineKeyboardButton(
+                    "𝐆𝐞𝐧𝐭𝐥𝐞",
+                    callback_data="nature_gentle"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "𝐂𝐚𝐫𝐞𝐟𝐮𝐥",
+                    callback_data="nature_careful"
+                ),
+                InlineKeyboardButton(
+                    "𝐒𝐚𝐬𝐬𝐲",
+                    callback_data="nature_sassy"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="nature_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "✨ <b>𝐒𝐏. 𝐃𝐄𝐅𝐄𝐍𝐒𝐄 𝐍𝐀𝐓𝐔𝐑𝐄𝐒</b>\n\n"
+            "These Natures reinforce resistance against "
+            "special attacks by lowering another stat.\n\n"
+            "⬆️ Sp. Defense receives the boost\n"
+            "⬇️ Another stat takes the reduction\n\n"
+            "✦ Select a Nature to explore its profile."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # CALM
+    # =====================================================
+
+    if data == "nature_calm":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_spdefense"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐂𝐀𝐋𝐌 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Sp. Defense (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Attack (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Strengthens special resilience while reducing "
+            "the value of physical attacking power.\n\n"
+            "✦ A natural fit for specially defensive builds."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # GENTLE
+    # =====================================================
+
+    if data == "nature_gentle":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_spdefense"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐆𝐄𝐍𝐓𝐋𝐄 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Sp. Defense (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Defense (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Places greater emphasis on special protection "
+            "than physical toughness.\n\n"
+            "✦ Useful when special durability matters most."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+        # =====================================================
+    # CAREFUL
+    # =====================================================
+
+    if data == "nature_careful":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_spdefense"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐂𝐀𝐑𝐄𝐅𝐔𝐋 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Sp. Defense (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Sp. Attack (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Boosts special resistance while reducing "
+            "special attacking power.\n\n"
+            "✦ A strong choice for Pokémon built around "
+            "physical attacks and special durability."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # SASSY
+    # =====================================================
+
+    if data == "nature_sassy":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_spdefense"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐒𝐀𝐒𝐒𝐘 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Sp. Defense (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Speed (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Favors special durability while accepting "
+            "a slower turn order.\n\n"
+            "✦ Well suited to slow, bulky strategies."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # SPEED CATEGORY
+    # =====================================================
+
+    if data == "nature_speed":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "𝐓𝐢𝐦𝐢𝐝",
+                    callback_data="nature_timid"
+                ),
+                InlineKeyboardButton(
+                    "𝐇𝐚𝐬𝐭𝐲",
+                    callback_data="nature_hasty"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "𝐉𝐨𝐥𝐥𝐲",
+                    callback_data="nature_jolly"
+                ),
+                InlineKeyboardButton(
+                    "𝐍𝐚𝐢𝐯𝐞",
+                    callback_data="nature_naive"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="nature_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "⚡ <b>𝐒𝐏𝐄𝐄𝐃 𝐍𝐀𝐓𝐔𝐑𝐄𝐒</b>\n\n"
+            "These Natures push Speed higher by "
+            "trading away another stat.\n\n"
+            "⬆️ Speed receives the boost\n"
+            "⬇️ Another stat receives the reduction\n\n"
+            "✦ Choose a Nature to inspect its battle profile."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # TIMID
+    # =====================================================
+
+    if data == "nature_timid":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_speed"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐓𝐈𝐌𝐈𝐃 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Speed (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Attack (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Maximizes Speed while giving up physical "
+            "attacking power.\n\n"
+            "✦ Ideal for fast special-focused builds."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+        # =====================================================
+    # HASTY
+    # =====================================================
+
+    if data == "nature_hasty":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_speed"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐇𝐀𝐒𝐓𝐘 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Speed (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Defense (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Gives Speed a boost at the cost of some "
+            "physical durability.\n\n"
+            "✦ Useful for fast offensive and mixed builds."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # JOLLY
+    # =====================================================
+
+    if data == "nature_jolly":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_speed"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐉𝐎𝐋𝐋𝐘 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Speed (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Sp. Attack (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Boosts Speed while lowering special "
+            "attacking power.\n\n"
+            "✦ A classic choice for fast physical attackers."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # NAIVE
+    # =====================================================
+
+    if data == "nature_naive":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲",
+                callback_data="nature_speed"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "🌿 <b>𝐍𝐀𝐈𝐕𝐄 𝐍𝐀𝐓𝐔𝐑𝐄</b>\n\n"
+            "📈 <b>𝐑𝐢𝐬𝐞𝐬:</b> Speed (+10%)\n"
+            "📉 <b>𝐅𝐚𝐥𝐥𝐬:</b> Sp. Defense (-10%)\n\n"
+            "💡 <b>𝐁𝐚𝐭𝐭𝐥𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
+            "Keeps Speed high while sacrificing some "
+            "special defensive strength.\n\n"
+            "✦ Works well for fast mixed attackers."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+
+    # =====================================================
+    # NEUTRAL
+    # =====================================================
+
+    if data == "nature_neutral":
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤",
+                callback_data="nature_main"
+            )
+        ]]
+
+        text = (
+            "<blockquote>"
+            "⚪ <b>𝐍𝐄𝐔𝐓𝐑𝐀𝐋 𝐍𝐀𝐓𝐔𝐑𝐄𝐒</b>\n\n"
+            "Neutral Natures do not apply a Nature-based "
+            "increase or decrease to the five main battle stats.\n\n"
+            "⚖️ <b>𝐒𝐭𝐚𝐭 𝐄𝐟𝐟𝐞𝐜𝐭:</b> No modifier\n\n"
+            "✦ A clean option when you do not want a "
+            "specific stat trade-off."
+            "</blockquote>"
+        )
+
+        await edit_page(text, keyboard)
+        return
+            
 
 # =========================================================
 # EV TRAINING GUIDE
