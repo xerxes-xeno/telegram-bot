@@ -5821,7 +5821,6 @@ def main():
     )
        
     app.add_handler(CommandHandler("datanature", datanature))
-    app.add_handler(CommandHandler("bestnat", bestnat))
     app.add_handler(CommandHandler("evbuild", evbuild))
     app.add_handler(CommandHandler("datatm", datatm))
     app.add_handler(CommandHandler("pokeballs", pokeballs))
