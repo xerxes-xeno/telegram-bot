@@ -924,7 +924,7 @@ async def helpdex_callback(update, context):
             ])
         )
     
-    elif query.data == dex_type:
+    elif query.data == "dex_type":
     
         await query.edit_message_caption(
             caption=(
