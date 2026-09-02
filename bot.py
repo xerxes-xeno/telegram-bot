@@ -923,66 +923,37 @@ async def helpdex_callback(update, context):
                 ]
             ])
         )
-
+    
     elif query.data == "dex_type":
-
-        keyboard = [
-            [
-                InlineKeyboardButton("🔥 𝐅𝐢𝐫𝐞", callback_data="type_fire"),
-                InlineKeyboardButton("💧 𝐖𝐚𝐭𝐞𝐫", callback_data="type_water"),
-                InlineKeyboardButton("🌿 𝐆𝐫𝐚𝐬𝐬", callback_data="type_grass")
-            ],
-            [
-                InlineKeyboardButton("⚡ 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜", callback_data="type_electric"),
-                InlineKeyboardButton("❄️ 𝐈𝐜𝐞", callback_data="type_ice"),
-                InlineKeyboardButton("🥊 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠", callback_data="type_fighting")
-            ],
-            [
-                InlineKeyboardButton("☠️ 𝐏𝐨𝐢𝐬𝐨𝐧", callback_data="type_poison"),
-                InlineKeyboardButton("🌍 𝐆𝐫𝐨𝐮𝐧𝐝", callback_data="type_ground"),
-                InlineKeyboardButton("🪽 𝐅𝐥𝐲𝐢𝐧𝐠", callback_data="type_flying")
-            ],
-            [
-                InlineKeyboardButton("🔮 𝐏𝐬𝐲𝐜𝐡𝐢𝐜", callback_data="type_psychic"),
-                InlineKeyboardButton("🐛 𝐁𝐮𝐠", callback_data="type_bug"),
-                InlineKeyboardButton("🪨 𝐑𝐨𝐜𝐤", callback_data="type_rock")
-            ],
-            [
-                InlineKeyboardButton("👻 𝐆𝐡𝐨𝐬𝐭", callback_data="type_ghost"),
-                InlineKeyboardButton("🐉 𝐃𝐫𝐚𝐠𝐨𝐧", callback_data="type_dragon"),
-                InlineKeyboardButton("🌑 𝐃𝐚𝐫𝐤", callback_data="type_dark")
-            ],
-            [
-                InlineKeyboardButton("⚙️ 𝐒𝐭𝐞𝐞𝐥", callback_data="type_steel"),
-                InlineKeyboardButton("🧚 𝐅𝐚𝐢𝐫𝐲", callback_data="type_fairy"),
-                InlineKeyboardButton("⚪ 𝐍𝐨𝐫𝐦𝐚𝐥", callback_data="type_normal")
-            ],
-            [
-                InlineKeyboardButton(
-                    "◀️ 𝐁𝐚𝐜𝐤",
-                    callback_data="dex_help_main"
-                )
-            ]
-        ]
 
         await query.edit_message_caption(
             caption=(
-                "📊 𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐓𝐘𝐏𝐄 𝐆𝐔𝐈𝐃𝐄\n\n"
+                "📊 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞\n\n"
 
                 "<blockquote>"
                 "𝐄𝐯𝐞𝐫𝐲 𝐓𝐲𝐩𝐞 𝐡𝐚𝐬 𝐢𝐭𝐬 𝐨𝐰𝐧 𝐬𝐭𝐫𝐞𝐧𝐠𝐭𝐡𝐬, "
                 "𝐰𝐞𝐚𝐤𝐧𝐞𝐬𝐬𝐞𝐬 𝐚𝐧𝐝 𝐢𝐦𝐦𝐮𝐧𝐢𝐭𝐢𝐞𝐬."
                 "</blockquote>\n\n"
 
-                "💚 𝐒𝐮𝐩𝐞𝐫 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 — 𝟐×\n"
-                "💛 𝐍𝐨𝐫𝐦𝐚𝐥 — 𝟏×\n"
-                "💔 𝐍𝐨𝐭 𝐕𝐞𝐫𝐲 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 — 𝟎.𝟓×\n"
-                "🚫 𝐍𝐨 𝐄𝐟𝐟𝐞𝐜𝐭 — 𝟎×\n\n"
-
-                "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐓𝐲𝐩𝐞:"
+                "⌘ 𝐂𝐨𝐦𝐦𝐚𝐧𝐝: /datatype\n\n"
+                "⤷ 𝐔𝐬𝐞 𝐭𝐡𝐞 𝐜𝐨𝐦𝐦𝐚𝐧𝐝 𝐛𝐞𝐥𝐨𝐰 𝐭𝐨 𝐨𝐩𝐞𝐧 "
+                "𝐭𝐡𝐞 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐓𝐲𝐩𝐞 𝐆𝐮𝐢𝐝𝐞."
             ),
             parse_mode="HTML",
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "📊 𝐎𝐩𝐞𝐧 /𝐝𝐚𝐭𝐚𝐭𝐲𝐩𝐞",
+                        callback_data="open_datatype"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "◀️ 𝐁𝐚𝐜𝐤",
+                        callback_data="dex_help_main"
+                    )
+                ]
+            ])
         )
     
     elif query.data == "dex_nature":
