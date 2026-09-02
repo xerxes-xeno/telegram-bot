@@ -936,7 +936,7 @@ async def helpdex_callback(update, context):
             ),
             parse_mode="HTML",
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("◀️ 𝐁𝐚𝐜𝐤", callback_data=dex_help_main)]
+                [InlineKeyboardButton("◀️ 𝐁𝐚𝐜𝐤", callback_data="dex_help_main")]
             ])
         )    
     
