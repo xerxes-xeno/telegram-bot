@@ -1377,6 +1377,7 @@ async def type_callback(update, context):
             "strong": "𝐆𝐫𝐚𝐬𝐬, 𝐈𝐜𝐞, 𝐁𝐮𝐠, 𝐒𝐭𝐞𝐞𝐥",
             "weak": "𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐑𝐨𝐜𝐤, 𝐃𝐫𝐚𝐠𝐨𝐧",
             "immune": "𝐍𝐨𝐧𝐞",
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐚𝐫𝐤, 𝐅𝐚𝐢𝐫𝐲",
             "defense": "𝐖𝐚𝐭𝐞𝐫 (𝟐×), 𝐆𝐫𝐨𝐮𝐧𝐝 (𝟐×), 𝐑𝐨𝐜𝐤 (𝟐×)"
         },
 
@@ -1385,6 +1386,7 @@ async def type_callback(update, context):
             "strong": "𝐅𝐢𝐫𝐞, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐑𝐨𝐜𝐤",
             "weak": "𝐖𝐚𝐭𝐞𝐫, 𝐆𝐫𝐚𝐬𝐬, 𝐃𝐫𝐚𝐠𝐨𝐧",
             "immune": "𝐍𝐨𝐧𝐞",
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐈𝐜𝐞, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐁𝐮𝐠, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐚𝐫𝐤, 𝐒𝐭𝐞𝐞𝐥, 𝐅𝐚𝐢𝐫𝐲",
             "defense": "𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜 (𝟐×), 𝐆𝐫𝐚𝐬𝐬 (𝟐×)"
         },
 
@@ -1393,6 +1395,7 @@ async def type_callback(update, context):
             "strong": "𝐖𝐚𝐭𝐞𝐫, 𝐅𝐥𝐲𝐢𝐧𝐠",
             "weak": "𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐆𝐫𝐚𝐬𝐬, 𝐃𝐫𝐚𝐠𝐨𝐧",
             "immune": "𝐆𝐫𝐨𝐮𝐧𝐝",
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐅𝐢𝐫𝐞, 𝐈𝐜𝐞, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐁𝐮𝐠, 𝐑𝐨𝐜𝐤, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐚𝐫𝐤, 𝐒𝐭𝐞𝐞𝐥, 𝐅𝐚𝐢𝐫𝐲",
             "defense": "𝐆𝐫𝐨𝐮𝐧𝐝 (𝟐×)"
         },
 
@@ -1401,6 +1404,7 @@ async def type_callback(update, context):
             "strong": "𝐖𝐚𝐭𝐞𝐫, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐑𝐨𝐜𝐤",
             "weak": "𝐅𝐢𝐫𝐞, 𝐆𝐫𝐚𝐬𝐬, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐁𝐮𝐠, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐒𝐭𝐞𝐞𝐥",
             "immune": "𝐍𝐨𝐧𝐞",
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐈𝐜𝐞, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐚𝐫𝐤, 𝐅𝐚𝐢𝐫𝐲",
             "defense": "𝐅𝐢𝐫𝐞 (𝟐×), 𝐈𝐜𝐞 (𝟐×), 𝐏𝐨𝐢𝐬𝐨𝐧 (𝟐×), 𝐅𝐥𝐲𝐢𝐧𝐠 (𝟐×), 𝐁𝐮𝐠 (𝟐×)"
         },
 
@@ -1409,6 +1413,7 @@ async def type_callback(update, context):
             "strong": "𝐆𝐫𝐚𝐬𝐬, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐃𝐫𝐚𝐠𝐨𝐧",
             "weak": "𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐈𝐜𝐞, 𝐒𝐭𝐞𝐞𝐥",
             "immune": "𝐍𝐨𝐧𝐞",
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐁𝐮𝐠, 𝐑𝐨𝐜𝐤, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐚𝐫𝐤, 𝐅𝐚𝐢𝐫𝐲",
             "defense": "𝐅𝐢𝐫𝐞 (𝟐×), 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟐×), 𝐑𝐨𝐜𝐤 (𝟐×), 𝐒𝐭𝐞𝐞𝐥 (𝟐×)"
         },
 
@@ -1417,7 +1422,8 @@ async def type_callback(update, context):
             "strong": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐈𝐜𝐞, 𝐑𝐨𝐜𝐤, 𝐃𝐚𝐫𝐤, 𝐒𝐭𝐞𝐞𝐥",
             "weak": "𝐏𝐨𝐢𝐬𝐨𝐧, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐁𝐮𝐠, 𝐅𝐚𝐢𝐫𝐲",
             "immune": "𝐆𝐡𝐨𝐬𝐭",
-            "defense": "𝐅𝐥𝐲𝐢𝐧𝐠 (𝟐×), 𝐏𝐬𝐲𝐜𝐡𝐢𝐜 (𝟐×), 𝐅𝐚𝐢𝐫𝐲 (𝟐×)"
+            "normal": "𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐆𝐫𝐚𝐬𝐬, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐃𝐫𝐚𝐠𝐨𝐧",
+            "defense": "𝐅𝐥𝐲𝐢𝐧𝐠 (𝟐×), 𝐏𝐬𝐲𝐜𝐡𝐢𝐜 (𝟐×), 𝐁𝐮𝐠 (𝟎.𝟓×), 𝐑𝐨𝐜𝐤 (𝟎.𝟓×), 𝐃𝐚𝐫𝐤 (𝟎.𝟓×), 𝐅𝐚𝐢𝐫𝐲 (𝟐×)"
         },
 
         "poison": {
@@ -1425,7 +1431,8 @@ async def type_callback(update, context):
             "strong": "𝐆𝐫𝐚𝐬𝐬, 𝐅𝐚𝐢𝐫𝐲",
             "weak": "𝐏𝐨𝐢𝐬𝐨𝐧, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐑𝐨𝐜𝐤, 𝐆𝐡𝐨𝐬𝐭",
             "immune": "𝐒𝐭𝐞𝐞𝐥",
-            "defense": "𝐆𝐫𝐨𝐮𝐧𝐝 (𝟐×), 𝐏𝐬𝐲𝐜𝐡𝐢𝐜 (𝟐×)"
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐈𝐜𝐞, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐁𝐮𝐠, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐃𝐚𝐫𝐤",
+            "defense": "𝐆𝐫𝐚𝐬𝐬 (𝟎.𝟓×), 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟎.𝟓×), 𝐏𝐨𝐢𝐬𝐨𝐧 (𝟎.𝟓×), 𝐆𝐫𝐨𝐮𝐧𝐝 (𝟐×), 𝐏𝐬𝐲𝐜𝐡𝐢𝐜 (𝟐×), 𝐁𝐮𝐠 (𝟎.𝟓×), 𝐅𝐚𝐢𝐫𝐲 (𝟎.𝟓×)"
         },
 
         "ground": {
@@ -1433,7 +1440,8 @@ async def type_callback(update, context):
             "strong": "𝐅𝐢𝐫𝐞, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐑𝐨𝐜𝐤, 𝐒𝐭𝐞𝐞𝐥",
             "weak": "𝐆𝐫𝐚𝐬𝐬, 𝐁𝐮𝐠",
             "immune": "𝐅𝐥𝐲𝐢𝐧𝐠",
-            "defense": "𝐖𝐚𝐭𝐞𝐫 (𝟐×), 𝐆𝐫𝐚𝐬𝐬 (𝟐×), 𝐈𝐜𝐞 (𝟐×)"
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐖𝐚𝐭𝐞𝐫, 𝐈𝐜𝐞, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐃𝐚𝐫𝐤, 𝐅𝐚𝐢𝐫𝐲",
+            "defense": "𝐖𝐚𝐭𝐞𝐫 (𝟐×), 𝐆𝐫𝐚𝐬𝐬 (𝟐×), 𝐈𝐜𝐞 (𝟐×), 𝐏𝐨𝐢𝐬𝐨𝐧 (𝟎.𝟓×), 𝐑𝐨𝐜𝐤 (𝟎.𝟓×), 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜 (𝟎×)"
         },
 
         "flying": {
@@ -1441,7 +1449,8 @@ async def type_callback(update, context):
             "strong": "𝐆𝐫𝐚𝐬𝐬, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐁𝐮𝐠",
             "weak": "𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐑𝐨𝐜𝐤, 𝐒𝐭𝐞𝐞𝐥",
             "immune": "𝐍𝐨𝐧𝐞",
-            "defense": "𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜 (𝟐×), 𝐈𝐜𝐞 (𝟐×), 𝐑𝐨𝐜𝐤 (𝟐×)"
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐈𝐜𝐞, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐃𝐚𝐫𝐤, 𝐅𝐚𝐢𝐫𝐲",
+            "defense": "𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜 (𝟐×), 𝐈𝐜𝐞 (𝟐×), 𝐑𝐨𝐜𝐤 (𝟐×), 𝐆𝐫𝐨𝐮𝐧𝐝 (𝟎×)"
         },
 
         "psychic": {
@@ -1449,7 +1458,8 @@ async def type_callback(update, context):
             "strong": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐏𝐨𝐢𝐬𝐨𝐧",
             "weak": "𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐒𝐭𝐞𝐞𝐥",
             "immune": "𝐃𝐚𝐫𝐤",
-            "defense": "𝐁𝐮𝐠 (𝟐×), 𝐆𝐡𝐨𝐬𝐭 (𝟐×), 𝐃𝐚𝐫𝐤 (𝟐×)"
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐆𝐫𝐚𝐬𝐬, 𝐈𝐜𝐞, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐁𝐮𝐠, 𝐑𝐨𝐜𝐤, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐅𝐚𝐢𝐫𝐲",
+            "defense": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟎.𝟓×), 𝐏𝐬𝐲𝐜𝐡𝐢𝐜 (𝟎.𝟓×), 𝐁𝐮𝐠 (𝟐×), 𝐆𝐡𝐨𝐬𝐭 (𝟐×), 𝐃𝐚𝐫𝐤 (𝟐×)"
         },
 
         "bug": {
@@ -1457,7 +1467,8 @@ async def type_callback(update, context):
             "strong": "𝐆𝐫𝐚𝐬𝐬, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐃𝐚𝐫𝐤",
             "weak": "𝐅𝐢𝐫𝐞, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐆𝐡𝐨𝐬𝐭, 𝐒𝐭𝐞𝐞𝐥, 𝐅𝐚𝐢𝐫𝐲",
             "immune": "𝐍𝐨𝐧𝐞",
-            "defense": "𝐅𝐢𝐫𝐞 (𝟐×), 𝐅𝐥𝐲𝐢𝐧𝐠 (𝟐×), 𝐑𝐨𝐜𝐤 (𝟐×)"
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐈𝐜𝐞, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐁𝐮𝐠, 𝐑𝐨𝐜𝐤, 𝐃𝐫𝐚𝐠𝐨𝐧",
+            "defense": "𝐅𝐢𝐫𝐞 (𝟐×), 𝐅𝐥𝐲𝐢𝐧𝐠 (𝟐×), 𝐑𝐨𝐜𝐤 (𝟐×), 𝐆𝐫𝐚𝐬𝐬 (𝟎.𝟓×), 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟎.𝟓×), 𝐆𝐫𝐨𝐮𝐧𝐝 (𝟎.𝟓×)"
         },
 
         "rock": {
@@ -1465,7 +1476,8 @@ async def type_callback(update, context):
             "strong": "𝐅𝐢𝐫𝐞, 𝐈𝐜𝐞, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐁𝐮𝐠",
             "weak": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐒𝐭𝐞𝐞𝐥",
             "immune": "𝐍𝐨𝐧𝐞",
-            "defense": "𝐖𝐚𝐭𝐞𝐫 (𝟐×), 𝐆𝐫𝐚𝐬𝐬 (𝟐×), 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟐×), 𝐆𝐫𝐨𝐮𝐧𝐝 (𝟐×), 𝐒𝐭𝐞𝐞𝐥 (𝟐×)"
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐆𝐫𝐚𝐬𝐬, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐑𝐨𝐜𝐤, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐃𝐚𝐫𝐤, 𝐅𝐚𝐢𝐫𝐲",
+            "defense": "𝐍𝐨𝐫𝐦𝐚𝐥 (𝟎.𝟓×), 𝐅𝐢𝐫𝐞 (𝟎.𝟓×), 𝐖𝐚𝐭𝐞𝐫 (𝟐×), 𝐆𝐫𝐚𝐬𝐬 (𝟐×), 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟐×), 𝐆𝐫𝐨𝐮𝐧𝐝 (𝟐×), 𝐅𝐥𝐲𝐢𝐧𝐠 (𝟎.𝟓×), 𝐏𝐨𝐢𝐬𝐨𝐧 (𝟎.𝟓×), 𝐒𝐭𝐞𝐞𝐥 (𝟐×)"
         },
 
         "ghost": {
@@ -1473,7 +1485,8 @@ async def type_callback(update, context):
             "strong": "𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐆𝐡𝐨𝐬𝐭",
             "weak": "𝐃𝐚𝐫𝐤",
             "immune": "𝐍𝐨𝐫𝐦𝐚𝐥",
-            "defense": "𝐆𝐡𝐨𝐬𝐭 (𝟐×), 𝐃𝐚𝐫𝐤 (𝟐×)"
+            "normal": "𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐆𝐫𝐚𝐬𝐬, 𝐈𝐜𝐞, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐁𝐮𝐠, 𝐑𝐨𝐜𝐤, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐒𝐭𝐞𝐞𝐥, 𝐅𝐚𝐢𝐫𝐲",
+            "defense": "𝐍𝐨𝐫𝐦𝐚𝐥 (𝟎×), 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟎×), 𝐏𝐨𝐢𝐬𝐨𝐧 (𝟎.𝟓×), 𝐁𝐮𝐠 (𝟎.𝟓×), 𝐆𝐡𝐨𝐬𝐭 (𝟐×), 𝐃𝐚𝐫𝐤 (𝟐×)"
         },
 
         "dragon": {
@@ -1481,23 +1494,26 @@ async def type_callback(update, context):
             "strong": "𝐃𝐫𝐚𝐠𝐨𝐧",
             "weak": "𝐒𝐭𝐞𝐞𝐥",
             "immune": "𝐅𝐚𝐢𝐫𝐲",
-            "defense": "𝐈𝐜𝐞 (𝟐×), 𝐃𝐫𝐚𝐠𝐨𝐧 (𝟐×), 𝐅𝐚𝐢𝐫𝐲 (𝟐×)"
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐆𝐫𝐚𝐬𝐬, 𝐈𝐜𝐞, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐁𝐮𝐠, 𝐑𝐨𝐜𝐤, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐚𝐫𝐤",
+            "defense": "𝐅𝐢𝐫𝐞 (𝟎.𝟓×), 𝐖𝐚𝐭𝐞𝐫 (𝟎.𝟓×), 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜 (𝟎.𝟓×), 𝐆𝐫𝐚𝐬𝐬 (𝟎.𝟓×), 𝐈𝐜𝐞 (𝟐×), 𝐃𝐫𝐚𝐠𝐨𝐧 (𝟐×), 𝐅𝐚𝐢𝐫𝐲 (𝟐×)"
         },
 
         "dark": {
             "name": "🌑 𝐃𝐀𝐑𝐊 𝐓𝐘𝐏𝐄",
             "strong": "𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐆𝐡𝐨𝐬𝐭",
             "weak": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐃𝐚𝐫𝐤, 𝐅𝐚𝐢𝐫𝐲",
-            "immune": "𝐍𝐨𝐧𝐞",
-            "defense": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟐×), 𝐁𝐮𝐠 (𝟐×), 𝐅𝐚𝐢𝐫𝐲 (𝟐×)"
+            "immune": "𝐏𝐬𝐲𝐜𝐡𝐢𝐜",
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐆𝐫𝐚𝐬𝐬, 𝐈𝐜𝐞, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐁𝐮𝐠, 𝐑𝐨𝐜𝐤, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐒𝐭𝐞𝐞𝐥",
+            "defense": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟐×), 𝐁𝐮𝐠 (𝟐×), 𝐅𝐚𝐢𝐫𝐲 (𝟐×), 𝐏𝐬𝐲𝐜𝐡𝐢𝐜 (𝟎×), 𝐆𝐡𝐨𝐬𝐭 (𝟎.𝟓×), 𝐃𝐚𝐫𝐤 (𝟎.𝟓×)"
         },
 
         "steel": {
             "name": "⚙️ 𝐒𝐓𝐄𝐄𝐋 𝐓𝐘𝐏𝐄",
             "strong": "𝐈𝐜𝐞, 𝐑𝐨𝐜𝐤, 𝐅𝐚𝐢𝐫𝐲",
             "weak": "𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐒𝐭𝐞𝐞𝐥",
-            "immune": "𝐍𝐨𝐧𝐞",
-            "defense": "𝐅𝐢𝐫𝐞 (𝟐×), 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟐×), 𝐆𝐫𝐨𝐮𝐧𝐝 (𝟐×)"
+            "immune": "𝐏𝐨𝐢𝐬𝐨𝐧",
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐆𝐫𝐚𝐬𝐬, 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐁𝐮𝐠, 𝐆𝐡𝐨𝐬𝐭, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐃𝐚𝐫𝐤",
+            "defense": "𝐍𝐨𝐫𝐦𝐚𝐥 (𝟎.𝟓×), 𝐅𝐢𝐫𝐞 (𝟐×), 𝐆𝐫𝐚𝐬𝐬 (𝟎.𝟓×), 𝐈𝐜𝐞 (𝟎.𝟓×), 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟐×), 𝐆𝐫𝐨𝐮𝐧𝐝 (𝟐×), 𝐅𝐥𝐲𝐢𝐧𝐠 (𝟎.𝟓×), 𝐏𝐬𝐲𝐜𝐡𝐢𝐜 (𝟎.𝟓×), 𝐁𝐮𝐠 (𝟎.𝟓×), 𝐑𝐨𝐜𝐤 (𝟎.𝟓×), 𝐃𝐫𝐚𝐠𝐨𝐧 (𝟎.𝟓×), 𝐒𝐭𝐞𝐞𝐥 (𝟎.𝟓×), 𝐅𝐚𝐢𝐫𝐲 (𝟎.𝟓×), 𝐏𝐨𝐢𝐬𝐨𝐧 (𝟎×)"
         },
 
         "fairy": {
@@ -1505,7 +1521,8 @@ async def type_callback(update, context):
             "strong": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐃𝐚𝐫𝐤",
             "weak": "𝐅𝐢𝐫𝐞, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐒𝐭𝐞𝐞𝐥",
             "immune": "𝐍𝐨𝐧𝐞",
-            "defense": "𝐏𝐨𝐢𝐬𝐨𝐧 (𝟐×), 𝐒𝐭𝐞𝐞𝐥 (𝟐×)"
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐆𝐫𝐚𝐬𝐬, 𝐈𝐜𝐞, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐁𝐮𝐠, 𝐑𝐨𝐜𝐤, 𝐆𝐡𝐨𝐬𝐭, 𝐅𝐚𝐢𝐫𝐲",
+            "defense": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟎.𝟓×), 𝐏𝐨𝐢𝐬𝐨𝐧 (𝟐×), 𝐁𝐮𝐠 (𝟎.𝟓×), 𝐃𝐫𝐚𝐠𝐨𝐧 (𝟎×), 𝐃𝐚𝐫𝐤 (𝟎.𝟓×), 𝐒𝐭𝐞𝐞𝐥 (𝟐×)"
         },
 
         "normal": {
@@ -1513,9 +1530,11 @@ async def type_callback(update, context):
             "strong": "𝐍𝐨𝐧𝐞",
             "weak": "𝐑𝐨𝐜𝐤, 𝐒𝐭𝐞𝐞𝐥",
             "immune": "𝐆𝐡𝐨𝐬𝐭",
-            "defense": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟐×)"
+            "normal": "𝐍𝐨𝐫𝐦𝐚𝐥, 𝐅𝐢𝐫𝐞, 𝐖𝐚𝐭𝐞𝐫, 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜, 𝐆𝐫𝐚𝐬𝐬, 𝐈𝐜𝐞, 𝐏𝐨𝐢𝐬𝐨𝐧, 𝐆𝐫𝐨𝐮𝐧𝐝, 𝐅𝐥𝐲𝐢𝐧𝐠, 𝐏𝐬𝐲𝐜𝐡𝐢𝐜, 𝐁𝐮𝐠, 𝐑𝐨𝐜𝐤, 𝐃𝐫𝐚𝐠𝐨𝐧, 𝐃𝐚𝐫𝐤, 𝐅𝐚𝐢𝐫𝐲",
+            "defense": "𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠 (𝟐×), 𝐆𝐡𝐨𝐬𝐭 (𝟎×)"
         }
     }
+
     type_name = query.data.replace("type_", "")
 
     data = type_data.get(type_name)
@@ -1528,20 +1547,23 @@ async def type_callback(update, context):
             f"🔍 {data['name']}\n\n"
 
             "<blockquote>"
-            "𝐓𝐡𝐢𝐬 𝐓𝐲𝐩𝐞 𝐡𝐚𝐬 𝐢𝐭𝐬 𝐨𝐰𝐧 𝐨𝐟𝐟𝐞𝐧𝐬𝐢𝐯𝐞 "
-            "𝐚𝐧𝐝 𝐝𝐞𝐟𝐞𝐧𝐬𝐢𝐯𝐞 𝐩𝐫𝐨𝐟𝐢𝐥𝐞."
+            "𝐄𝐯𝐞𝐫𝐲 𝐓𝐲𝐩𝐞 𝐡𝐚𝐬 𝐢𝐭𝐬 𝐨𝐰𝐧 "
+            "𝐨𝐟𝐟𝐞𝐧𝐬𝐢𝐯𝐞 𝐚𝐧𝐝 𝐝𝐞𝐟𝐞𝐧𝐬𝐢𝐯𝐞 𝐩𝐫𝐨𝐟𝐢𝐥𝐞."
             "</blockquote>\n\n"
 
-            "💚 <b>𝐒𝐮𝐩𝐞𝐫 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞</b>\n"
+            "💚 <b>𝐒𝐮𝐩𝐞𝐫 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 — 𝟐×</b>\n"
             f"{data['strong']}\n\n"
 
-            "💔 <b>𝐑𝐞𝐝𝐮𝐜𝐞𝐝 𝐃𝐚𝐦𝐚𝐠𝐞</b>\n"
+            "💛 <b>𝐍𝐨𝐫𝐦𝐚𝐥 — 𝟏×</b>\n"
+            f"{data['normal']}\n\n"
+
+            "💔 <b>𝐑𝐞𝐝𝐮𝐜𝐞𝐝 𝐃𝐚𝐦𝐚𝐠𝐞 — 𝟎.𝟓×</b>\n"
             f"{data['weak']}\n\n"
 
-            "🚫 <b>𝐍𝐨 𝐄𝐟𝐟𝐞𝐜𝐭</b>\n"
+            "🚫 <b>𝐍𝐨 𝐄𝐟𝐟𝐞𝐜𝐭 — 𝟎×</b>\n"
             f"{data['immune']}\n\n"
 
-            "🛡️ <b>𝐃𝐞𝐟𝐞𝐧𝐬𝐢𝐯𝐞 𝐖𝐞𝐚𝐤𝐧𝐞𝐬𝐬𝐞𝐬</b>\n"
+            "🛡️ <b>𝐃𝐞𝐟𝐞𝐧𝐬𝐢𝐯𝐞 𝐏𝐫𝐨𝐟𝐢𝐥𝐞</b>\n"
             f"{data['defense']}"
         ),
         parse_mode="HTML",
@@ -1553,6 +1575,67 @@ async def type_callback(update, context):
                 )
             ]
         ])
+    )
+
+
+# =========================================================
+# TYPE GUIDE BACK
+# =========================================================
+
+async def datatype_back_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    keyboard = [
+        [
+            InlineKeyboardButton("🔥 𝐅𝐢𝐫𝐞", callback_data="type_fire"),
+            InlineKeyboardButton("💧 𝐖𝐚𝐭𝐞𝐫", callback_data="type_water"),
+            InlineKeyboardButton("🌿 𝐆𝐫𝐚𝐬𝐬", callback_data="type_grass")
+        ],
+        [
+            InlineKeyboardButton("⚡ 𝐄𝐥𝐞𝐜𝐭𝐫𝐢𝐜", callback_data="type_electric"),
+            InlineKeyboardButton("❄️ 𝐈𝐜𝐞", callback_data="type_ice"),
+            InlineKeyboardButton("🥊 𝐅𝐢𝐠𝐡𝐭𝐢𝐧𝐠", callback_data="type_fighting")
+        ],
+        [
+            InlineKeyboardButton("☠️ 𝐏𝐨𝐢𝐬𝐨𝐧", callback_data="type_poison"),
+            InlineKeyboardButton("🌍 𝐆𝐫𝐨𝐮𝐧𝐝", callback_data="type_ground"),
+            InlineKeyboardButton("🪽 𝐅𝐥𝐲𝐢𝐧𝐠", callback_data="type_flying")
+        ],
+        [
+            InlineKeyboardButton("🔮 𝐏𝐬𝐲𝐜𝐡𝐢𝐜", callback_data="type_psychic"),
+            InlineKeyboardButton("🐛 𝐁𝐮𝐠", callback_data="type_bug"),
+            InlineKeyboardButton("🪨 𝐑𝐨𝐜𝐤", callback_data="type_rock")
+        ],
+        [
+            InlineKeyboardButton("👻 𝐆𝐡𝐨𝐬𝐭", callback_data="type_ghost"),
+            InlineKeyboardButton("🐉 𝐃𝐫𝐚𝐠𝐨𝐧", callback_data="type_dragon"),
+            InlineKeyboardButton("🌑 𝐃𝐚𝐫𝐤", callback_data="type_dark")
+        ],
+        [
+            InlineKeyboardButton("⚙️ 𝐒𝐭𝐞𝐞𝐥", callback_data="type_steel"),
+            InlineKeyboardButton("🧚 𝐅𝐚𝐢𝐫𝐲", callback_data="type_fairy"),
+            InlineKeyboardButton("⚪ 𝐍𝐨𝐫𝐦𝐚𝐥", callback_data="type_normal")
+        ]
+    ]
+
+    await query.edit_message_caption(
+        caption=(
+            "📊 𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐓𝐘𝐏𝐄 𝐆𝐔𝐈𝐃𝐄\n\n"
+            "<blockquote>"
+            "𝐋𝐞𝐚𝐫𝐧 𝐡𝐨𝐰 𝐞𝐚𝐜𝐡 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐓𝐲𝐩𝐞 "
+            "𝐩𝐞𝐫𝐟𝐨𝐫𝐦𝐬 𝐢𝐧 𝐛𝐚𝐭𝐭𝐥𝐞 — 𝐟𝐫𝐨𝐦 𝐬𝐮𝐩𝐞𝐫 "
+            "𝐞𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 𝐡𝐢𝐭𝐬 𝐭𝐨 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐢𝐦𝐦𝐮𝐧𝐢𝐭𝐢𝐞𝐬."
+            "</blockquote>\n\n"
+            "💚 𝐒𝐮𝐩𝐞𝐫 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 — 𝟐×\n"
+            "💛 𝐍𝐨𝐫𝐦𝐚𝐥 — 𝟏×\n"
+            "💔 𝐍𝐨𝐭 𝐕𝐞𝐫𝐲 𝐄𝐟𝐟𝐞𝐜𝐭𝐢𝐯𝐞 — 𝟎.𝟓×\n"
+            "🚫 𝐍𝐨 𝐄𝐟𝐟𝐞𝐜𝐭 — 𝟎×\n\n"
+            "⤷ 𝐒𝐞𝐥𝐞𝐜𝐭 𝐚 𝐓𝐲𝐩𝐞 𝐛𝐞𝐥𝐨𝐰:"
+        ),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
@@ -4944,6 +5027,21 @@ def main():
     app.add_handler(CommandHandler("datadamage", datadamage))
     app.add_handler(CommandHandler("buildpoke", buildpoke))
     app.add_handler(CommandHandler("datatype", datatype))
+    
+    app.add_handler(
+        CallbackQueryHandler(
+            type_callback,
+            pattern=r"^type_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            datatype_back_callback,
+            pattern=r"^datatype_back$"
+        )
+    )
+       
     app.add_handler(CommandHandler("datanature", datanature))
     app.add_handler(CommandHandler("bestnat", bestnat))
     app.add_handler(CommandHandler("evbuild", evbuild))
@@ -4951,13 +5049,6 @@ def main():
     app.add_handler(CommandHandler("pokeballs", pokeballs))
     app.add_handler(CommandHandler("move", move))
   
-    app.add_handler(
-        CallbackQueryHandler(
-            type_callback,
-            pattern=r"^type_"
-        )
-    )
-    
     app.add_handler(
         CallbackQueryHandler(
             tm_callback,
