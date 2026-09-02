@@ -943,41 +943,62 @@ async def helpdex_callback(update, context):
     elif query.data == "dex_nature":
 
         keyboard = [
-        [
-            InlineKeyboardButton("⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤", callback_data="nature_attack"),
-            InlineKeyboardButton("✨ 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤", callback_data="nature_spattack")
-        ],
-        [
-            InlineKeyboardButton("🛡️ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞", callback_data="nature_defense"),
-            InlineKeyboardButton("✨ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞", callback_data="nature_spdefense")
-        ],
-        [
-            InlineKeyboardButton("⚡ 𝐒𝐩𝐞𝐞𝐝", callback_data="nature_speed"),
-            InlineKeyboardButton("⚪ 𝐍𝐞𝐮𝐭𝐫𝐚𝐥", callback_data="nature_neutral")
-        ],
-        [
-            InlineKeyboardButton("◀️ 𝐁𝐚𝐜𝐤", callback_data="dex_help_main")
+            [
+                InlineKeyboardButton(
+                    "⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤",
+                    callback_data="nature_attack"
+                ),
+                InlineKeyboardButton(
+                    "✨ 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                    callback_data="nature_spattack"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🛡️ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                    callback_data="nature_defense"
+                ),
+                InlineKeyboardButton(
+                    "✨ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                    callback_data="nature_spdefense"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "⚡ 𝐒𝐩𝐞𝐞𝐝",
+                    callback_data="nature_speed"
+                ),
+                InlineKeyboardButton(
+                    "⚪ 𝐍𝐞𝐮𝐭𝐫𝐚𝐥",
+                    callback_data="nature_neutral"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="dex_help_main"
+                )
+            ]
         ]
-    ]
 
-    await query.edit_message_caption(
-        caption=(
-            "<blockquote>"
-            "🌿 <b>𝐍𝐀𝐓𝐔𝐑𝐄 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
-            "Every Nature shapes a Pokémon's battle profile "
-            "by increasing one stat while decreasing another.\n\n"
-            "⚔️ <b>Attack</b> — Physical power\n"
-            "✨ <b>Sp. Attack</b> — Special power\n"
-            "🛡️ <b>Defense</b> — Physical durability\n"
-            "✨ <b>Sp. Defense</b> — Special durability\n"
-            "⚡ <b>Speed</b> — Battle priority\n"
-            "⚪ <b>Neutral</b> — No stat trade-off\n\n"
-            "⤷ <b>Select a category to explore.</b>"
-            "</blockquote>"
-        ),
-        parse_mode="HTML",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )   
+        await query.edit_message_caption(
+            caption=(
+                "<blockquote>"
+                "🌿 <b>𝐍𝐀𝐓𝐔𝐑𝐄 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+                "Every Nature shapes a Pokémon's battle profile "
+                "by increasing one stat while decreasing another.\n\n"
+                "⚔️ <b>Attack</b> — Physical power\n"
+                "✨ <b>Sp. Attack</b> — Special power\n"
+                "🛡️ <b>Defense</b> — Physical durability\n"
+                "✨ <b>Sp. Defense</b> — Special durability\n"
+                "⚡ <b>Speed</b> — Battle priority\n"
+                "⚪ <b>Neutral</b> — No stat trade-off\n\n"
+                "⤷ <b>Select a category to explore.</b>"
+                "</blockquote>"
+            ),
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
     elif query.data == "dex_bestnature":
 
