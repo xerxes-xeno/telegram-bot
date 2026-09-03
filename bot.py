@@ -1216,6 +1216,57 @@ async def helpdex_callback(update, context):
                 reply_markup=InlineKeyboardMarkup(keyboard)
             )
 
+    elif query.data == "dex_move":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐇𝐞𝐥𝐩𝐝𝐞𝐱",
+                    callback_data="dex_help_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "⚔️ <b>𝐌𝐎𝐕𝐄𝐃𝐄𝐗 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>"
+            "</blockquote>\n\n"
+
+            "<blockquote>"
+            "━━━━━━━━━━━━━━━━━━━━━━\n"
+            "◈ 𝐀𝐑𝐂𝐇𝐈𝐕𝐄 𝐀𝐂𝐂𝐄𝐒𝐒\n"
+            "━━━━━━━━━━━━━━━━━━━━━━\n\n"
+
+            "Query any move to retrieve its\n"
+            "complete combat profile.\n\n"
+
+            "📂 COMMAND\n"
+            "<code>/move [move name]</code>\n\n"
+
+            "🔎 SAMPLE QUERY\n"
+            "<code>/move Crunch</code>"
+            "</blockquote>\n\n"
+
+            "<blockquote>"
+            "━━━━━━━━━━━━━━━━━━━━━━\n"
+            "🟢 𝐒𝐘𝐒𝐓𝐄𝐌 𝐎𝐍𝐋𝐈𝐍𝐄\n"
+            "XERXES • MOVE ARCHIVE"
+            "</blockquote>"
+        )
+
+        if query.message.photo:
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+        else:
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+    
     elif query.data == "dex_moves":
 
         await query.edit_message_caption(
