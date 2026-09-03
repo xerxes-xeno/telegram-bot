@@ -4577,23 +4577,75 @@ async def move(update, context):
         )
         return
 
-    power = data["power"] if data["power"] is not None else "—"
+    power = (
+        data["power"]
+        if data["power"] is not None
+        else "—"
+    )
+
     accuracy = (
         data["accuracy"]
         if data["accuracy"] is not None
         else "—"
     )
 
+    pp = (
+        data["pp"]
+        if data["pp"]
+        else "—"
+    )
+
+    text = (
+        "<blockquote>"
+        "╔════════════════════════════╗\n"
+        "        ⚔️ <b>𝐌𝐎𝐕𝐄𝐃𝐄𝐗</b>\n"
+        "     ◈ <b>𝐂𝐋𝐀𝐒𝐒𝐈𝐅𝐈𝐄𝐃 𝐃𝐀𝐓𝐀</b> ◈\n"
+        "╚════════════════════════════╝"
+        "</blockquote>\n\n"
+
+        "<blockquote>"
+        "             ⚔️\n"
+        f"       <b>𝐌𝐎𝐕𝐄: {data['name'].upper()}</b>\n"
+        f"       <i>{data['type'].upper()} • "
+        f"{data['category'].upper()}</i>"
+        "</blockquote>\n\n"
+
+        "<blockquote>"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "      ⚡ <b>𝐂𝐎𝐌𝐁𝐀𝐓 𝐒𝐏𝐄𝐂𝐒</b>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        f"  💥 POWER       ▸ {power}\n"
+        f"  🎯 ACCURACY   ▸ {accuracy}%\n"
+        f"  🔋 PP          ▸ {pp}\n"
+        f"  🌀 PRIORITY    ▸ {data['priority']}\n"
+        f"  👁 TARGET      ▸ {data['target']}"
+        "</blockquote>\n\n"
+
+        "<blockquote>"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "       🧠 <b>𝐓𝐀𝐂𝐓𝐈𝐂𝐀𝐋 𝐏𝐑𝐎𝐅𝐈𝐋𝐄</b>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        f"  TYPE       ▸ {data['type'].upper()}\n"
+        f"  CLASS      ▸ {data['category'].upper()}\n\n"
+        f"  ◈ {data['description']}"
+        "</blockquote>\n\n"
+
+        "<blockquote>"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "       ◈ <b>𝐀𝐑𝐂𝐇𝐈𝐕𝐄 𝐒𝐓𝐀𝐓𝐔𝐒</b>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        "       🟢 <b>𝐃𝐀𝐓𝐀 𝐕𝐄𝐑𝐈𝐅𝐈𝐄𝐃</b>\n"
+        "       XERXES • MOVE ARCHIVE\n\n"
+        "╚════════════════════════════╝"
+        "</blockquote>\n\n"
+
+        "⟐ <b>Query another move:</b>\n"
+        "<code>/move [move name]</code>"
+    )
+
     await update.message.reply_text(
-        f"⚔️ 𝐌𝐨𝐯𝐞: {data['name']}\n\n"
-        f"🔹 𝐓𝐲𝐩𝐞: {data['type']}\n"
-        f"🔹 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲: {data['category']}\n"
-        f"🔹 𝐏𝐨𝐰𝐞𝐫: {power}\n"
-        f"🔹 𝐀𝐜𝐜𝐮𝐫𝐚𝐜𝐲: {accuracy}\n"
-        f"🔹 𝐏𝐏: {data['pp'] if data['pp'] else '—'}\n"
-        f"🔹 𝐏𝐫𝐢𝐨𝐫𝐢𝐭𝐲: {data['priority']}\n"
-        f"🔹 𝐓𝐚𝐫𝐠𝐞𝐭: {data['target']}\n\n"
-        f"📝 {data['description']}"
+        text,
+        parse_mode="HTML"
     )
 
 
