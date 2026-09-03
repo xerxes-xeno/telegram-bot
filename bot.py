@@ -4129,8 +4129,14 @@ async def ball_callback(update, context):
                     "🌿 𝐒𝐚𝐟𝐚𝐫𝐢 𝐁𝐚𝐥𝐥",
                     callback_data="ball_safari"
                 )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐇𝐞𝐥𝐩𝐝𝐞𝐱",
+                    callback_data="dex_help_main"
+                )
             ]
-        ]
+        ] 
 
         text = (
             "<blockquote>"
