@@ -4496,7 +4496,7 @@ add_tm_move("Stealth Rock", "Rock", None, None, "Status")
 add_tm_move("Hyper Voice", "Normal", 90, 100, "Special")
 add_tm_move("Heat Wave", "Fire", 95, 90, "Special")
 add_tm_move("Energy Ball", "Grass", 90, 100, "Special")
-add_tm_move("Psychic", "Psychic", 90, 100, "Special")
+add_tm_move("Psychic", "Psychic", 90, 100, "Special") 
 
 add_tm_move("Heavy Slam", "Steel", None, 100, "Physical")
 add_tm_move("Encore", "Normal", None, 100, "Status")
@@ -4529,6 +4529,7 @@ add_tm_move("Sludge Bomb", "Poison", 90, 100, "Special")
 add_tm_move("Earthquake", "Ground", 100, 100, "Physical")
 add_tm_move("Stone Edge", "Rock", 100, 80, "Physical")
 
+
 add_tm_move("Phantom Force", "Ghost", 90, 100, "Physical")
 add_tm_move("Giga Impact", "Normal", 150, 90, "Physical")
 add_tm_move("Blast Burn", "Fire", 150, 90, "Special")
@@ -4553,49 +4554,1046 @@ add_tm_move("Tera Blast", "Normal", 80, 100, "Special")
 
 
 # =========================================================
-# MOVE COMMAND
+# XERXES MOVEDEX — COMPLETE MOVE DATA ENGINE
+# =========================================================
+
+MOVEDEX_CACHE = {}
+
+
+# =========================================================
+# SIGNATURE / SPECIAL MOVES
+# =========================================================
+
+SIGNATURE_MOVES = {
+
+    # -----------------------------------------------------
+    # YVELTAL
+    # -----------------------------------------------------
+
+    "oblivion wing": {
+        "name": "Oblivion Wing",
+        "type": "Flying",
+        "category": "Special",
+        "power": 80,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user absorbs the target's energy. "
+            "The user's HP is restored by a portion "
+            "of the damage dealt."
+        ),
+        "signature": "Yveltal"
+    },
+
+    # -----------------------------------------------------
+    # ETERNATUS
+    # -----------------------------------------------------
+
+    "eternabeam": {
+        "name": "Eternabeam",
+        "type": "Dragon",
+        "category": "Special",
+        "power": 160,
+        "accuracy": 90,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user unleashes a devastating beam of "
+            "energy. The user must rest on the following turn."
+        ),
+        "signature": "Eternatus"
+    },
+
+    "dynamax cannon": {
+        "name": "Dynamax Cannon",
+        "type": "Dragon",
+        "category": "Special",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user unleashes a powerful beam of energy. "
+            "Its power is doubled against Dynamax Pokémon."
+        ),
+        "signature": "Eternatus"
+    },
+
+    # -----------------------------------------------------
+    # RAYQUAZA
+    # -----------------------------------------------------
+
+    "dragon ascent": {
+        "name": "Dragon Ascent",
+        "type": "Flying",
+        "category": "Physical",
+        "power": 120,
+        "accuracy": 100,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user soars upward and attacks the target "
+            "from above. The user's Defense and Sp. Defense "
+            "are lowered after using this move."
+        ),
+        "signature": "Rayquaza"
+    },
+
+    # -----------------------------------------------------
+    # ZYGARDE
+    # -----------------------------------------------------
+
+    "thousand arrows": {
+        "name": "Thousand Arrows",
+        "type": "Ground",
+        "category": "Physical",
+        "power": 90,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0,
+        "target": "all-opponents",
+        "description": (
+            "This move can hit Pokémon that are normally "
+            "immune to Ground-type moves and brings airborne "
+            "targets down to the ground."
+        ),
+        "signature": "Zygarde"
+    },
+
+    "thousand waves": {
+        "name": "Thousand Waves",
+        "type": "Ground",
+        "category": "Physical",
+        "power": 90,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0,
+        "target": "all-opponents",
+        "description": (
+            "The user attacks with powerful waves of ground. "
+            "Opposing Pokémon hit by this move cannot flee "
+            "or switch out."
+        ),
+        "signature": "Zygarde"
+    },
+
+    "core enforcer": {
+        "name": "Core Enforcer",
+        "type": "Dragon",
+        "category": "Special",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user attacks with a powerful beam. "
+            "If the target has already acted this turn, "
+            "its Ability is suppressed."
+        ),
+        "signature": "Zygarde"
+    },
+
+    # -----------------------------------------------------
+    # NECROZMA
+    # -----------------------------------------------------
+
+    "photon geyser": {
+        "name": "Photon Geyser",
+        "type": "Psychic",
+        "category": "Special",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user attacks with a pillar of light. "
+            "The move uses the user's higher attacking stat "
+            "to determine damage."
+        ),
+        "signature": "Necrozma"
+    },
+
+    "prismatic laser": {
+        "name": "Prismatic Laser",
+        "type": "Psychic",
+        "category": "Special",
+        "power": 160,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user attacks with an extremely powerful "
+            "beam of light. The user must rest on the "
+            "following turn."
+        ),
+        "signature": "Necrozma"
+    },
+
+    # -----------------------------------------------------
+    # DIALGA
+    # -----------------------------------------------------
+
+    "roar of time": {
+        "name": "Roar of Time",
+        "type": "Dragon",
+        "category": "Special",
+        "power": 150,
+        "accuracy": 90,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user blasts the target with a powerful "
+            "temporal force. The user must rest on the "
+            "following turn."
+        ),
+        "signature": "Dialga"
+    },
+
+    # -----------------------------------------------------
+    # PALKIA
+    # -----------------------------------------------------
+
+    "spacial rend": {
+        "name": "Spacial Rend",
+        "type": "Dragon",
+        "category": "Special",
+        "power": 100,
+        "accuracy": 95,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user tears the target with space itself. "
+            "This move has an increased critical-hit ratio."
+        ),
+        "signature": "Palkia"
+    },
+
+    # -----------------------------------------------------
+    # GIRATINA
+    # -----------------------------------------------------
+
+    "shadow force": {
+        "name": "Shadow Force",
+        "type": "Ghost",
+        "category": "Physical",
+        "power": 120,
+        "accuracy": 100,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user disappears from sight and strikes "
+            "the target on the next turn. This move can "
+            "hit through Protect."
+        ),
+        "signature": "Giratina"
+    },
+
+    # -----------------------------------------------------
+    # RESHIRAM
+    # -----------------------------------------------------
+
+    "blue flare": {
+        "name": "Blue Flare",
+        "type": "Fire",
+        "category": "Special",
+        "power": 130,
+        "accuracy": 85,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user attacks with an intense blue flame "
+            "that may burn the target."
+        ),
+        "signature": "Reshiram"
+    },
+
+    # -----------------------------------------------------
+    # ZEKROM
+    # -----------------------------------------------------
+
+    "bolt strike": {
+        "name": "Bolt Strike",
+        "type": "Electric",
+        "category": "Physical",
+        "power": 130,
+        "accuracy": 85,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user surrounds itself with a powerful "
+            "electric charge and attacks the target. "
+            "It may leave the target paralyzed."
+        ),
+        "signature": "Zekrom"
+    },
+
+    # -----------------------------------------------------
+    # KYUREM
+    # -----------------------------------------------------
+
+    "glaciate": {
+        "name": "Glaciate",
+        "type": "Ice",
+        "category": "Special",
+        "power": 65,
+        "accuracy": 95,
+        "pp": 10,
+        "priority": 0,
+        "target": "all-opponents",
+        "description": (
+            "The user attacks with cold air and lowers "
+            "the Speed of opposing Pokémon."
+        ),
+        "signature": "Kyurem"
+    },
+
+    "freeze shock": {
+        "name": "Freeze Shock",
+        "type": "Ice",
+        "category": "Physical",
+        "power": 140,
+        "accuracy": 90,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user charges electricity while frozen "
+            "energy surrounds its body, then strikes the "
+            "target on the following turn. It may paralyze."
+        ),
+        "signature": "Kyurem-Black"
+    },
+
+    "ice burn": {
+        "name": "Ice Burn",
+        "type": "Ice",
+        "category": "Special",
+        "power": 140,
+        "accuracy": 90,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user charges energy before unleashing "
+            "a powerful icy attack. It may burn the target."
+        ),
+        "signature": "Kyurem-White"
+    },
+
+    # -----------------------------------------------------
+    # MIRAIDON
+    # -----------------------------------------------------
+
+    "electro drift": {
+        "name": "Electro Drift",
+        "type": "Electric",
+        "category": "Special",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user races forward while surrounded by "
+            "electric energy. This move deals increased "
+            "damage when it is super effective."
+        ),
+        "signature": "Miraidon"
+    },
+
+    # -----------------------------------------------------
+    # KORAIDON
+    # -----------------------------------------------------
+
+    "collision course": {
+        "name": "Collision Course",
+        "type": "Fighting",
+        "category": "Physical",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user attacks with a powerful collision. "
+            "This move deals increased damage when it is "
+            "super effective."
+        ),
+        "signature": "Koraidon"
+    },
+
+    # -----------------------------------------------------
+    # DARKRAI
+    # -----------------------------------------------------
+
+    "dark void": {
+        "name": "Dark Void",
+        "type": "Dark",
+        "category": "Status",
+        "power": None,
+        "accuracy": 50,
+        "pp": 10,
+        "priority": 0,
+        "target": "all-opponents",
+        "description": (
+            "The user creates a void of darkness that "
+            "puts opposing Pokémon to sleep."
+        ),
+        "signature": "Darkrai"
+    },
+
+    # -----------------------------------------------------
+    # ARCEUS
+    # -----------------------------------------------------
+
+    "judgment": {
+        "name": "Judgment",
+        "type": "Normal",
+        "category": "Special",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user releases countless shots of light. "
+            "Its type changes according to the Plate or "
+            "type-changing effect held by the user."
+        ),
+        "signature": "Arceus"
+    },
+
+    # -----------------------------------------------------
+    # MEWTWO
+    # -----------------------------------------------------
+
+    "psystrike": {
+        "name": "Psystrike",
+        "type": "Psychic",
+        "category": "Special",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user materializes psychic energy and "
+            "strikes the target. Damage is calculated "
+            "using the target's Defense."
+        ),
+        "signature": "Mewtwo"
+    },
+
+    # -----------------------------------------------------
+    # LUNALA
+    # -----------------------------------------------------
+
+    "moongeist beam": {
+        "name": "Moongeist Beam",
+        "type": "Ghost",
+        "category": "Special",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user attacks with a beam of light. "
+            "The move ignores the target's Ability."
+        ),
+        "signature": "Lunala"
+    },
+
+    # -----------------------------------------------------
+    # SOLGALEO
+    # -----------------------------------------------------
+
+    "sunsteel strike": {
+        "name": "Sunsteel Strike",
+        "type": "Steel",
+        "category": "Physical",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 5,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user attacks with the force of a meteor. "
+            "The move ignores the target's Ability."
+        ),
+        "signature": "Solgaleo"
+    },
+
+    # -----------------------------------------------------
+    # NECROZMA ULTRA
+    # -----------------------------------------------------
+
+    "menacing moonraze maelstrom": {
+        "name": "Menacing Moonraze Maelstrom",
+        "type": "Ghost",
+        "category": "Special",
+        "power": 200,
+        "accuracy": None,
+        "pp": 1,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user unleashes an overwhelming torrent "
+            "of spectral energy that ignores the target's "
+            "Ability."
+        ),
+        "signature": "Dawn Wings Necrozma"
+    },
+
+    "searing sunraze smash": {
+        "name": "Searing Sunraze Smash",
+        "type": "Steel",
+        "category": "Physical",
+        "power": 200,
+        "accuracy": None,
+        "pp": 1,
+        "priority": 0,
+        "target": "selected-pokemon",
+        "description": (
+            "The user strikes with overwhelming solar "
+            "energy that ignores the target's Ability."
+        ),
+        "signature": "Dusk Mane Necrozma"
+    }
+}
+
+
+# =========================================================
+# MOVE NAME NORMALIZER
+# =========================================================
+
+def normalize_move_name(name):
+
+    return (
+        name.strip()
+        .lower()
+        .replace("’", "'")
+        .replace("'", "")
+        .replace("-", " ")
+        .replace(" ", "-")
+    )
+
+
+# =========================================================
+# FETCH MOVE DATA
+# =========================================================
+
+def fetch_move_from_api(move_name):
+
+    slug = normalize_move_name(move_name)
+
+    if slug in MOVEDEX_CACHE:
+        return MOVEDEX_CACHE[slug]
+
+    url = (
+        "https://pokeapi.co/api/v2/move/"
+        f"{slug}/"
+    )
+
+    try:
+
+        with urllib.request.urlopen(
+            url,
+            timeout=8
+        ) as response:
+
+            data = json.loads(
+                response.read()
+            )
+
+        effect_text = ""
+
+        for entry in data.get(
+            "effect_entries",
+            []
+        ):
+
+            if (
+                entry
+                .get("language", {})
+                .get("name")
+                == "en"
+            ):
+
+                effect_text = (
+                    entry.get("short_effect")
+                    or entry.get("effect")
+                    or ""
+                )
+
+                break
+
+        damage_class = data.get(
+            "damage_class"
+        )
+
+        category = "Status"
+
+        if damage_class:
+
+            category = (
+                damage_class
+                .get("name", "status")
+                .title()
+            )
+
+        target = (
+            data.get("target", {})
+            .get(
+                "name",
+                "selected-pokemon"
+            )
+        )
+
+        result = {
+
+            "name":
+                data.get(
+                    "name",
+                    move_name
+                ).replace(
+                    "-", " "
+                ).title(),
+
+            "type":
+                data.get(
+                    "type", {}
+                ).get(
+                    "name",
+                    "normal"
+                ).title(),
+
+            "category":
+                category,
+
+            "power":
+                data.get("power"),
+
+            "accuracy":
+                data.get("accuracy"),
+
+            "pp":
+                data.get("pp"),
+
+            "priority":
+                data.get(
+                    "priority",
+                    0
+                ),
+
+            "target":
+                target,
+
+            "description":
+                effect_text
+                or "Move data available.",
+
+            "signature":
+                None
+        }
+
+        MOVEDEX_CACHE[slug] = result
+
+        return result
+
+    except Exception:
+
+        return None
+
+
+# =========================================================
+# TARGET FORMATTER
+# =========================================================
+
+def format_target(target):
+
+    target_map = {
+
+        "selected-pokemon":
+            "Selected Pokémon",
+
+        "specific-move":
+            "Specific Move",
+
+        "ally":
+            "Ally",
+
+        "user":
+            "User",
+
+        "all-opponents":
+            "All Opponents",
+
+        "all-other-pokemon":
+            "All Other Pokémon",
+
+        "user-or-ally":
+            "User / Ally",
+
+        "random-opponent":
+            "Random Opponent",
+
+        "entire-field":
+            "Entire Field",
+
+        "opponents-field":
+            "Opponents' Field",
+
+        "user-field":
+            "User's Field",
+
+        "all-pokemon":
+            "All Pokémon",
+
+        "all-allies":
+            "All Allies",
+
+        "specific-pokemon":
+            "Specific Pokémon"
+    }
+
+    return target_map.get(
+        target,
+        target.replace(
+            "-",
+            " "
+        ).title()
+        if target
+        else "Selected Pokémon"
+    )
+
+
+# =========================================================
+# COMPLETE MOVE DATA
+# =========================================================
+
+def get_complete_move_data(move_name):
+
+    key = (
+        move_name
+        .strip()
+        .lower()
+    )
+
+    # -----------------------------------------------------
+    # SIGNATURE MOVES FIRST
+    # -----------------------------------------------------
+
+    if key in SIGNATURE_MOVES:
+
+        return SIGNATURE_MOVES[
+            key
+        ].copy()
+
+    # -----------------------------------------------------
+    # EXISTING LOCAL MOVE
+    # -----------------------------------------------------
+
+    local_data = MOVE_DATA.get(
+        key
+    )
+
+    # -----------------------------------------------------
+    # ONLINE MOVE DATA
+    # -----------------------------------------------------
+
+    api_data = fetch_move_from_api(
+        move_name
+    )
+
+    # -----------------------------------------------------
+    # LOCAL + API
+    # -----------------------------------------------------
+
+    if local_data and api_data:
+
+        result = api_data.copy()
+
+        # IMPORTANT:
+        # Your existing move data wins for
+        # Name / Type / Category / Power / Accuracy
+
+        result.update({
+
+            "name":
+                local_data.get(
+                    "name",
+                    api_data["name"]
+                ),
+
+            "type":
+                local_data.get(
+                    "type",
+                    api_data["type"]
+                ),
+
+            "category":
+                local_data.get(
+                    "category",
+                    api_data["category"]
+                ),
+
+            "power":
+                local_data.get(
+                    "power",
+                    api_data["power"]
+                ),
+
+            "accuracy":
+                local_data.get(
+                    "accuracy",
+                    api_data["accuracy"]
+                )
+        })
+
+        return result
+
+    # -----------------------------------------------------
+    # API ONLY
+    # -----------------------------------------------------
+
+    if api_data:
+
+        return api_data
+
+    # -----------------------------------------------------
+    # LOCAL FALLBACK
+    # -----------------------------------------------------
+
+    if local_data:
+
+        return {
+
+            "name":
+                local_data.get(
+                    "name",
+                    move_name.title()
+                ),
+
+            "type":
+                local_data.get(
+                    "type",
+                    "Normal"
+                ),
+
+            "category":
+                local_data.get(
+                    "category",
+                    "Status"
+                ),
+
+            "power":
+                local_data.get(
+                    "power"
+                ),
+
+            "accuracy":
+                local_data.get(
+                    "accuracy"
+                ),
+
+            "pp":
+                local_data.get(
+                    "pp"
+                ),
+
+            "priority":
+                local_data.get(
+                    "priority",
+                    0
+                ),
+
+            "target":
+                local_data.get(
+                    "target",
+                    "selected-pokemon"
+                ),
+
+            "description":
+                local_data.get(
+                    "description",
+                    "Move data available."
+                ),
+
+            "signature":
+                local_data.get(
+                    "signature"
+                )
+        }
+
+    return None
+
+           
+# =========================================================
+# MOVEDEX COMMAND
 # =========================================================
 
 async def move(update, context):
 
     if not context.args:
+
         await update.message.reply_text(
-            "⚠️ 𝐏𝐥𝐞𝐚𝐬𝐞 𝐞𝐧𝐭𝐞𝐫 𝐚 𝐦𝐨𝐯𝐞 𝐧𝐚𝐦𝐞.\n\n"
-            "𝐄𝐱𝐚𝐦𝐩𝐥𝐞:\n"
-            "/move Crunch"
+
+            "⚠️ <b>PLEASE ENTER A MOVE NAME</b>\n\n"
+            "Example:\n"
+            "<code>/move Crunch</code>",
+
+            parse_mode="HTML"
         )
+
         return
 
-    move_name = " ".join(context.args).strip().lower()
 
-    data = MOVE_DATA.get(move_name)
+    move_name = " ".join(
+        context.args
+    ).strip()
+
+
+    # -----------------------------------------------------
+    # LOAD COMPLETE DATA
+    # -----------------------------------------------------
+
+    data = await asyncio.to_thread(
+        get_complete_move_data,
+        move_name
+    )
+
 
     if not data:
+
         await update.message.reply_text(
-            f"❌ 𝐌𝐨𝐯𝐞 𝐧𝐨𝐭 𝐟𝐨𝐮𝐧𝐝.\n\n"
-            f"𝐒𝐞𝐚𝐫𝐜𝐡𝐞𝐝: {move_name.title()}"
+
+            "❌ <b>MOVE NOT FOUND</b>\n\n"
+            f"Search Query: "
+            f"<code>{move_name}</code>\n\n"
+            "Please check the move name and try again.",
+
+            parse_mode="HTML"
         )
+
         return
 
-    power = (
-        data["power"]
-        if data["power"] is not None
+    # -----------------------------------------------------
+    # DATA
+    # -----------------------------------------------------
+
+    display_name = data.get(
+        "name",
+        move_name.title()
+    )
+
+    move_type = data.get(
+        "type",
+        "Normal"
+    )
+
+    category = data.get(
+        "category",
+        "Status"
+    )
+
+    power = data.get(
+        "power"
+    )
+
+    accuracy = data.get(
+        "accuracy"
+    )
+
+    pp = data.get(
+        "pp"
+    )
+
+    priority = data.get(
+        "priority",
+        0
+    )
+
+    target = format_target(
+        data.get(
+            "target",
+            "selected-pokemon"
+        )
+    )
+
+    description = data.get(
+        "description",
+        "Move data available."
+    )
+
+    signature = data.get(
+        "signature"
+    )
+
+
+    # -----------------------------------------------------
+    # DISPLAY VALUES
+    # -----------------------------------------------------
+
+    power_display = (
+        str(power)
+        if power is not None
         else "—"
     )
 
-    accuracy = (
-        data["accuracy"]
-        if data["accuracy"] is not None
+    accuracy_display = (
+        f"{accuracy}%"
+        if accuracy is not None
         else "—"
     )
 
-    pp = (
-        data["pp"]
-        if data["pp"]
+    pp_display = (
+        str(pp)
+        if pp is not None
         else "—"
     )
+
+    priority_display = (
+        f"+{priority}"
+        if priority > 0
+        else str(priority)
+    )
+
+
+    # -----------------------------------------------------
+    # SIGNATURE STATUS
+    # -----------------------------------------------------
+
+    signature_text = ""
+
+    if signature:
+
+        signature_text = (
+            "\n\n"
+            "⭐ <b>SIGNATURE MOVE</b>\n"
+            f"   ▸ {signature}"
+        )
+
+
+# =====================================================
+# MOVEDEx
+# =====================================================
 
     text = (
+
         "<blockquote>"
         "╔════════════════════════════╗\n"
         "        ⚔️ <b>𝐌𝐎𝐕𝐄𝐃𝐄𝐗</b>\n"
@@ -4603,45 +5601,57 @@ async def move(update, context):
         "╚════════════════════════════╝"
         "</blockquote>\n\n"
 
+
         "<blockquote>"
         "             ⚔️\n"
-        f"       <b>𝐌𝐎𝐕𝐄: {data['name'].upper()}</b>\n"
-        f"       <i>{data['type'].upper()} • "
-        f"{data['category'].upper()}</i>"
+        f"       <b>𝐌𝐎𝐕𝐄: "
+        f"{display_name.upper()}</b>\n"
+        f"       {move_type.upper()} • "
+        f"{category.upper()}"
         "</blockquote>\n\n"
+
 
         "<blockquote>"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
         "      ⚡ <b>𝐂𝐎𝐌𝐁𝐀𝐓 𝐒𝐏𝐄𝐂𝐒</b>\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-        f"  💥 POWER       ▸ {power}\n"
-        f"  🎯 ACCURACY   ▸ {accuracy}%\n"
-        f"  🔋 PP          ▸ {pp}\n"
-        f"  🌀 PRIORITY    ▸ {data['priority']}\n"
-        f"  👁 TARGET      ▸ {data['target']}"
+
+        f"  💥 POWER       ▸ {power_display}\n"
+        f"  🎯 ACCURACY   ▸ {accuracy_display}\n"
+        f"  🔋 PP          ▸ {pp_display}\n"
+        f"  🌀 PRIORITY    ▸ {priority_display}\n"
+        f"  👁 TARGET      ▸ {target}"
         "</blockquote>\n\n"
+
 
         "<blockquote>"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
         "       🧠 <b>𝐓𝐀𝐂𝐓𝐈𝐂𝐀𝐋 𝐏𝐑𝐎𝐅𝐈𝐋𝐄</b>\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-        f"  TYPE       ▸ {data['type'].upper()}\n"
-        f"  CLASS      ▸ {data['category'].upper()}\n\n"
-        f"  ◈ {data['description']}"
+
+        f"  TYPE       ▸ {move_type.upper()}\n"
+        f"  CLASS      ▸ {category.upper()}\n\n"
+
+        f"  ◈ {description}"
+        f"{signature_text}"
         "</blockquote>\n\n"
+
 
         "<blockquote>"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
         "       ◈ <b>𝐀𝐑𝐂𝐇𝐈𝐕𝐄 𝐒𝐓𝐀𝐓𝐔𝐒</b>\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+
         "       🟢 <b>𝐃𝐀𝐓𝐀 𝐕𝐄𝐑𝐈𝐅𝐈𝐄𝐃</b>\n"
         "       XERXES • MOVE ARCHIVE\n\n"
+
         "╚════════════════════════════╝"
         "</blockquote>\n\n"
 
         "⟐ <b>Query another move:</b>\n"
         "<code>/move [move name]</code>"
     )
+
 
     await update.message.reply_text(
         text,
