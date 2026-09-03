@@ -7,6 +7,9 @@ import random
 import threading
 import hashlib
 import hmac
+import urllib.request
+import json
+import asyncio
 
 from flask import Flask, jsonify, request
 
@@ -1267,26 +1270,6 @@ async def helpdex_callback(update, context):
                 reply_markup=InlineKeyboardMarkup(keyboard)
             )
     
-    elif query.data == "dex_moves":
-
-        await query.edit_message_caption(
-            caption=(
-                "⚔️ 𝐌𝐨𝐯𝐞 𝐃𝐚𝐭𝐚\n\n"
-                "Use:\n"
-                "/move <move name>\n\n"
-                "Example:\n"
-                "/move Crunch"
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
-        )
-
     elif query.data == "dex_help_main":
 
         keyboard = [
