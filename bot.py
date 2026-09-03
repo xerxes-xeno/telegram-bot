@@ -892,36 +892,93 @@ async def helpdex_callback(update, context):
 
     elif query.data == "dex_damage":
 
-        await query.edit_message_caption(
-            caption=(
-                "⚔️ 𝐃𝐚𝐦𝐚𝐠𝐞 𝐂𝐚𝐥𝐜𝐮𝐥𝐚𝐭𝐨𝐫\n\n"
-                "Use /datadamage to get the damage calculator form."
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="dex_help_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "⚔️ <b>𝐃𝐀𝐌𝐀𝐆𝐄 𝐂𝐀𝐋𝐂𝐔𝐋𝐀𝐓𝐎𝐑</b>\n\n"
+
+            "Estimate the damage output of a Pokémon's move "
+            "by considering the key battle factors that shape "
+            "each calculation.\n\n"
+
+            "📊 <b>CALCULATION DATA</b>\n"
+            "Pokémon stats • Move power • Type effectiveness "
+            "• Ability • Nature • Battle conditions\n\n"
+
+            "🎯 <b>USE CASE</b>\n"
+            "Test offensive combinations, compare moves, and "
+            "understand how different battle conditions can "
+            "change the final damage result."
+            "</blockquote>\n\n"
+
+            "⤷ <b>Use <code>/datadamage</code> to open the "
+            "Damage Calculator.</b>"
+        )
+
+        if query.message.photo:
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+        else:
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
     elif query.data == "dex_build":
 
-        await query.edit_message_caption(
-            caption=(
-                "📋 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐁𝐮𝐢𝐥𝐝\n\n"
-                "Use /buildpoke to get the Pokémon build form."
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="dex_help_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "🧬 <b>𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐁𝐔𝐈𝐋𝐃 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+
+            "Build your Pokémon around a clear battle role "
+            "by combining the right Nature, EV spread, moves, "
+            "and strategic setup.\n\n"
+
+            "🧩 <b>BUILD COMPONENTS</b>\n"
+            "Nature • EVs • Moveset • Ability • Held Item\n\n"
+
+            "🎯 <b>BUILD OBJECTIVE</b>\n"
+            "Create a focused setup that complements your "
+            "Pokémon's strengths and supports your preferred "
+            "battle strategy."
+            "</blockquote>\n\n"
+
+            "⤷ <b>Use <code>/buildpoke</code> to open the "
+            "Pokémon Build system.</b>"
+        )
+
+        if query.message.photo:
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+        else:
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
         )
     
     elif query.data == "dex_type":
