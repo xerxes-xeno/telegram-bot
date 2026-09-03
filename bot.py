@@ -4016,6 +4016,12 @@ async def pokeballs(update, context):
                 "🌿 𝐒𝐚𝐟𝐚𝐫𝐢 𝐁𝐚𝐥𝐥",
                 callback_data="ball_safari"
             )
+        ],
+        [
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐌𝐚𝐢𝐧 𝐌𝐞𝐧𝐮",
+                callback_data="start_main"
+            )
         ]
     ]
 
@@ -4044,13 +4050,11 @@ async def pokeballs(update, context):
         "⤷ <b>Select a Poké Ball below to view "
         "its complete capture profile.</b>"
     )
-
     await update.message.reply_text(
         text,
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-        
+    )   
 
 # =========================================================
 # POKÉ BALL CALLBACK
