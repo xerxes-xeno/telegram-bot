@@ -1075,27 +1075,44 @@ async def helpdex_callback(update, context):
 
     elif query.data == "dex_tm":
 
-        await query.edit_message_caption(
-            caption=(
-                "🏆 𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌 𝐋𝐢𝐬𝐭\n\n"
-                "171 official TMs are available across 6 pages."
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "𝐎𝐟𝐟𝐢𝐜𝐢𝐚𝐥 𝐓𝐌𝐬",
-                        callback_data="tm_page_1"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="dex_help_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "🏆 <b>𝐎𝐅𝐅𝐈𝐂𝐈𝐀𝐋 𝐓𝐌 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+        
+            "Explore the official Technical Machine catalogue "
+            "with detailed move information including power, "
+            "accuracy, and category.\n\n"
+         
+            "📖 <b>ACCESS THE COMPLETE LIST</b>\n"
+            "Use <code>/datatm</code> to open the full Official "
+            "TM catalogue."
+            "</blockquote>\n\n"
+        
+            "⤷ <b>Enter /datatm to access the TM archive.</b>"
         )
 
+        if query.message.photo:
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+        else:
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+                
     elif query.data == "dex_pokeballs":
 
         await query.edit_message_caption(
