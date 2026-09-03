@@ -1316,8 +1316,8 @@ async def helpdex_callback(update, context):
                     callback_data="dex_pokeballs"
                 ),
                 InlineKeyboardButton(
-                    "⚔️ 𝐌𝐨𝐯𝐞𝐬",
-                    callback_data="dex_moves"
+                    "🗡️ 𝐌𝐨𝐯𝐞 𝐃𝐚𝐭𝐚",
+                    callback_data="dex_move"
                 )
             ]
         ]
