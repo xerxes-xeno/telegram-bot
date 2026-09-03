@@ -1174,30 +1174,47 @@ async def helpdex_callback(update, context):
                 
     elif query.data == "dex_pokeballs":
 
-        await query.edit_message_caption(
-            caption=(
-                "🎯 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬 𝐆𝐮𝐢𝐝𝐞\n\n"
-                "Regular Ball\n"
-                "Great Ball\n"
-                "Ultra Ball\n"
-                "Level Ball\n"
-                "Fast Ball\n"
-                "Repeat Ball\n"
-                "Nest Ball\n"
-                "Net Ball\n"
-                "Quick Ball\n"
-                "Master Ball\n"
-                "Safari Ball"
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "🎯 𝐎𝐩𝐞𝐧 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥 𝐀𝐫𝐜𝐡𝐢𝐯𝐞",
+                    callback_data="ball_main"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤",
+                    callback_data="dex_help_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "🎯 <b>𝐏𝐎𝐊𝐄́ 𝐁𝐀𝐋𝐋 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+            "Explore the complete Poké Ball archive and "
+            "learn about different capture multipliers, "
+            "special conditions, and recommended usage.\n\n"
+            "📖 <b>𝐀𝐕𝐀𝐈𝐋𝐀𝐁𝐋𝐄 𝐃𝐀𝐓𝐀</b>\n"
+            "Regular • Great • Ultra • Level • Fast • Repeat\n"
+            "Nest • Net • Quick • Master • Safari\n\n"
+            "⤷ <b>Open the archive below to explore "
+            "each Poké Ball.</b>"
+            "</blockquote>"
         )
+
+        if query.message.photo:
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+        else:
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
 
     elif query.data == "dex_moves":
 
