@@ -7,9 +7,6 @@ import random
 import threading
 import hashlib
 import hmac
-import urllib.request
-import json
-import asyncio
 
 from flask import Flask, jsonify, request
 
