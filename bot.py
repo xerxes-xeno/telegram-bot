@@ -3938,36 +3938,373 @@ async def tm_callback(update, context):
 
 
 # =========================================================
-# POKEBALLS GUIDE
+# POKÉ BALL GUIDE
 # =========================================================
 
 async def pokeballs(update, context):
 
-    await update.message.reply_text(
-        "🎯 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬 𝐆𝐮𝐢𝐝𝐞\n\n"
-        "𝐑𝐞𝐠𝐮𝐥𝐚𝐫 𝐁𝐚𝐥𝐥: Multiplier: x1\n\n"
-        "𝐆𝐫𝐞𝐚𝐭 𝐁𝐚𝐥𝐥: Multiplier: x1.5\n\n"
-        "𝐔𝐥𝐭𝐫𝐚 𝐁𝐚𝐥𝐥: Multiplier: x2\n\n"
-        "𝐋𝐞𝐯𝐞𝐥 𝐁𝐚𝐥𝐥: Multiplier:\n"
-        "• x8 if your Pokémon's level is ≥ 4× wild Pokémon\n"
-        "• x4 if ≥ 2× wild Pokémon\n"
-        "• x2 if higher than wild Pokémon\n"
-        "• x1 otherwise\n\n"
-        "𝐅𝐚𝐬𝐭 𝐁𝐚𝐥𝐥: Multiplier: x4 if base speed ≥ 100 "
-        "(or Magnemite, Grimer, Tangela), x1 otherwise\n\n"
-        "𝐑𝐞𝐩𝐞𝐚𝐭 𝐁𝐚𝐥𝐥: Multiplier: x3.5 if you have previously "
-        "caught the Pokémon, x1 otherwise\n\n"
-        "𝐍𝐞𝐬𝐭 𝐁𝐚𝐥𝐥: Multiplier: Works better on low level "
-        "Pokémon (up to x4)\n\n"
-        "𝐍𝐞𝐭 𝐁𝐚𝐥𝐥: Multiplier: x3.5 if the Pokémon is Water "
-        "or Bug type, x1 otherwise\n\n"
-        "𝐐𝐮𝐢𝐜𝐤 𝐁𝐚𝐥𝐥: Multiplier: x5 if used in the first "
-        "turn, x1 otherwise\n\n"
-        "𝐌𝐚𝐬𝐭𝐞𝐫 𝐁𝐚𝐥𝐥: Multiplier: x255 "
-        "(100% capture guaranteed)\n\n"
-        "𝐒𝐚𝐟𝐚𝐫𝐢 𝐁𝐚𝐥𝐥: Multiplier: x1.5 "
-        "(only used in Safari zone)"
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🔴 𝐑𝐞𝐠𝐮𝐥𝐚𝐫 𝐁𝐚𝐥𝐥",
+                callback_data="ball_regular"
+            ),
+            InlineKeyboardButton(
+                "🔵 𝐆𝐫𝐞𝐚𝐭 𝐁𝐚𝐥𝐥",
+                callback_data="ball_great"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🟡 𝐔𝐥𝐭𝐫𝐚 𝐁𝐚𝐥𝐥",
+                callback_data="ball_ultra"
+            ),
+            InlineKeyboardButton(
+                "⚖️ 𝐋𝐞𝐯𝐞𝐥 𝐁𝐚𝐥𝐥",
+                callback_data="ball_level"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "⚡ 𝐅𝐚𝐬𝐭 𝐁𝐚𝐥𝐥",
+                callback_data="ball_fast"
+            ),
+            InlineKeyboardButton(
+                "🔁 𝐑𝐞𝐩𝐞𝐚𝐭 𝐁𝐚𝐥𝐥",
+                callback_data="ball_repeat"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🌿 𝐍𝐞𝐬𝐭 𝐁𝐚𝐥𝐥",
+                callback_data="ball_nest"
+            ),
+            InlineKeyboardButton(
+                "🕸️ 𝐍𝐞𝐭 𝐁𝐚𝐥𝐥",
+                callback_data="ball_net"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "⚡ 𝐐𝐮𝐢𝐜𝐤 𝐁𝐚𝐥𝐥",
+                callback_data="ball_quick"
+            ),
+            InlineKeyboardButton(
+                "👑 𝐌𝐚𝐬𝐭𝐞𝐫 𝐁𝐚𝐥𝐥",
+                callback_data="ball_master"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🌿 𝐒𝐚𝐟𝐚𝐫𝐢 𝐁𝐚𝐥𝐥",
+                callback_data="ball_safari"
+            )
+        ]
+    ]
+
+    text = (
+        "<blockquote>"
+        "🎯 <b>𝐏𝐎𝐊𝐄́ 𝐁𝐀𝐋𝐋 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+
+        "Poké Balls are specialized capture tools, each "
+        "designed with its own capture modifier or condition.\n\n"
+
+        "Some provide a fixed bonus, while others become "
+        "more effective depending on the target's level, "
+        "type, Speed, battle turn, or capture history.\n\n"
+
+        "📖 <b>ARCHIVE FEATURES</b>\n"
+        "Capture Multiplier • Special Conditions • "
+        "Recommended Use\n\n"
+
+        "⤷ <b>Select a Poké Ball below to inspect "
+        "its capture properties.</b>"
+        "</blockquote>"
     )
+
+    await update.message.reply_text(
+        text,
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# POKÉ BALL CALLBACK
+# =========================================================
+
+async def ball_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data
+
+    # -----------------------------------------------------
+    # MAIN POKÉ BALL MENU
+    # -----------------------------------------------------
+
+    if data == "ball_main":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "🔴 𝐑𝐞𝐠𝐮𝐥𝐚𝐫 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_regular"
+                ),
+                InlineKeyboardButton(
+                    "🔵 𝐆𝐫𝐞𝐚𝐭 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_great"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🟡 𝐔𝐥𝐭𝐫𝐚 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_ultra"
+                ),
+                InlineKeyboardButton(
+                    "⚖️ 𝐋𝐞𝐯𝐞𝐥 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_level"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "⚡ 𝐅𝐚𝐬𝐭 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_fast"
+                ),
+                InlineKeyboardButton(
+                    "🔁 𝐑𝐞𝐩𝐞𝐚𝐭 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_repeat"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🌿 𝐍𝐞𝐬𝐭 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_nest"
+                ),
+                InlineKeyboardButton(
+                    "🕸️ 𝐍𝐞𝐭 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_net"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "⚡ 𝐐𝐮𝐢𝐜𝐤 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_quick"
+                ),
+                InlineKeyboardButton(
+                    "👑 𝐌𝐚𝐬𝐭𝐞𝐫 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_master"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🌿 𝐒𝐚𝐟𝐚𝐫𝐢 𝐁𝐚𝐥𝐥",
+                    callback_data="ball_safari"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "🎯 <b>𝐏𝐎𝐊𝐄́ 𝐁𝐀𝐋𝐋 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+            "Poké Balls are specialized capture tools, each "
+            "with its own capture modifier or condition.\n\n"
+            "📖 <b>ARCHIVE FEATURES</b>\n"
+            "Capture Multiplier • Special Conditions • "
+            "Recommended Use\n\n"
+            "⤷ <b>Select a Poké Ball to inspect its "
+            "capture properties.</b>"
+            "</blockquote>"
+        )
+
+        if query.message.photo:
+            await query.edit_message_caption(
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+        else:
+            await query.edit_message_text(
+                text=text,
+                parse_mode="HTML",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+
+        return
+
+    # -----------------------------------------------------
+    # POKÉ BALL INFORMATION
+    # -----------------------------------------------------
+
+    pages = {
+
+        "ball_regular": (
+            "<blockquote>"
+            "🔴 <b>𝐑𝐄𝐆𝐔𝐋𝐀𝐑 𝐁𝐀𝐋𝐋</b>\n\n"
+            "The standard capture tool for everyday "
+            "wild Pokémon encounters.\n\n"
+            "🎯 <b>Multiplier:</b> ×1\n"
+            "📌 <b>Special Effect:</b> None\n"
+            "💡 <b>Recommended:</b> Standard capture attempts."
+            "</blockquote>"
+        ),
+
+        "ball_great": (
+            "<blockquote>"
+            "🔵 <b>𝐆𝐑𝐄𝐀𝐓 𝐁𝐀𝐋𝐋</b>\n\n"
+            "A more capable capture tool that provides "
+            "a stronger baseline than the Regular Ball.\n\n"
+            "🎯 <b>Multiplier:</b> ×1.5\n"
+            "📌 <b>Special Effect:</b> None\n"
+            "💡 <b>Recommended:</b> General-purpose captures."
+            "</blockquote>"
+        ),
+
+        "ball_ultra": (
+            "<blockquote>"
+            "🟡 <b>𝐔𝐋𝐓𝐑𝐀 𝐁𝐀𝐋𝐋</b>\n\n"
+            "A high-performance capture tool designed "
+            "for more challenging encounters.\n\n"
+            "🎯 <b>Multiplier:</b> ×2\n"
+            "📌 <b>Special Effect:</b> None\n"
+            "💡 <b>Recommended:</b> Difficult or valuable targets."
+            "</blockquote>"
+        ),
+
+        "ball_level": (
+            "<blockquote>"
+            "⚖️ <b>𝐋𝐄𝐕𝐄𝐋 𝐁𝐀𝐋𝐋</b>\n\n"
+            "Its effectiveness changes according to the "
+            "level difference between your Pokémon and "
+            "the wild target.\n\n"
+            "🎯 <b>Multiplier:</b>\n"
+            "• ×8 — Your Pokémon is ≥4× the wild level\n"
+            "• ×4 — Your Pokémon is ≥2× the wild level\n"
+            "• ×2 — Your Pokémon is higher level\n"
+            "• ×1 — Otherwise\n\n"
+            "💡 <b>Recommended:</b> Encounters where your "
+            "active Pokémon has a significant level advantage."
+            "</blockquote>"
+        ),
+
+        "ball_fast": (
+            "<blockquote>"
+            "⚡ <b>𝐅𝐀𝐒𝐓 𝐁𝐀𝐋𝐋</b>\n\n"
+            "A specialized capture tool that favors "
+            "high-Speed Pokémon and certain special targets.\n\n"
+            "🎯 <b>Multiplier:</b>\n"
+            "• ×4 — Base Speed ≥100\n"
+            "• ×4 — Magnemite, Grimer, or Tangela\n"
+            "• ×1 — Otherwise\n\n"
+            "💡 <b>Recommended:</b> Qualifying fast Pokémon."
+            "</blockquote>"
+        ),
+
+        "ball_repeat": (
+            "<blockquote>"
+            "🔁 <b>𝐑𝐄𝐏𝐄𝐀𝐓 𝐁𝐀𝐋𝐋</b>\n\n"
+            "A capture tool that becomes significantly "
+            "more effective for Pokémon already caught before.\n\n"
+            "🎯 <b>Multiplier:</b>\n"
+            "• ×3.5 — Previously caught\n"
+            "• ×1 — Not previously caught\n\n"
+            "💡 <b>Recommended:</b> Completing collections "
+            "or catching duplicates."
+            "</blockquote>"
+        ),
+
+        "ball_nest": (
+            "<blockquote>"
+            "🌿 <b>𝐍𝐄𝐒𝐓 𝐁𝐀𝐋𝐋</b>\n\n"
+            "A specialized Ball designed to perform better "
+            "against lower-level wild Pokémon.\n\n"
+            "🎯 <b>Multiplier:</b> Up to ×4\n"
+            "📌 <b>Effect:</b> Effectiveness scales with "
+            "the target's level.\n\n"
+            "💡 <b>Recommended:</b> Lower-level encounters."
+            "</blockquote>"
+        ),
+
+        "ball_net": (
+            "<blockquote>"
+            "🕸️ <b>𝐍𝐄𝐓 𝐁𝐀𝐋𝐋</b>\n\n"
+            "A specialized capture tool particularly suited "
+            "for Water- and Bug-type Pokémon.\n\n"
+            "🎯 <b>Multiplier:</b>\n"
+            "• ×3.5 — Water or Bug type\n"
+            "• ×1 — Otherwise\n\n"
+            "💡 <b>Recommended:</b> Water- and Bug-type targets."
+            "</blockquote>"
+        ),
+
+        "ball_quick": (
+            "<blockquote>"
+            "⚡ <b>𝐐𝐔𝐈𝐂𝐊 𝐁𝐀𝐋𝐋</b>\n\n"
+            "A capture tool built around fast opening-turn "
+            "attempts.\n\n"
+            "🎯 <b>Multiplier:</b>\n"
+            "• ×5 — Used on the first turn\n"
+            "• ×1 — Otherwise\n\n"
+            "💡 <b>Recommended:</b> Immediate capture attempts "
+            "at the start of an encounter."
+            "</blockquote>"
+        ),
+
+        "ball_master": (
+            "<blockquote>"
+            "👑 <b>𝐌𝐀𝐒𝐓𝐄𝐑 𝐁𝐀𝐋𝐋</b>\n\n"
+            "The ultimate capture tool, designed to secure "
+            "its target without a failed capture attempt.\n\n"
+            "🎯 <b>Multiplier:</b> ×255\n"
+            "✅ <b>Capture Rate:</b> 100%\n"
+            "📌 <b>Special Effect:</b> Guaranteed capture.\n\n"
+            "💡 <b>Recommended:</b> Extremely rare or "
+            "high-value encounters."
+            "</blockquote>"
+        ),
+
+        "ball_safari": (
+            "<blockquote>"
+            "🌿 <b>𝐒𝐀𝐅𝐀𝐑𝐈 𝐁𝐀𝐋𝐋</b>\n\n"
+            "A specialized capture Ball associated with "
+            "Safari Zone encounters.\n\n"
+            "🎯 <b>Multiplier:</b> ×1.5\n"
+            "📌 <b>Availability:</b> Safari Zone only\n\n"
+            "💡 <b>Recommended:</b> Pokémon encountered "
+            "during Safari Zone activities."
+            "</blockquote>"
+        )
+    }
+
+    text = pages.get(data)
+
+    if not text:
+        return
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐏𝐨𝐤𝐞́ 𝐁𝐚𝐥𝐥𝐬",
+                callback_data="ball_main"
+            )
+        ]
+    ]
+
+    markup = InlineKeyboardMarkup(keyboard)
+
+    if query.message.photo:
+        await query.edit_message_caption(
+            caption=text,
+            parse_mode="HTML",
+            reply_markup=markup
+        )
+    else:
+        await query.edit_message_text(
+            text=text,
+            parse_mode="HTML",
+            reply_markup=markup
+        )
 
 
 # =========================================================
@@ -6444,7 +6781,14 @@ def main():
             pattern="^tm_page_[1-6]$"
         )
     )
-   
+
+    app.add_handler(
+        CallbackQueryHandler(
+            ball_callback,
+            pattern=r"^ball_"
+        )
+    )
+    
     app.add_handler(
         CallbackQueryHandler(
             helpdex_callback,
