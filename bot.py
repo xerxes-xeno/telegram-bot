@@ -919,8 +919,9 @@ async def helpdex_callback(update, context):
             "change the final damage result."
             "</blockquote>\n\n"
 
-            "⤷ <b>Use <code>/datadamage</code> to open the "
-            "Damage Calculator.</b>"
+            "⤷ <b>Use</b> "
+            '<a href="tg://bot_command?command=datadamage">/datadamage</a> '
+            "<b>to open the Damage Calculator.</b>"
         )
 
         if query.message.photo:
@@ -964,8 +965,9 @@ async def helpdex_callback(update, context):
             "battle strategy."
             "</blockquote>\n\n"
 
-            "⤷ <b>Use <code>/buildpoke</code> to open the "
-            "Pokémon Build system.</b>"
+            "⤷ <b>Use</b> "
+            '<a href="tg://bot_command?command=buildpoke">/buildpoke</a> '
+            "<b>to open the Pokémon Build system.</b>"
         )
 
         if query.message.photo:
