@@ -919,22 +919,22 @@ async def helpdex_callback(update, context):
             "change the final damage result."
             "</blockquote>\n\n"
 
-            "⤷ <b>Use</b> "
-            '<a href="tg://bot_command?command=datadamage">/datadamage</a> '
-            "<b>to open the Damage Calculator.</b>"
+            "⤷ <b>Open with:</b> <code>/datadamage</code>"
         )
+
+        markup = InlineKeyboardMarkup(keyboard)
 
         if query.message.photo:
             await query.edit_message_caption(
                 caption=text,
                 parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=markup
             )
         else:
             await query.edit_message_text(
                 text=text,
                 parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=markup
         )
 
     elif query.data == "dex_build":
@@ -965,22 +965,22 @@ async def helpdex_callback(update, context):
             "battle strategy."
             "</blockquote>\n\n"
 
-            "⤷ <b>Use</b> "
-            '<a href="tg://bot_command?command=buildpoke">/buildpoke</a> '
-            "<b>to open the Pokémon Build system.</b>"
+            "⤷ <b>Open with:</b> <code>/buildpoke</code>"
         )
+
+        markup = InlineKeyboardMarkup(keyboard)
 
         if query.message.photo:
             await query.edit_message_caption(
                 caption=text,
                 parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=markup
             )
         else:
             await query.edit_message_text(
                 text=text,
                 parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=markup
         )
     
     elif query.data == "dex_type":
