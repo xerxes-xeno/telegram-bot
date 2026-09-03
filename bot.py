@@ -4006,20 +4006,26 @@ async def pokeballs(update, context):
         "<blockquote>"
         "🎯 <b>𝐏𝐎𝐊𝐄́ 𝐁𝐀𝐋𝐋 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
 
-        "Poké Balls are specialized capture tools, each "
-        "designed with its own capture modifier or condition.\n\n"
+        "Poké Balls are specialized capture tools, "
+        "each designed with different capture properties.\n\n"
 
-        "Some provide a fixed bonus, while others become "
-        "more effective depending on the target's level, "
-        "type, Speed, battle turn, or capture history.\n\n"
+        "📖 <b>𝐂𝐀𝐏𝐓𝐔𝐑𝐄 𝐒𝐘𝐒𝐓𝐄𝐌</b>\n"
+        "Some Balls provide a fixed capture multiplier, "
+        "while others become more effective under specific "
+        "conditions such as level difference, Pokémon type, "
+        "Speed, battle turn, or capture history.\n\n"
 
-        "📖 <b>ARCHIVE FEATURES</b>\n"
+        "⚙️ <b>𝐀𝐑𝐂𝐇𝐈𝐕𝐄 𝐃𝐀𝐓𝐀</b>\n"
         "Capture Multiplier • Special Conditions • "
-        "Recommended Use\n\n"
+        "Availability • Recommended Usage\n\n"
 
-        "⤷ <b>Select a Poké Ball below to inspect "
-        "its capture properties.</b>"
-        "</blockquote>"
+        "🎯 <b>𝐓𝐑𝐀𝐈𝐍𝐄𝐑 𝐍𝐎𝐓𝐄</b>\n"
+        "Choosing the right Ball for the right situation "
+        "can greatly improve your capture efficiency."
+        "</blockquote>\n\n"
+
+        "⤷ <b>Select a Poké Ball below to view "
+        "its complete capture profile.</b>"
     )
 
     await update.message.reply_text(
@@ -4027,7 +4033,7 @@ async def pokeballs(update, context):
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
+        
 
 # =========================================================
 # POKÉ BALL CALLBACK
