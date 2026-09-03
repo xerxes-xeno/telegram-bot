@@ -850,7 +850,9 @@ async def helpdex(update, context):
     await update.message.reply_photo(
         photo="AgACAgUAAyEFAAMBCNz_jgACS9FqkmIgY76ky8pI5Gh7d6EfZIit6AACexJrG8L2mFSKvokScixrtAEAAwIAA3kAAz0E",
         caption=(
-            "☏ 𝛸𝛴𝛤𝛸𝛴𝑆 𝛨𝜀𝜄𝛲 𝐶𝜀𝜂𝜏𝜀𝛤\n\n"
+            "<blockquote>"
+            "☏ 𝛸𝛴𝛤𝛸𝛴𝑆 𝛨𝜀𝜄𝛲 𝐶𝜀𝜂𝜏𝜀𝛤\n"
+            "</blockquote>\n\n"
             "<blockquote>"
             "𝐘𝐨𝐮𝐫 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐝𝐚𝐭𝐚 𝐚𝐧𝐝\n"
             "𝐭𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐠𝐮𝐢𝐝𝐞."
