@@ -172,94 +172,190 @@ POKEMON_DATA = {
                 "power": 0,
                 "accuracy": 100,
                 "category": "status"
-           },
-           {
+            },
+            {
                 "name": "Synthesis",
                 "type": "grass",
                 "method": "Level 27",
                 "power": 0,
                 "accuracy": 100,
                 "category": "status"
-           },
-           {
+            },
+            {
                 "name": "worry-seed",
                 "type": "grass",
                 "method": "Level 30",
                 "power": 0,
                 "accuracy": 100,
                 "category": "status"
-           },
-           {
+            },
+            {
                 "name": "power-whip",
                 "type": "grass",
                 "method": "Level 33",
                 "power": 120,
                 "accuracy": 85,
                 "category": "physical"
-           },
-           {
+            },
+            {
                 "name": "solar-beam",
                 "type": "grass",
                 "method": "Level 36",
                 "power": 120,
                 "accuracy": 100,
                 "category": "special"
-           },
-           {
+            },
+            {
                 "name": "swords-dance",
                 "type": "normal",
                 "method": "Machine",
                 "power": 0,
                 "accuracy": None,
                 "category": "status"
-          },
-          {
+            },
+            {
                 "name": "body-slam", 
                 "type": "normal",
                 "method": "Machine",
                 "power": 85,
                 "accuracy": 100,
                 "category": "physical"
-          },
-          {
+            },
+            {
                 "name": "take-down",
                 "type": "normal",
                 "method": "Machine",
                 "power": 90,
                 "accuracy": 85,
                 "category": "physical"
-          },
-          {
+            },
+            {
                 "name": "double-edge",
                 "type": "normal",
                 "method": "Machine",
                 "power": 120,
                 "accuracy": 100,
                 "category": "physical"
-          },
-          {
+            },
+            {
                 "name": "solar-beam",
                 "type": "grass",
                 "method": "Machine",
                 "power": 120,
                 "accuracy": 100,
                 "category": "special"
-          },
-          {
+            },
+            {
                 "name": "petal-dance",
                 "type": "grass",
                 "method": "Egg",
                 "power": 120,
                 "accuracy": 100,
                 "category": "special"    
-          }      
+            },
+            {
+                "name": "Toxic",
+                "type": "poison",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 90,
+                "category": "status"    
+            },
+            {
+                "name": "Toxic",
+                "type": "poison",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 90,
+                "category": "status"
+            },
+            {
+                "name": "Rest",
+                "type": "psychic",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Substitute",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Curse",
+                "type": "ghost",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Curse",
+                "type": "ghost",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Protect",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "sludge-bomb",
+                "type": "poison",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "giga-drain",
+                "type": "grass",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Endure",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Charm",
+                "type": "fairy",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "false-swipe",
+                "type": "normal",
+                "method": "Machine",
+                "power": 40,
+                "accuracy": 100,
+                "category": "physical"
+            }
         ],
 
         "weakness": {
-            "super_effective": ["fire", "ice", "flying", "psychic"],
-            "reduced_damage": ["water", "electric", "fighting", "fairy"],
-            "double_resist": ["grass"],
-            "no_effect": []
+            "2X Weak To": ["fire", "ice", "flying", "psychic"],
+            "▪️Resist To": ["water", "electric", "fighting", "fairy"],
+            "▪️▪️ Double Resist": ["grass"],
+            "🚫 No Effect": []
         },
 
         "evolutions": [
@@ -410,9 +506,9 @@ def build_weakness_page(data):
     weakness = data.get("weakness", {})
 
     sections = [
-        ("🔥 Super Effective", weakness.get("super_effective", [])),
-        ("🛡️ Reduced Damage", weakness.get("reduced_damage", [])),
-        ("💠 Double Resist", weakness.get("double_resist", [])),
+        ("2X Weak To", weakness.get("super_effective", [])),
+        ("▪️Resist To", weakness.get("reduced_damage", [])),
+        ("▪️▪️ Double Resist", weakness.get("double_resist", [])),
         ("🚫 No Effect", weakness.get("no_effect", [])),
     ]
 
