@@ -7,6 +7,8 @@ import random
 import threading
 import hashlib
 import hmac
+import difflib
+import math
 
 from flask import Flask, jsonify, request
 
@@ -34,7 +36,626 @@ from telegram.ext import (
 
 DB_FILE = "/data/warnings.db"
 
- 
+TYPE_EMOJIS = {
+    "normal": "⚪",
+    "fire": "🔥",
+    "water": "💧",
+    "electric": "⚡",
+    "grass": "🌿",
+    "ice": "❄️",
+    "fighting": "🥊",
+    "poison": "☠️",
+    "ground": "🌍",
+    "flying": "🌪️",
+    "psychic": "🔮",
+    "bug": "🐛",
+    "rock": "🪨",
+    "ghost": "👻",
+    "dragon": "🐉",
+    "dark": "🌑",
+    "steel": "⚙️",
+    "fairy": "🧚",
+}
+
+POKEMON_DATA = {
+
+    "bulbasaur": {
+        "name": "Bulbasaur",
+        "types": ["grass", "poison"],
+        "region": "I",
+        "rarity": "Unknown",
+        "catch_rate": 45,
+        "catch_percent": "17.647%",
+        "id": 1,
+
+        "abilities": ["Overgrow"],
+        "hidden_ability": "Chlorophyll",
+
+        "ev_yield": "Special-attack +1",
+
+        "stats": {
+            "hp": {"base": 45, "range": "200-294", "bar": "■■□□□"},
+            "attack": {"base": 49, "range": "92-216", "bar": "■■□□□"},
+            "defense": {"base": 49, "range": "92-216", "bar": "■■□□□"},
+            "sp_attack": {"base": 65, "range": "121-251", "bar": "■■□□□"},
+            "sp_defense": {"base": 65, "range": "121-251", "bar": "■■□□□"},
+            "speed": {"base": 45, "range": "85-207", "bar": "■■□□□"},
+        },
+
+        "file_id": "AgACAgUAAxkBAAIDlGqaUiual1s_TSSOtn771fkK2zvoAALVEWsbEovQVIFnVKCDSIhaAQADAgADeQADPQQ",
+
+        "moves": [
+            {
+                "name": "Tackle",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 40,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Growl",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "vine-whip",
+                "type": "grass",
+                "method": "Level 3",
+                "power": 45,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {   
+                "name": "Growth",
+                "type": "normal",
+                "method": "Level 6",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "leech-seed",
+                "type": "grass",
+                "method": "Level 9",
+                "power": 0,
+                "accuracy": 90,
+                "category": "status"
+            },
+            {
+                "name": "razor-leaf",
+                "type": "grass",
+                "method": "Level 12",
+                "power": 55,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "poison-powder",
+                "type": "poison",
+                "method": "Level 15",
+                "power": 0,
+                "accuracy": 75,
+                "category": "status"
+            },
+            {
+                "name": "sleep-powder",
+                "type": "grass",
+                "method": "Level 15",
+                "power": 0,
+                "accuracy": 75,
+                "category": "status"
+            },
+            {
+                "name": "seed-bomb",
+                "type": "grass",
+                "method": "Level 18",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "take-down",
+                "type": "normal",
+                "method": "Level 21",
+                "power": 90,
+                "accuracy": 85,
+                "category": "physical"
+            },
+            {
+                "name": "sweet-scent",
+                "type": "normal",
+                "method": "Level 24",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+           },
+           {
+                "name": "Synthesis",
+                "type": "grass",
+                "method": "Level 27",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+           },
+           {
+                "name": "worry-seed",
+                "type": "grass",
+                "method": "Level 30",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+           },
+           {
+                "name": "power-whip",
+                "type": "grass",
+                "method": "Level 33",
+                "power": 120,
+                "accuracy": 85,
+                "category": "physical"
+           },
+           {
+                "name": "solar-beam",
+                "type": "grass",
+                "method": "Level 36",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+           },
+           {
+                "name": "swords-dance",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+          },
+          {
+                "name": "body-slam", 
+                "type": "normal",
+                "method": "Machine",
+                "power": 85,
+                "accuracy": 100,
+                "category": "physical"
+          },
+          {
+                "name": "take-down",
+                "type": "normal",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 85,
+                "category": "physical"
+          },
+          {
+                "name": "double-edge",
+                "type": "normal",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "physical"
+          },
+          {
+                "name": "solar-beam",
+                "type": "grass",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+          },
+          {
+                "name": "petal-dance",
+                "type": "grass",
+                "method": "Egg",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"    
+          }      
+        ],
+
+        "weakness": {
+            "super_effective": ["fire", "ice", "flying", "psychic"],
+            "reduced_damage": ["water", "electric", "fighting", "fairy"],
+            "double_resist": ["grass"],
+            "no_effect": []
+        },
+
+        "evolutions": [
+            {
+                "from": "Bulbasaur",
+                "to": "Ivysaur",
+                "method": "Level up",
+                "level": 16
+            },
+            {
+                "from": "Ivysaur",
+                "to": "Venusaur",
+                "method": "Level up",
+                "level": 32
+            }
+        ]
+    },
+
+}
+
+def normalize_pokemon_name(name):
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def get_pokemon(name):
+    key = normalize_pokemon_name(name)
+
+    for pokemon_key, data in POKEMON_DATA.items():
+        if normalize_pokemon_name(pokemon_key) == key:
+            return data
+
+        if normalize_pokemon_name(data["name"]) == key:
+            return data
+
+    return None
+
+
+def get_pokemon_suggestions(name, limit=6):
+    query = normalize_pokemon_name(name)
+
+    names = list(POKEMON_DATA.keys())
+
+    matches = difflib.get_close_matches(
+        query,
+        names,
+        n=limit,
+        cutoff=0.0
+    )
+
+    return matches[:limit]
+
+
+def type_display(type_name):
+    emoji = TYPE_EMOJIS.get(type_name.lower(), "")
+    return f"{emoji} {type_name.title()}"
+
+
+def format_types(types):
+    return " / ".join(type_display(t) for t in types)
+
+def build_info_text(data):
+    stats = data["stats"]
+
+    return (
+        f"<blockquote>"
+        f"╭━━━『 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐎𝐊É𝐃𝐄𝐗 』━━━╮\n"
+        f"┃\n"
+        f"┃ 𝐍𝐚𝐦𝐞: {data['name']} {format_types(data['types'])}\n"
+        f"┃ 𝐑𝐞𝐠𝐢𝐨𝐧: {data['region']}\n"
+        f"┃ 𝐓𝐲𝐩𝐞: {format_types(data['types'])}\n"
+        f"┃ 𝐑𝐚𝐫𝐢𝐭𝐲: {data['rarity']}\n"
+        f"┃ 𝐂𝐚𝐭𝐜𝐡 𝐑𝐚𝐭𝐞: {data['catch_rate']} ({data['catch_percent']})\n"
+        f"┃ 𝐏𝐨𝐤é𝐝𝐞𝐱 𝐈𝐃: #{data['id']:03d}\n"
+        f"┃ 𝐀𝐛𝐢𝐥𝐢𝐭𝐢𝐞𝐬: {', '.join(data['abilities'])}\n"
+        f"┃ 𝐇𝐢𝐝𝐝𝐞𝐧 𝐀𝐛𝐢𝐥𝐢𝐭𝐲: {data['hidden_ability']}\n"
+        f"┃ 𝐄𝐕 𝐘𝐢𝐞𝐥𝐝: {data['ev_yield']}\n"
+        f"┃\n"
+        f"┃ ┌─ 𝐁𝐀𝐒𝐄 𝐒𝐓𝐀𝐓𝐒 ─┐\n"
+        f"┃ │ HP  : {stats['hp']['base']}  {stats['hp']['range']}  {stats['hp']['bar']}\n"
+        f"┃ │ Atk : {stats['attack']['base']}  {stats['attack']['range']}  {stats['attack']['bar']}\n"
+        f"┃ │ Def : {stats['defense']['base']}  {stats['defense']['range']}  {stats['defense']['bar']}\n"
+        f"┃ │ SpA : {stats['sp_attack']['base']}  {stats['sp_attack']['range']}  {stats['sp_attack']['bar']}\n"
+        f"┃ │ SpD : {stats['sp_defense']['base']}  {stats['sp_defense']['range']}  {stats['sp_defense']['bar']}\n"
+        f"┃ │ Spe : {stats['speed']['base']}  {stats['speed']['range']}  {stats['speed']['bar']}\n"
+        f"┃ └──────────────┘\n"
+        f"┃\n"
+        f"╰━━━━━━━━━━━━━━━━━━━━╯"
+        f"</blockquote>"
+    )
+
+def info_keyboard(pokemon_key):
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("⚔️ Moves", callback_data=f"dex_moves_{pokemon_key}_1"),
+            InlineKeyboardButton("🛡️ Weakness", callback_data=f"dex_weakness_{pokemon_key}"),
+        ],
+        [
+            InlineKeyboardButton("✨ Shiny", callback_data=f"dex_shiny_{pokemon_key}"),
+            InlineKeyboardButton("🧬 Evolution", callback_data=f"dex_evolution_{pokemon_key}"),
+        ]
+    ])
+
+MOVES_PER_PAGE = 10
+
+def build_moves_page(data, pokemon_key, page):
+    moves = data.get("moves", [])
+
+    total_pages = max(1, math.ceil(len(moves) / MOVES_PER_PAGE))
+
+    page = max(1, min(page, total_pages))
+
+    start = (page - 1) * MOVES_PER_PAGE
+    end = start + MOVES_PER_PAGE
+
+    page_moves = moves[start:end]
+
+    lines = [
+        f"<blockquote>",
+        f"┌─ 𝐗𝐄𝐑𝐗𝐄𝐒 𝐌𝐎𝐕𝐄𝐒 ─┐",
+        f"│ 𝐏𝐨𝐤é𝐦𝐨𝐧: {data['name']}",
+        f"│ 𝐏𝐚𝐠𝐞: {page}/{total_pages}",
+        f"└────────────────┘",
+        ""
+    ]
+
+    for index, move in enumerate(page_moves, start=start + 1):
+        move_type = move["type"].lower()
+        emoji = TYPE_EMOJIS.get(move_type, "")
+
+        power = move.get("power", "—")
+        accuracy = move.get("accuracy", "—")
+        category = move.get("category", "—")
+        method = move.get("method", "—")
+
+        lines.extend([
+            f"🔹 {index}. 𝐌𝐨𝐯𝐞: {move['name']}",
+            f"   {emoji} {move['type'].title()} • {method}",
+            f"   ⚡ Power: {power} • 🎯 Accuracy: {accuracy}",
+            f"   ◈ Category: {category}",
+            ""
+        ])
+
+    lines.append("</blockquote>")
+
+    return "\n".join(lines), total_pages
+
+def build_weakness_page(data):
+    weakness = data.get("weakness", {})
+
+    sections = [
+        ("🔥 Super Effective", weakness.get("super_effective", [])),
+        ("🛡️ Reduced Damage", weakness.get("reduced_damage", [])),
+        ("💠 Double Resist", weakness.get("double_resist", [])),
+        ("🚫 No Effect", weakness.get("no_effect", [])),
+    ]
+
+    lines = [
+        "<blockquote>",
+        "┌─ 𝐗𝐄𝐑𝐗𝐄𝐒 𝐓𝐘𝐏𝐄 𝐏𝐑𝐎𝐅𝐈𝐋𝐄 ─┐",
+        f"│ 𝐏𝐨𝐤é𝐦𝐨𝐧: {data['name']}",
+        "└────────────────────┘",
+        ""
+    ]
+
+    for title, types in sections:
+        lines.append(title)
+
+        if types:
+            for type_name in types:
+                lines.append(
+                    f"  {TYPE_EMOJIS.get(type_name, '')} {type_name.title()}"
+                )
+        else:
+            lines.append("  —")
+
+        lines.append("")
+
+    lines.append("</blockquote>")
+
+    return "\n".join(lines)
+
+def build_evolution_page(data):
+    evolutions = data.get("evolutions", [])
+
+    lines = [
+        "<blockquote>",
+        "┌─ 𝐗𝐄𝐑𝐗𝐄𝐒 𝐄𝐕𝐎𝐋𝐔𝐓𝐈𝐎𝐍 ─┐",
+        f"│ 𝐏𝐨𝐤é𝐦𝐨𝐧: {data['name']}",
+        "└──────────────────┘",
+        ""
+    ]
+
+    if not evolutions:
+        lines.append("🔹 No evolutions")
+    else:
+        for evo in evolutions:
+            lines.append(
+                f"🔹 {evo['from']} → {evo['to']}"
+            )
+
+            method = evo.get("method", "Unknown")
+            level = evo.get("level")
+
+            if level:
+                lines.append(
+                    f"   Method: {method}, Level {level}"
+                )
+            else:
+                lines.append(
+                    f"   Method: {method}"
+                )
+
+            lines.append("")
+
+    lines.append("</blockquote>")
+
+    return "\n".join(lines)
+
+async def data_command(update, context):
+    if not context.args:
+        await update.message.reply_text(
+            "❌ Please enter a Pokémon name.\n\n"
+            "Example: /data Pikachu"
+        )
+        return
+
+    query = " ".join(context.args)
+    data = get_pokemon(query)
+
+    if not data:
+        suggestions = get_pokemon_suggestions(query)
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    POKEMON_DATA[name]["name"],
+                    callback_data=f"dex_info_{name}"
+                )
+            ]
+            for name in suggestions
+        ]
+
+        await update.message.reply_text(
+            "❌ <b>Pokémon not found.</b>\n\n"
+            "Maybe you meant one of these?",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode="HTML"
+        )
+        return
+
+    pokemon_key = normalize_pokemon_name(data["name"])
+
+    info_text = build_info_text(data)
+
+    info_message = await update.message.reply_text(
+        info_text,
+        reply_markup=info_keyboard(pokemon_key),
+        parse_mode="HTML"
+    )
+
+    await update.message.reply_photo(
+        photo=data["file_id"],
+        caption=f"<blockquote>🖼️ {data['name']} • XERXES POKÉDEX</blockquote>",
+        parse_mode="HTML",
+        reply_to_message_id=info_message.message_id
+    )
+
+async def dex_callback(update, context):
+    query = update.callback_query
+    await query.answer()
+
+    data_parts = query.data.split("_")
+
+    if data_parts[1] == "info":
+        pokemon_key = "_".join(data_parts[2:])
+        data = get_pokemon(pokemon_key)
+
+        if not data:
+            return
+
+        await query.edit_message_text(
+            build_info_text(data),
+            reply_markup=info_keyboard(pokemon_key),
+            parse_mode="HTML"
+        )
+
+    elif data_parts[1] == "moves":
+        pokemon_key = data_parts[2]
+        page = int(data_parts[3])
+
+        data = get_pokemon(pokemon_key)
+
+        if not data:
+            return
+
+        text, total_pages = build_moves_page(
+            data,
+            pokemon_key,
+            page
+        )
+
+        keyboard = []
+
+        navigation = []
+
+        if page > 1:
+            navigation.append(
+                InlineKeyboardButton(
+                    "⬅️ Back",
+                    callback_data=f"dex_moves_{pokemon_key}_{page - 1}"
+                )
+            )
+
+        if page < total_pages:
+            navigation.append(
+                InlineKeyboardButton(
+                    "Next ➡️",
+                    callback_data=f"dex_moves_{pokemon_key}_{page + 1}"
+                )
+            )
+
+        if navigation:
+            keyboard.append(navigation)
+
+        keyboard.append([
+            InlineKeyboardButton(
+                "🔙 Back to Info",
+                callback_data=f"dex_info_{pokemon_key}"
+            )
+        ])
+
+        await query.edit_message_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode="HTML"
+        )
+    
+    elif data_parts[1] == "weakness":
+        pokemon_key = "_".join(data_parts[2:])
+        data = get_pokemon(pokemon_key)
+
+        if not data:
+            return
+
+        keyboard = [[
+            InlineKeyboardButton(
+                "🔙 Back to Info",
+                callback_data=f"dex_info_{pokemon_key}"
+            )
+        ]]
+
+        await query.edit_message_text(
+            build_weakness_page(data),
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode="HTML"
+        )
+
+    elif data_parts[1] == "evolution":
+        pokemon_key = "_".join(data_parts[2:])
+        data = get_pokemon(pokemon_key)
+
+        if not data:
+            return
+
+        keyboard = []
+
+        for evo in data.get("evolutions", []):
+            related_key = normalize_pokemon_name(evo["to"])
+
+            if related_key in POKEMON_DATA:
+                keyboard.append([
+                    InlineKeyboardButton(
+                        f"🧬 {evo['to']}",
+                        callback_data=f"dex_info_{related_key}"
+                    )
+                ])
+
+        keyboard.append([
+            InlineKeyboardButton(
+                "🔙 Back to Info",
+                callback_data=f"dex_info_{pokemon_key}"
+            )
+        ])
+
+        await query.edit_message_text(
+            build_evolution_page(data),
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode="HTML"
+        )
+
+    elif data_parts[1] == "shiny":
+        await query.answer(
+            "✨ Shiny system will be available after launch.",
+            show_alert=True
+        )
+
 # =========================================================
 # BAG COMMAND
 # =========================================================
@@ -7878,7 +8499,7 @@ def main():
         )
     )
 
-    app.add_handler(CommandHandler("data", pokemon_data))
+    app.add_handler(CommandHandler("data", data_command))
     app.add_handler(CommandHandler("datadamage", datadamage))
     app.add_handler(CommandHandler("buildpoke", buildpoke))
     app.add_handler(CommandHandler("datatype", datatype))
@@ -7914,6 +8535,13 @@ def main():
         CallbackQueryHandler(
             ball_callback,
             pattern=r"^ball_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            dex_callback,
+            pattern=r"^dex_(info|moves|weakness|evolution|shiny)_"
         )
     )
     
