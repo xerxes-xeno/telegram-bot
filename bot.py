@@ -506,10 +506,10 @@ def build_weakness_page(data):
     weakness = data.get("weakness", {})
 
     sections = [
-        ("2X Weak To", weakness.get("super_effective", [])),
-        ("▪️Resist To", weakness.get("reduced_damage", [])),
-        ("▪️▪️ Double Resist", weakness.get("double_resist", [])),
-        ("🚫 No Effect", weakness.get("no_effect", [])),
+        ("2X Weak To", weakness.get("2X Weak To", [])),
+        ("▪️Resist To", weakness.get("▪️Resist To", [])),
+        ("▪️▪️ Double Resist", weakness.get("▪️▪️ Double Resist", [])),
+        ("🚫 No Effect", weakness.get("🚫 No Effect", [])),
     ]
 
     lines = [
