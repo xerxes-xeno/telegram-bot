@@ -1317,9 +1317,9 @@ async def dex_callback(update, context):
             photo=data["file_id"],
             caption=f"<blockquote>🖼️ {data['name']} • XERXES POKÉDEX</blockquote>",
             parse_mode="HTML"
-       )
-    
-   elif data_parts[1] == "info":
+        )
+
+    elif data_parts[1] == "info":
         pokemon_key = "_".join(data_parts[2:])
         data = get_pokemon(pokemon_key)
 
@@ -1330,9 +1330,9 @@ async def dex_callback(update, context):
             build_info_text(data),
             reply_markup=info_keyboard(pokemon_key),
             parse_mode="HTML"
-       )
+        )
     
-   elif data_parts[1] == "moves":
+    elif data_parts[1] == "moves":
         pokemon_key = data_parts[2]
         page = int(data_parts[3])
 
