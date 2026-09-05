@@ -2914,39 +2914,141 @@ def type_display(type_name):
     emoji = TYPE_EMOJIS.get(type_name.lower(), "")
     return f"{emoji} {type_name.title()}"
 
-
 def format_types(types):
     return " / ".join(type_display(t) for t in types)
 
 def build_info_text(data):
-    stats = data["stats"]
+    name = data["name"].upper()
 
-    return (
-        f"<blockquote>"
-        f"╭━『 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐎𝐊É𝐃𝐄𝐗 』━╮\n"
-        f"┃\n"
-        f"┃ 𝐍𝐚𝐦𝐞: {data['name']}\n"
-        f"┃ 𝐓𝐲𝐩𝐞: {format_types(data['types'])}\n"
-        f"┃ 𝐑𝐞𝐠𝐢𝐨𝐧: {data['region']}\n"
-        f"┃ 𝐑𝐚𝐫𝐢𝐭𝐲: {data['rarity']}\n"
-        f"┃ 𝐂𝐚𝐭𝐜𝐡: {data['catch_rate']} ({data['catch_percent']})\n"
-        f"┃ 𝐏𝐨𝐤é𝐝𝐞𝐱 𝐈𝐃: #{data['id']:03d}\n"
-        f"┃ 𝐀𝐛𝐢𝐥𝐢𝐭𝐢𝐞𝐬: {', '.join(data['abilities'])}\n"
-        f"┃ 𝐇𝐢𝐝𝐝𝐞𝐧: {data['hidden_ability']}\n"
-        f"┃ 𝐄𝐕 𝐘𝐢𝐞𝐥𝐝: {data['ev_yield']}\n"
-        f"┃\n"
-        f"┃ ┌─ 𝐁𝐀𝐒𝐄 𝐒𝐓𝐀𝐓𝐒 ─┐\n"
-        f"┃ │ HP  : {stats['hp']['base']}  {stats['hp']['range']}  {stats['hp']['bar']}\n"
-        f"┃ │ Atk : {stats['attack']['base']}  {stats['attack']['range']}  {stats['attack']['bar']}\n"
-        f"┃ │ Def : {stats['defense']['base']}  {stats['defense']['range']}  {stats['defense']['bar']}\n"
-        f"┃ │ SpA : {stats['sp_attack']['base']}  {stats['sp_attack']['range']}  {stats['sp_attack']['bar']}\n"
-        f"┃ │ SpD : {stats['sp_defense']['base']}  {stats['sp_defense']['range']}  {stats['sp_defense']['bar']}\n"
-        f"┃ │ Spe : {stats['speed']['base']}  {stats['speed']['range']}  {stats['speed']['bar']}\n"
-        f"┃ └────────────────┘\n"
-        f"┃\n"
-        f"╰━━━━━━━━━━━━━━━━━━╯"
-        f"</blockquote>"
+    # Types
+    types = data.get("types", [])
+    if types:
+        primary_type = types[0]
+        type_emoji = TYPE_EMOJIS.get(primary_type.lower(), "")
+        type_name = primary_type.upper()
+    else:
+        type_emoji = ""
+        type_name = "UNKNOWN"
+
+    # Basic info
+    region = data.get("region", "Unknown")
+    rarity = data.get("rarity", "Unknown")
+    catch_rate = data.get("catch_rate", "Unknown")
+
+    # Catch percentage
+    catch_percentage = data.get("catch_percentage")
+
+    if catch_percentage is not None:
+        catch_text = f"{catch_rate} • {catch_percentage}%"
+    else:
+        catch_text = str(catch_rate)
+
+    dex_id = data.get("dex_id", data.get("pokedex_id", "Unknown"))
+
+    # Abilities
+    abilities = data.get("abilities", [])
+    if isinstance(abilities, str):
+        abilities = [abilities]
+
+    ability_text = (
+        abilities[0]
+        if abilities
+        else "None"
     )
+
+    hidden_ability = data.get(
+        "hidden_ability",
+        data.get("hidden ability", "None")
+    )
+
+    # EV Yield
+    ev_yield = data.get("ev_yield", {})
+
+    # Base stats
+    stats = data.get("base_stats", {})
+
+    def stat_bar(value):
+        try:
+            value = int(value)
+        except (TypeError, ValueError):
+            return "□□□□□"
+
+        filled = min(5, max(0, round(value / 35)))
+        return "■" * filled + "□" * (5 - filled)
+
+    hp = stats.get("hp", 0)
+    atk = stats.get("attack", 0)
+    defense = stats.get("defense", 0)
+    spa = stats.get("sp_attack", 0)
+    spd = stats.get("sp_defense", 0)
+    spe = stats.get("speed", 0)
+
+    lines = [
+        "<blockquote>",
+        "╭━『 𝐗 𝐄 𝐑 𝐗 𝐄 𝐒 』━╮",
+        "┃      𝐏𝐎𝐊É𝐃𝐄𝐗",
+        "┃ 𓋰𓋰𓋰𓋰𓋰𓋰𓋰𓋰",
+        f"┃  {type_emoji} 𝐂𝐇𝐀𝐑𝐌𝐄𝐋𝐄𝐎𝐍" if name == "CHARMELEON"
+        else f"┃  {type_emoji} 𝐏{name}",
+        f"┃  ╰─ {type_emoji} 𝐅𝐈𝐑𝐄" if name == "CHARMELEON"
+        else f"┃  ╰─ {type_emoji} 𝐓𝐘𝐏𝐄",
+        "┃",
+        "┃  ╭─「 𝐏𝐑𝐎𝐅𝐈𝐋𝐄 」─╮",
+        f"┃  │ 𝐑𝐞𝐠𝐢𝐨𝐧  ◉   {region}",
+        f"┃  │ 𝐑𝐚𝐫𝐢𝐭𝐲   ◉   {rarity}",
+        f"┃  │ 𝐂𝐚𝐭𝐜𝐡    ◉   {catch_text}",
+        f"┃  │ 𝐃𝐞𝐱 𝐈𝐃   ◉   #{dex_id}",
+        "┃  ╰────────────╯",
+        "┃",
+        "┃  ╭─「 𝐀𝐁𝐈𝐋𝐈𝐓𝐈𝐄𝐒 」╮",
+        f"┃  │ 𝐀𝐛𝐢𝐥𝐢𝐭𝐲  ◉  {ability_text}",
+        f"┃  │ 𝐇𝐢𝐝𝐝𝐞𝐧   ◉  {hidden_ability}",
+        "┃  ╰───────────╯",
+        "┃",
+        "┃  ╭─「 𝐄𝐕 𝐘𝐈𝐄𝐋𝐃 」─╮",
+    ]
+
+    # EV Yield
+    if ev_yield:
+        for stat_name, amount in ev_yield.items():
+            stat_display = {
+                "hp": "𝐇𝐏",
+                "attack": "𝐀𝐭𝐤",
+                "defense": "𝐃𝐞𝐟",
+                "sp_attack": "𝐒𝐩. 𝐀𝐭𝐤",
+                "sp_defense": "𝐒𝐩. 𝐃𝐞𝐟",
+                "speed": "𝐒𝐩𝐞𝐞𝐝",
+            }.get(stat_name.lower(), stat_name)
+
+            lines.append(
+                f"┃  │  {stat_display}  ◉  +{amount}"
+            )
+    else:
+        lines.append("┃  │  None")
+
+    lines.extend([
+        "┃  ╰────────────╯",
+        "┃  𓋰𓋰𓋰𓋰𓋰𓋰𓋰𓋰",
+        "┃  ╭─「 𝐁𝐀𝐒𝐄 𝐒𝐓𝐀𝐓𝐒 」╮",
+        f"┃  │ 𝐇𝐏    ◉   {hp}",
+        f"┃  │            {stat_bar(hp)}",
+        f"┃  │ 𝐀𝐓𝐊   ◉   {atk}",
+        f"┃  │            {stat_bar(atk)}",
+        f"┃  │ 𝐃𝐄𝐅   ◉   {defense}",
+        f"┃  │            {stat_bar(defense)}",
+        f"┃  │ 𝐒𝐏𝐀   ◉   {spa}",
+        f"┃  │            {stat_bar(spa)}",
+        f"┃  │ 𝐒𝐏𝐃   ◉   {spd}",
+        f"┃  │            {stat_bar(spd)}",
+        f"┃  │ 𝐒𝐏𝐄   ◉   {spe}",
+        f"┃  │            {stat_bar(spe)}",
+        "┃  ╰─────────────╯",
+        "┃   𓋰𓋰𓋰𓋰𓋰𓋰𓋰𓋰",
+        "╰━━━━━━━━━━━━━━━╯",
+        "</blockquote>"
+    ])
+
+    return "\n".join(lines)
 
 def info_keyboard(pokemon_key):
     return InlineKeyboardMarkup([
