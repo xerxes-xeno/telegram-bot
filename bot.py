@@ -1038,6 +1038,1242 @@ POKEMON_DATA = {
             }
         ]
     },
+
+    "venusaur": {
+        "name": "Venusaur",
+        "id": 3,
+        "region": "I",
+        "types": ["grass", "poison"],
+        "rarity": "Unknown",
+        "catch_rate": 45,
+        "catch_percent": "17.647%",
+        "abilities": ["Overgrow"],
+        "hidden_ability": "Chlorophyll",
+        "ev_yield": "Sp. Atk +2, Sp. Def +1",       
+
+        "stats": {
+            "hp": {
+                "base": 80,
+                "range": "270-364",
+                "bar": "■■■□□"
+            },
+            "attack": {
+                "base": 82,
+                "range": "152-289",
+                "bar": "■■■□□"
+            },
+            "defense": {
+                "base": 83,
+                "range": "153-291",
+                "bar": "■■■□□"
+            },
+            "sp_attack": {
+                "base": 100,
+                "range": "184-328",
+                "bar": "■■■□□"
+            },
+            "sp_defense": {
+                "base": 100,
+                "range": "184-328",
+                "bar": "■■■□□"
+            },
+            "speed": {
+                "base": 80,
+                "range": "148-284",
+                "bar": "■■■□□"
+            }
+        },
+
+        "file_id": "AgACAgUAAxkBAAIDo2qaXrFwV13ZG4jcyCqW3gZgtG9hAALtEWsbEovQVJohItPAONu1AQADAgADeQADPQQ",
+
+        "weakness": {
+            "2X Weak To": [
+                "fire",
+                "ice",
+                "flying",
+                "psychic"
+            ],
+            "▪️Resist To": [
+                "water",
+                "electric",
+                "fighting",
+                "fairy"
+            ],
+            "▪️▪️ Double Resist": [
+                "grass"
+            ],
+            "🚫 No Effect": []
+        },
+
+        "evolutions": [
+            {
+                "from": "Bulbasaur",
+                "to": "Ivysaur",
+                "method": "Level up",
+                "level": 16
+            },
+            {
+                "from": "Ivysaur",
+                "to": "Venusaur",
+                "method": "Level up",
+                "level": 32
+            }
+        ],
+
+        "alternate_forms": [
+            "Mega Venusaur",
+            "Venusaur Gmax"
+        ],
+
+        "moves": [
+            {
+                "name": "petal-blizzard",
+                "type": "grass",
+                "method": "Level Up",
+                "power": 90,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "vine-whip",
+                "type": "grass",
+                "method": "Level 1",
+                "power": 45,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Tackle",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 40,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Growl",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Growth",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "petal-dance",
+                "type": "grass",
+                "method": "Level 1",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "leech-seed",
+                "type": "grass",
+                "method": "Level 9",
+                "power": 0,
+                "accuracy": 90,
+                "category": "status"
+            },
+            {
+                "name": "razor-leaf",
+                "type": "grass",
+                "method": "Level 12",
+                "power": 55,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "poison-powder",
+                "type": "poison",
+                "method": "Level 15",
+                "power": 0,
+                "accuracy": 75,
+                "category": "status"
+            },
+            {
+                "name": "sleep-powder",
+                "type": "grass",
+                "method": "Level 15",
+                "power": 0,
+                "accuracy": 75,
+                "category": "status"
+            },
+            {
+                "name": "seed-bomb",
+                "type": "grass",
+                "method": "Level 20",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "take-down",
+                "type": "normal",
+                "method": "Level 25",
+                "power": 90,
+                "accuracy": 85,
+                "category": "physical"
+            },
+            {
+                "name": "sweet-scent",
+                "type": "normal",
+                "method": "Level 30",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Synthesis",
+                "type": "grass",
+                "method": "Level 37",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "worry-seed",
+                "type": "grass",
+                "method": "Level 44",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "power-whip",
+                "type": "grass",
+                "method": "Level 51",
+                "power": 120,
+                "accuracy": 85,
+                "category": "physical"
+            },
+            {
+                "name": "solar-beam",
+                "type": "grass",
+                "method": "Level 58",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "swords-dance",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "body-slam",
+                "type": "normal",
+                "method": "Machine",
+                "power": 85,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "take-down",
+                "type": "normal",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 85,
+                "category": "physical"
+            },
+            {
+                "name": "double-edge",
+                "type": "normal",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Roar",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "hyper-beam",
+                "type": "normal",
+                "method": "Machine",
+                "power": 150,
+                "accuracy": 90,
+                "category": "special"
+            },
+            {
+                "name": "solar-beam",
+                "type": "grass",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "petal-dance",
+                "type": "grass",
+                "method": "Egg",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Earthquake",
+                "type": "ground",
+                "method": "Machine",
+                "power": 100,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Toxic",
+                "type": "poison",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 90,
+                "category": "status"
+            },
+            {
+                "name": "Toxic",
+                "type": "poison",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 90,
+                "category": "status"
+            },
+            {
+                "name": "Amnesia",
+                "type": "psychic",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Rest",
+                "type": "psychic",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Substitute",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Curse",
+                "type": "ghost",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Protect",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "scary-face",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "sludge-bomb",
+                "type": "poison",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "giga-drain",
+                "type": "grass",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Endure",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Charm",
+                "type": "fairy",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "false-swipe",
+                "type": "normal",
+                "method": "Machine",
+                "power": 40,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "sleep-talk",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "sunny-day",
+                "type": "fire",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Facade",
+                "type": "normal",
+                "method": "Machine",
+                "power": 70,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "helping-hand",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Ingrain",
+                "type": "grass",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "knock-off",
+                "type": "dark",
+                "method": "Machine",
+                "power": 65,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "weather-ball",
+                "type": "normal",
+                "method": "Machine",
+                "power": 50,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "bullet-seed",
+                "type": "grass",
+                "method": "Machine",
+                "power": 25,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "frenzy-plant",
+                "type": "grass",
+                "method": "Machine",
+                "power": 150,
+                "accuracy": 90,
+                "category": "special"
+            },
+            {
+                "name": "magical-leaf",
+                "type": "grass",
+                "method": "Machine",
+                "power": 60,
+                "accuracy": None,
+                "category": "special"
+            },
+            {
+                "name": "poison-jab",
+                "type": "poison",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "seed-bomb",
+                "type": "grass",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "energy-ball",
+                "type": "grass",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "earth-power",
+                "type": "ground",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "giga-impact",
+                "type": "normal",
+                "method": "Machine",
+                "power": 150,
+                "accuracy": 90,
+                "category": "physical"
+            },
+            {
+                "name": "leaf-storm",
+                "type": "grass",
+                "method": "Machine",
+                "power": 130,
+                "accuracy": 90,
+                "category": "special"
+            },
+            {
+                "name": "grass-knot",
+                "type": "grass",
+                "method": "Machine",
+                "power": None,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Venoshock",
+                "type": "poison",
+                "method": "Machine",
+                "power": 65,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "acid-spray",
+                "type": "poison",
+                "method": "Machine",
+                "power": 40,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "grass-pledge",
+                "type": "grass",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Bulldoze",
+                "type": "ground",
+                "method": "Machine",
+                "power": 60,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "petal-blizzard",
+                "type": "grass",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "grassy-terrain",
+                "type": "grass",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "stomping-tantrum",
+                "type": "ground",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "grassy-glide",
+                "type": "grass",
+                "method": "Machine",
+                "power": 55,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "tera-blast",
+                "type": "normal",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Trailblaze",
+                "type": "grass",
+                "method": "Machine",
+                "power": 50,
+                "accuracy": 100,
+                "category": "physical"
+            }
+        ]
+    },
+
+    "charmander": {
+        "name": "Charmander",
+        "id": 4,
+        "region": "I",
+        "types": ["fire"],
+        "rarity": "Unknown",
+        "catch_rate": 45,
+        "catch_percent": "17.647%",
+        "abilities": ["Blaze"],
+        "hidden_ability": "Solar-power",
+        "ev_yield": "Speed +1",
+
+        "stats": {
+            "hp": {
+                "base": 39,
+                "range": "188-282",
+                "bar": "■□□□□"
+            },
+            "attack": {
+                "base": 52,
+                "range": "98-223",
+                "bar": "■■□□□"
+            },
+            "defense": {
+                "base": 43,
+                "range": "81-203",
+                "bar": "■□□□□"
+            },
+            "sp_attack": {
+                "base": 60,
+                "range": "112-240",
+                "bar": "■■□□□"
+            },
+            "sp_defense": {
+                "base": 50,
+                "range": "94-218",
+                "bar": "■■□□□"
+            },
+            "speed": {
+                "base": 65,
+                "range": "121-251",
+                "bar": "■■□□□"
+            }
+        },
+
+                "file_id": "AgACAgUAAxkBAAIDpWqaXzSI0ZIHaVj1D_baNQ0L_xYhAALuEWsbEovQVOtDm_I80Im1AQADAgADeQADPQQ",
+
+        "weakness": {
+            "2X Weak To": [
+                "water",
+                "ground",
+                "rock"
+            ],
+            "▪️Resist To": [
+                "fire",
+                "grass",
+                "ice",
+                "bug",
+                "steel",
+                "fairy"
+            ],
+            "▪️▪️ Double Resist": [],
+            "🚫 No Effect": []
+        },
+
+        "evolutions": [
+            {
+                "from": "Charmander",
+                "to": "Charmeleon",
+                "method": "Level up",
+                "level": 16
+            },
+            {
+                "from": "Charmeleon",
+                "to": "Charizard",
+                "method": "Level up",
+                "level": 36
+            }
+        ],
+
+        "alternate_forms": [
+            "Mega Charizard X",
+            "Mega Charizard Y",
+            "Charizard Gmax"
+        ],
+
+        "moves": [
+            {
+                "name": "Scratch",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 40,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Growl",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Ember",
+                "type": "fire",
+                "method": "Level 4",
+                "power": 40,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Smokescreen",
+                "type": "normal",
+                "method": "Level 8",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "dragon-breath",
+                "type": "dragon",
+                "method": "Level 12",
+                "power": 60,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "fire-fang",
+                "type": "fire",
+                "method": "Level 17",
+                "power": 65,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "Slash",
+                "type": "normal",
+                "method": "Level 20",
+                "power": 70,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Flamethrower",
+                "type": "fire",
+                "method": "Level 24",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "scary-face",
+                "type": "normal",
+                "method": "Level 28",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "fire-spin",
+                "type": "fire",
+                "method": "Level 32",
+                "power": 35,
+                "accuracy": 85,
+                "category": "special"
+            },
+            {
+                "name": "Inferno",
+                "type": "fire",
+                "method": "Level 36",
+                "power": 100,
+                "accuracy": 50,
+                "category": "special"
+            },
+            {
+                "name": "flare-blitz",
+                "type": "fire",
+                "method": "Level 40",
+                "power": 120,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "fire-punch",
+                "type": "fire",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "thunder-punch",
+                "type": "electric",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "swords-dance",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "body-slam",
+                "type": "normal",
+                "method": "Machine",
+                "power": 85,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "take-down",
+                "type": "normal",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 85,
+                "category": "physical"
+            },
+            {
+                "name": "Bite",
+                "type": "dark",
+                "method": "Egg",
+                "power": 60,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Roar",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Flamethrower",
+                "type": "fire",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Counter",
+                "type": "fighting",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "fire-spin",
+                "type": "fire",
+                "method": "Machine",
+                "power": 35,
+                "accuracy": 85,
+                "category": "special"
+            },
+            {
+                "name": "Dig",
+                "type": "ground",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "fire-blast",
+                "type": "fire",
+                "method": "Machine",
+                "power": 110,
+                "accuracy": 85,
+                "category": "special"
+            },
+            {
+                "name": "Swift",
+                "type": "normal",
+                "method": "Machine",
+                "power": 60,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Rest",
+                "type": "psychic",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "rock-slide",
+                "type": "rock",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 90,
+                "category": "physical"
+            },
+            {
+                "name": "Substitute",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Protect",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "scary-face",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "belly-drum",
+                "type": "normal",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Outrage",
+                "type": "dragon",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Endure",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "false-swipe",
+                "type": "normal",
+                "method": "Machine",
+                "power": 40,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "sleep-talk",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+                        {
+                "name": "iron-tail",
+                "type": "steel",
+                "method": "Egg",
+                "power": 100,
+                "accuracy": 75,
+                "category": "physical"
+            },
+            {
+                "name": "metal-claw",
+                "type": "steel",
+                "method": "Egg",
+                "power": 50,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "metal-claw",
+                "type": "steel",
+                "method": "Machine",
+                "power": 50,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "sunny-day",
+                "type": "fire",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Crunch",
+                "type": "dark",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "ancient-power",
+                "type": "rock",
+                "method": "Egg",
+                "power": 60,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "heat-wave",
+                "type": "fire",
+                "method": "Machine",
+                "power": 95,
+                "accuracy": 90,
+                "category": "special"
+            },
+            {
+                "name": "will-o-wisp",
+                "type": "fire",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 85,
+                "category": "status"
+            },
+            {
+                "name": "Facade",
+                "type": "normal",
+                "method": "Machine",
+                "power": 70,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "focus-punch",
+                "type": "fighting",
+                "method": "Machine",
+                "power": 150,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "helping-hand",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "brick-break",
+                "type": "fighting",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "weather-ball",
+                "type": "normal",
+                "method": "Machine",
+                "power": 50,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Overheat",
+                "type": "fire",
+                "method": "Machine",
+                "power": 130,
+                "accuracy": 90,
+                "category": "special"
+            },
+            {
+                "name": "rock-tomb",
+                "type": "rock",
+                "method": "Machine",
+                "power": 60,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "dragon-claw",
+                "type": "dragon",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "dragon-dance",
+                "type": "dragon",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Fling",
+                "type": "dark",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "flare-blitz",
+                "type": "fire",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "dragon-pulse",
+                "type": "dragon",
+                "method": "Machine",
+                "power": 85,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "dragon-rush",
+                "type": "dragon",
+                "method": "Egg",
+                "power": 100,
+                "accuracy": 75,
+                "category": "physical"
+            },
+            {
+                "name": "focus-blast",
+                "type": "fighting",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 70,
+                "category": "special"
+            },
+            {
+                "name": "shadow-claw",
+                "type": "ghost",
+                "method": "Machine",
+                "power": 70,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "fire-fang",
+                "type": "fire",
+                "method": "Machine",
+                "power": 65,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "flame-charge",
+                "type": "fire",
+                "method": "Machine",
+                "power": 50,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "fire-pledge",
+                "type": "fire",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "dragon-tail",
+                "type": "dragon",
+                "method": "Egg",
+                "power": 60,
+                "accuracy": 90,
+                "category": "physical"
+            },
+            {
+                "name": "dragon-tail",
+                "type": "dragon",
+                "method": "Machine",
+                "power": 60,
+                "accuracy": 90,
+                "category": "physical"
+            },
+            {
+                "name": "breaking-swipe",
+                "type": "dragon",
+                "method": "Machine",
+                "power": 60,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "tera-blast",
+                "type": "normal",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "temper-flare",
+                "type": "fire",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "physical"
+            }
+        ]
+    },            
 }
 
 def normalize_pokemon_name(name):
