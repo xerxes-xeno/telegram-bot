@@ -1256,7 +1256,7 @@ async def data_command(update, context):
             [
                 InlineKeyboardButton(
                     POKEMON_DATA[name]["name"],
-                    callback_data=f"dex_info_{name}"
+                    callback_data=f"dex_suggest_{name}"
                 )
             ]
             for name in suggestions
@@ -1293,7 +1293,7 @@ async def dex_callback(update, context):
 
     data_parts = query.data.split("_")
 
-    if data_parts[1] == "info":
+    if data_parts[1] == "suggest":
         pokemon_key = "_".join(data_parts[2:])
         data = get_pokemon(pokemon_key)
 
@@ -1310,16 +1310,29 @@ async def dex_callback(update, context):
             text=build_info_text(data),
             reply_markup=info_keyboard(pokemon_key),
             parse_mode="HTML"
-        )
+        ) 
 
         await context.bot.send_photo(
             chat_id=query.message.chat_id,
             photo=data["file_id"],
             caption=f"<blockquote>🖼️ {data['name']} • XERXES POKÉDEX</blockquote>",
             parse_mode="HTML"
-        )
+       )
+    
+   elif data_parts[1] == "info":
+        pokemon_key = "_".join(data_parts[2:])
+        data = get_pokemon(pokemon_key)
 
-    elif data_parts[1] == "moves":
+        if not data:
+            return
+
+        await query.edit_message_text(
+            build_info_text(data),
+            reply_markup=info_keyboard(pokemon_key),
+            parse_mode="HTML"
+       )
+    
+   elif data_parts[1] == "moves":
         pokemon_key = data_parts[2]
         page = int(data_parts[3])
 
