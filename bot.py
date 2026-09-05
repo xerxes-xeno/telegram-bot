@@ -348,6 +348,166 @@ POKEMON_DATA = {
                 "power": 40,
                 "accuracy": 100,
                 "category": "physical"
+            },
+            {
+                "name": "sleep-talk",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {   
+                "name": "sunny-day",
+                "type": "fire",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Facade",
+                "type": "normal",
+                "method": "Machine",
+                "power": 70,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "helping-hand",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Ingrain",
+                "type": "grass",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "knock-off",
+                "type": "dark",
+                "method": "Machine",
+                "power": 65,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "weather-ball",
+                "type": "normal",
+                "method": "Machine",
+                "power": 50,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "bullet-seed",
+                "type": "grass",
+                "method": "Machine",
+                "power": 25,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "magical-leaf",
+                "type": "grass",
+                "method": "Machine",
+                "power": 60,
+                "accuracy": None,
+                "category": "special"
+            },
+            {
+                "name": "seed-bomb",
+                "type": "grass",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "energy-ball",
+                "type": "grass",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "leaf-storm",
+                "type": "grass",
+                "method": "Machine",
+                "power": 130,
+                "accuracy": 90,
+                "category": "special"
+            },
+            {
+                "name": "grass-knot",
+                "type": "grass",
+                "method": "Machine",
+                "power": None,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Venoshock",
+                "type": "poison",
+                "method": "Machine",
+                "power": 65,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "acid-spray",
+                "type": "poison",
+                "method": "Machine",
+                "power": 40,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "grass-pledge",
+                "type": "grass",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "grassy-terrain",
+                "type": "grass",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "grassy-glide",
+                "type": "grass",
+                "method": "Machine",
+                "power": 55,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "tera-blast",
+                "type": "normal",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Trailblaze",
+                "type": "grass",
+                "method": "Machine",
+                "power": 50,
+                "accuracy": 100,
+                "category": "physical"
             }
         ],
 
