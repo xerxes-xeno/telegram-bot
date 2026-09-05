@@ -1085,7 +1085,10 @@ def build_info_text(data):
 
     return (
         f"<blockquote>"
-        f"╭━━━『 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐎𝐊É𝐃𝐄𝐗 』━━━╮\n"
+        f"╭━『 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐎𝐊É𝐃𝐄𝐗 』━╮"
+        f"</blockquote>\n"
+
+        f"<blockquote>"
         f"┃\n"
         f"┃ 𝐍𝐚𝐦𝐞: {data['name']} {format_types(data['types'])}\n"
         f"┃ 𝐑𝐞𝐠𝐢𝐨𝐧: {data['region']}\n"
