@@ -796,9 +796,22 @@ async def dex_callback(update, context):
         if not data:
             return
 
-        await query.edit_message_text(
-            build_info_text(data),
+        try:
+            await query.message.delete()
+        except Exception:
+            pass
+
+        await context.bot.send_message(
+            chat_id=query.message.chat_id,
+            text=build_info_text(data),
             reply_markup=info_keyboard(pokemon_key),
+            parse_mode="HTML"
+        )
+
+        await context.bot.send_photo(
+            chat_id=query.message.chat_id,
+            photo=data["file_id"],
+            caption=f"<blockquote>🖼️ {data['name']} • XERXES POKÉDEX</blockquote>",
             parse_mode="HTML"
         )
 
