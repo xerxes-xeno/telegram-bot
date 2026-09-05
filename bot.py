@@ -534,6 +534,510 @@ POKEMON_DATA = {
         ]
     },
 
+    "ivysaur": {
+        "name": "Ivysaur",
+        "id": 2,
+        "region": "I",
+        "types": ["grass", "poison"],
+        "rarity": "Unknown",
+        "catch_rate": 45,
+        "catch_percent": "17.647%",
+        "abilities": ["Overgrow"],
+        "hidden_ability": "Chlorophyll",
+        "ev_yield": "Sp. Atk +1, Sp. Def +1",
+
+        "stats": {
+            "hp": {
+                "base": 60,
+                "range": "230-324",
+                "bar": "■■□□□"
+            },
+            "attack": {
+                "base": 62,
+                "range": "116-245",
+                "bar": "■■□□□"
+            },
+            "defense": {
+                "base": 63,
+                "range": "117-247",
+                "bar": "■■□□□"
+            },
+            "sp_attack": {
+                "base": 80,
+                "range": "148-284",
+                "bar": "■■■□□"
+            },
+            "sp_defense": {
+                "base": 80,
+                "range": "148-284",
+                "bar": "■■■□□"
+            },
+            "speed": {
+                "base": 60,
+                "range": "112-240",
+                "bar": "■■□□□"
+            }
+        },
+
+        "weakness": {
+            "2X Weak To": ["fire", "ice", "flying", "psychic"],
+            "▪️Resist To": ["water", "electric", "fighting", "fairy"],
+            "▪️▪️ Double Resist": ["grass"],
+            "🚫 No Effect": []
+        },
+
+        "evolutions": [
+            {
+                "from": "Bulbasaur",
+                "to": "Ivysaur",
+                "method": "Level up",
+                "level": 16
+            },
+            {
+                "from": "Ivysaur",
+                "to": "Venusaur",
+                "method": "Level up",
+                "level": 32
+            }
+        ],
+
+        "file_id": "AgACAgUAAxkBAAIDoWqaXjC7368c58Z9S9A6f1wIMkxxAALrEWsbEovQVBHd3YrTBFn-AQADAgADeQADPQQ",
+
+        "moves": [
+            {
+                "name": "Vine Whip",
+                "type": "grass",
+                "method": "Level 1",
+                "power": 45,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Tackle",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 40,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Growl",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Growth",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Leech Seed",
+                "type": "grass",
+                "method": "Level 9",
+                "power": 0,
+                "accuracy": 90,
+                "category": "status"
+            },
+            {
+                "name": "Razor Leaf",
+                "type": "grass",
+                "method": "Level 12",
+                "power": 55,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "Poison Powder",
+                "type": "poison",
+                "method": "Level 15",
+                "power": 0,
+                "accuracy": 75,
+                "category": "status"
+            },
+            {
+                "name": "Sleep Powder",
+                "type": "grass",
+                "method": "Level 15",
+                "power": 0,
+                "accuracy": 75,
+                "category": "status"
+            },
+            {
+                "name": "Seed Bomb",
+                "type": "grass",
+                "method": "Level 20",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Take Down",
+                "type": "normal",
+                "method": "Level 25",
+                "power": 90,
+                "accuracy": 85,
+                "category": "physical"
+            },
+            {
+                "name": "Sweet Scent",
+                "type": "normal",
+                "method": "Level 30",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Synthesis",
+                "type": "grass",
+                "method": "Level 35",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Worry Seed",
+                "type": "grass",
+                "method": "Level 40",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Power Whip",
+                "type": "grass",
+                "method": "Level 45",
+                "power": 120,
+                "accuracy": 85,
+                "category": "physical"
+            },
+            {
+                "name": "Solar Beam",
+                "type": "grass",
+                "method": "Level 50",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Swords Dance",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Body Slam",
+                "type": "normal",
+                "method": "Machine",
+                "power": 85,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Take Down",
+                "type": "normal",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 85,
+                "category": "physical"
+            },
+            {
+                "name": "Double-Edge",
+                "type": "normal",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Roar",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Solar Beam",
+                "type": "grass",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Petal Dance",
+                "type": "grass",
+                "method": "Egg",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Toxic",
+                "type": "poison",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 90,
+                "category": "status"
+            },
+            {
+                "name": "Toxic",
+                "type": "poison",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 90,
+                "category": "status"
+            },
+            {
+                "name": "Rest",
+                "type": "psychic",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Substitute",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Curse",
+                "type": "ghost",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Curse",
+                "type": "ghost",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Protect",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Sludge Bomb",
+                "type": "poison",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Giga Drain",
+                "type": "grass",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Endure",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Charm",
+                "type": "fairy",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "False Swipe",
+                "type": "normal",
+                "method": "Machine",
+                "power": 40,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Sleep Talk",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Sunny Day",
+                "type": "fire",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Facade",
+                "type": "normal",
+                "method": "Machine",
+                "power": 70,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Helping Hand",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Ingrain",
+                "type": "grass",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Knock Off",
+                "type": "dark",
+                "method": "Machine",
+                "power": 65,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Weather Ball",
+                "type": "normal",
+                "method": "Machine",
+                "power": 50,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Bullet Seed",
+                "type": "grass",
+                "method": "Machine",
+                "power": 25,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Magical Leaf",
+                "type": "grass",
+                "method": "Machine",
+                "power": 60,
+                "accuracy": None,
+                "category": "special"
+            },
+            {
+                "name": "Seed Bomb",
+                "type": "grass",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Energy Ball",
+                "type": "grass",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Leaf Storm",
+                "type": "grass",
+                "method": "Machine",
+                "power": 130,
+                "accuracy": 90,
+                "category": "special"
+            },
+            {
+                "name": "Grass Knot",
+                "type": "grass",
+                "method": "Machine",
+                "power": None,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Venoshock",
+                "type": "poison",
+                "method": "Machine",
+                "power": 65,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Acid Spray",
+                "type": "poison",
+                "method": "Machine",
+                "power": 40,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Grass Pledge",
+                "type": "grass",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Grassy Terrain",
+                "type": "grass",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": None,
+                "category": "status"
+            },
+            {
+                "name": "Grassy Glide",
+                "type": "grass",
+                "method": "Machine",
+                "power": 55,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Tera Blast",
+                "type": "normal",
+                "method": "Machine",
+                "power": 80,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Trailblaze",
+                "type": "grass",
+                "method": "Machine",
+                "power": 50,
+                "accuracy": 100,
+                "category": "physical"
+            }
+        ]
+    },
 }
 
 def normalize_pokemon_name(name):
