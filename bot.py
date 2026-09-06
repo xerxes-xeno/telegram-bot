@@ -2876,6 +2876,299 @@ POKEMON_DATA = {
             }
         ]
     },
+
+    "charizard": {
+        "name": "Charizard",
+        "id": 6,
+        "region": "I",
+        "types": ["fire", "flying"],
+        "rarity": "Unknown",
+        "catch_rate": 45,
+        "catch_percent": "17.647%",
+        "abilities": ["Blaze"],
+        "hidden_ability": "Solar-power",
+        "ev_yield": "Sp. Attack +3",
+
+        "stats": {
+            "hp": {
+                "base": 78,
+                "range": "268–360",
+                "bar": "■■■■□"
+            },
+            "attack": {
+                "base": 84,
+                "range": "160–292",
+                "bar": "■■■■□"
+            },
+            "defense": {
+                "base": 78,
+                "range": "148–280",
+                "bar": "■■■■□"
+            },
+            "sp_attack": {
+                "base": 109,
+                "range": "205–348",
+                "bar": "■■■■■"
+            },
+            "sp_defense": {
+                "base": 85,
+                "range": "157–295",
+                "bar": "■■■■□"
+            },
+            "speed": {
+                "base": 100,
+                "range": "184–328",
+                "bar": "■■■■■"
+            }
+        },
+
+        "weakness": {
+            "4X Weak To": [
+                "rock"
+            ],
+            "2X Weak To": [
+                "water",
+                "electric"
+            ],
+            "▪️Resist To": [
+                "fire",
+                "fighting",
+                "steel",
+                "fairy"
+            ],
+            "▪️▪️ Double Resist": [
+                "grass",
+                "bug"
+            ],
+            "🚫 No Effect": []
+        },
+
+        "evolutions": [
+            {
+                "from": "Charmander",
+                "to": "Charmeleon",
+                "method": "Level up",
+                "level": 16
+            },
+            {
+                "from": "Charmeleon",
+                "to": "Charizard",
+                "method": "Level up",
+                "level": 36
+            }
+        ],
+
+        "alternate_forms": [
+            "Mega Charizard X",
+            "Mega Charizard Y",
+            "Gigantamax Charizard"
+        ],
+
+        "file_id": "AgACAgUAAxkBAAIDqWqaX0curjBdQTGbZR8e0URQoDENAALwEWsbEovQVM_LpQX_ITthAQADAgADeQADPQQ",
+
+        "moves": [
+            {
+                "name": "air-slash",
+                "type": "flying",
+                "method": "Level Up",
+                "power": 75,
+                "accuracy": 95,
+                "category": "special"
+            },
+            {
+                "name": "Scratch",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 40,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Growl",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Ember",
+                "type": "fire",
+                "method": "Level 1",
+                "power": 40,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "Smokescreen",
+                "type": "normal",
+                "method": "Level 1",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "heat-wave",
+                "type": "fire",
+                "method": "Level 1",
+                "power": 95,
+                "accuracy": 90,
+                "category": "special"
+            },
+            {
+                "name": "dragon-claw",
+                "type": "dragon",
+                "method": "Level 1",
+                "power": 80,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "dragon-breath",
+                "type": "dragon",
+                "method": "Level 12",
+                "power": 60,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "fire-fang",
+                "type": "fire",
+                "method": "Level 19",
+                "power": 65,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "Slash",
+                "type": "normal",
+                "method": "Level 24",
+                "power": 70,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Flamethrower",
+                "type": "fire",
+                "method": "Level 30",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "scary-face",
+                "type": "normal",
+                "method": "Level 39",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "fire-spin",
+                "type": "fire",
+                "method": "Level 46",
+                "power": 35,
+                "accuracy": 85,
+                "category": "special"
+            },
+            {
+                "name": "Inferno",
+                "type": "fire",
+                "method": "Level 54",
+                "power": 100,
+                "accuracy": 50,
+                "category": "special"
+            },
+            {
+                "name": "flare-blitz",
+                "type": "fire",
+                "method": "Level 62",
+                "power": 120,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "fire-punch",
+                "type": "fire",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "thunder-punch",
+                "type": "electric",
+                "method": "Machine",
+                "power": 75,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "swords-dance",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": "None",
+                "category": "status"
+            },
+            {
+                "name": "Fly",
+                "type": "flying",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 95,
+                "category": "physical"
+            },
+            {
+                "name": "body-slam",
+                "type": "normal",
+                "method": "Machine",
+                "power": 85,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "take-down",
+                "type": "normal",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 85,
+                "category": "physical"
+            },
+            {
+                "name": "double-edge",
+                "type": "normal",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            { 
+                "name": "Bite",
+                "type": "dark",
+                "method": "Egg",
+                "power": 60,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "Roar",
+                "type": "normal",
+                "method": "Machine",
+                "power": 0,
+                "accuracy": 100,
+                "category": "status"
+            },
+            {
+                "name": "Flamethrower",
+                "type": "fire",
+                "method": "Machine",
+                "power": 90,
+                "accuracy": 100,
+                "category": "special"
+            }
+        ]
+    },    
 }
 
 def normalize_pokemon_name(name):
