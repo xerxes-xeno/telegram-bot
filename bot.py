@@ -3166,7 +3166,47 @@ POKEMON_DATA = {
                 "power": 90,
                 "accuracy": 100,
                 "category": "special"
-            }
+            },
+            {
+                "name": "hyper-beam",
+                "type": "normal",
+                "method": "Machine",
+                "power": 150,
+                "accuracy": 90,
+                "category": "special"
+            },
+            {
+                "name": "Counter",
+                "type": "fighting",
+                "method": "Egg",
+                "power": 0,
+                "accuracy": 100,
+                "category": "physical"
+            },
+            {
+                "name": "solar-beam",
+                "type": "grass",
+                "method": "Machine",
+                "power": 120,
+                "accuracy": 100,
+                "category": "special"
+            },
+            {
+                "name": "fire-spin",
+                "type": "fire",
+                "method": "Machine",
+                "power": 35,
+                "accuracy": 85,
+                "category": "special"
+            },
+            {
+                "name": "Earthquake",
+                "type": "ground",
+                "method": "Machine",
+                "power": 100,
+                "accuracy": 100,
+                "category": "physical"
+            },
         ]
     },    
 }
