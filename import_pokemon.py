@@ -416,14 +416,20 @@ def get_stats(pokemon):
     return stats
 
 
+SPECIES_CACHE = {}
+
+
 def build_pokemon_data(name, existing_data=None, file_id=""):
     pokemon = get_json(
         f"{API_BASE}/pokemon/{name.lower()}"
     )
 
-    species = get_json(
-        pokemon["species"]["url"]
-    )
+    species_url = pokemon["species"]["url"]
+
+    if species_url not in SPECIES_CACHE:
+        SPECIES_CACHE[species_url] = get_json(species_url)
+
+    species = SPECIES_CACHE[species_url]
 
     pokemon_id = pokemon["id"]
 
