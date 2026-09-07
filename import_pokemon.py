@@ -2,6 +2,12 @@ import json
 import requests
 import time
 
+def normalize_pokemon_name(name):
+    return "".join(
+        char for char in name.lower()
+        if char.isalnum()
+    )
+
 
 API_BASE = "https://pokeapi.co/api/v2"
 
