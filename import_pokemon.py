@@ -489,7 +489,7 @@ def main():
     )
 
     existing = load_json(
-        "pokemon_data.json",
+        "/data/pokemon_data.json",
         {}
     )
 
@@ -523,7 +523,7 @@ def main():
             existing[key] = entry
 
             save_json(
-                "pokemon_data.json",
+                "/data/pokemon_data.json",
                 existing
             )
 
