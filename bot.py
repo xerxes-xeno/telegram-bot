@@ -59,8 +59,11 @@ TYPE_EMOJIS = {
     "fairy": "🧚",
 }
 
-with open("/data/pokemon_data.json", "r", encoding="utf-8") as f:
-    POKEMON_DATA = json.load(f)
+try:
+    with open("/data/pokemon_data.json", "r", encoding="utf-8") as f:
+        POKEMON_DATA = json.load(f)
+except FileNotFoundError:
+    POKEMON_DATA = {}
 
 def normalize_pokemon_name(name):
     return re.sub(r"[^a-z0-9]", "", name.lower())
