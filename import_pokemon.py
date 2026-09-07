@@ -131,8 +131,14 @@ def get_ev_yield(pokemon):
     return ", ".join(parts)
 
 
+MOVE_CACHE = {}
+
+
 def get_move_data(move_url):
-    move = get_json(move_url)
+    if move_url not in MOVE_CACHE:
+        MOVE_CACHE[move_url] = get_json(move_url)
+
+    move = MOVE_CACHE[move_url]
 
     move_type = move.get("type", {}).get("name", "normal")
 
@@ -221,6 +227,9 @@ def collect_evolution_chain(chain, result):
         )
 
 
+EVOLUTION_CACHE = {}
+
+
 def get_evolutions(species_url):
 
     species = get_json(species_url)
@@ -246,8 +255,11 @@ def get_weakness(types):
     type_data = {}
 
     for type_name in types:
-        url = f"{API_BASE}/type/{type_name}"
-        type_data[type_name] = get_json(url)
+        if type_name not in TYPE_CACHE:
+            url = f"{API_BASE}/type/{type_name}"
+            TYPE_CACHE[type_name] = get_json(url)
+
+        type_data[type_name] = TYPE_CACHE[type_name]
 
     multipliers = {}
 
