@@ -400,7 +400,7 @@ def get_stats(pokemon):
     return stats
 
 
-def build_pokemon_data(name, existing_data=None):
+def build_pokemon_data(name, existing_data=None, file_id=""):
     pokemon = get_json(
         f"{API_BASE}/pokemon/{name.lower()}"
     )
@@ -474,6 +474,13 @@ def load_json(filename, default):
         return default
 
 
+def get_file_ids():
+    return load_json(
+        "pokemon_file_ids.json",
+        {}
+    )
+
+
 def save_json(filename, data):
     with open(
         filename,
@@ -499,6 +506,8 @@ def main():
         {}
     )
 
+    file_ids = get_file_ids()
+    
     if not selected:
         print("No Pokémon selected.")
         return
@@ -523,7 +532,8 @@ def main():
 
             entry = build_pokemon_data(
                 name,
-                existing.get(key)
+                existing.get(key),
+                file_ids.get(key, "")
             )
 
             existing[key] = entry
