@@ -1,8 +1,9 @@
 import json
 import requests
+import time
 
 
-API_URL = "https://pokeapi.co/api/v2/pokemon?limit=5000"
+API_BASE = "https://pokeapi.co/api/v2"
 
 
 def get_json(url):
@@ -32,14 +33,14 @@ def get_region(pokemon_id):
         return "IX"
 
 
-def get_stat_range(base):
-    minimum = int(((2 * base) * 1.0) + 5)
-    maximum = int(((2 * base + 31) * 1.0) + 94)
+def stat_range(base):
+    minimum = (2 * base) + 5
+    maximum = (2 * base) + 31 + 94
 
     return f"{minimum}–{maximum}"
 
 
-def get_stat_bar(base):
+def stat_bar(base):
     if base >= 100:
         return "■■■■■"
     elif base >= 80:
@@ -52,143 +53,502 @@ def get_stat_bar(base):
         return "■□□□□"
 
 
-def main():
+def format_name(name):
+    return name.replace("-", " ").title()
 
-    print("🔥 XERXES Pokémon Data Importer")
-    print("Fetching Pokémon list...")
 
-    pokemon_list = get_json(API_URL)["results"]
+def get_move_method(details):
+    methods = []
 
-    pokemon_data = {}
+    for detail in details:
+        method = detail.get("move_learn_method", {}).get("name")
 
-    total = len(pokemon_list)
+        if method:
+            methods.append(method)
 
-    for index, pokemon in enumerate(pokemon_list, start=1):
+    if not methods:
+        return "Unknown"
 
-        print(f"[{index}/{total}] {pokemon['name']}")
+    method = methods[0]
 
-        data = get_json(pokemon["url"])
+    if method == "level-up":
+        return "Level Up"
 
-        pokemon_id = data["id"]
+    if method == "machine":
+        return "Machine"
 
-        types = [
-            item["type"]["name"]
-            for item in sorted(
-                data["types"],
-                key=lambda x: x["slot"]
+    if method == "egg":
+        return "Egg"
+
+    if method == "tutor":
+        return "Tutor"
+
+    return format_name(method)
+
+
+def get_move_level(details):
+    for detail in details:
+        level = detail.get("level_learned_at")
+
+        if level:
+            return level
+
+    return None
+
+
+def get_ev_yield(pokemon):
+    parts = []
+
+    stat_names = {
+        "hp": "HP",
+        "attack": "Attack",
+        "defense": "Defense",
+        "special-attack": "Sp. Attack",
+        "special-defense": "Sp. Defense",
+        "speed": "Speed"
+    }
+
+    for stat in pokemon["stats"]:
+        effort = stat["effort"]
+
+        if effort > 0:
+            name = stat_names.get(
+                stat["stat"]["name"],
+                stat["stat"]["name"]
             )
-        ]
 
-        abilities = []
-        hidden_ability = None
+            parts.append(f"{name} +{effort}")
 
-        for ability in data["abilities"]:
+    if not parts:
+        return "None"
 
-            name = ability["ability"]["name"]
+    return ", ".join(parts)
 
-            if ability["is_hidden"]:
-                hidden_ability = name
-            else:
-                abilities.append(name)
 
-        stats = {}
+def get_move_data(move_url):
+    move = get_json(move_url)
 
-        stat_map = {
-            "hp": "hp",
-            "attack": "attack",
-            "defense": "defense",
-            "special-attack": "sp_attack",
-            "special-defense": "sp_defense",
-            "speed": "speed"
+    move_type = move.get("type", {}).get("name", "normal")
+
+    category = (
+        move.get("damage_class", {}).get("name")
+        or "status"
+    )
+
+    return {
+        "name": move["name"],
+        "type": move_type,
+        "method": None,
+        "power": move.get("power"),
+        "accuracy": move.get("accuracy"),
+        "category": category
+    }
+
+
+def get_evolution_details(details):
+    if not details:
+        return "Unknown", None
+
+    detail = details[0]
+
+    trigger = detail.get("trigger", {}).get("name")
+
+    if trigger == "level-up":
+        method = "Level up"
+    elif trigger:
+        method = format_name(trigger)
+    else:
+        method = "Unknown"
+
+    level = detail.get("min_level")
+
+    item = detail.get("item")
+
+    if item:
+        method = f"Use {format_name(item['name'])}"
+
+    if detail.get("known_move"):
+        method = (
+            f"Know {format_name(detail['known_move']['name'])}"
+        )
+
+    if detail.get("time_of_day"):
+        method += f" ({detail['time_of_day']})"
+
+    if detail.get("min_happiness") is not None:
+        method = f"High friendship"
+
+    if detail.get("min_beauty") is not None:
+        method = f"Beauty"
+
+    if detail.get("trade_species"):
+        method = (
+            f"Trade for "
+            f"{format_name(detail['trade_species']['name'])}"
+        )
+
+    return method, level
+
+
+def collect_evolution_chain(chain, result):
+
+    from_name = chain["species"]["name"]
+
+    for evolution in chain.get("evolves_to", []):
+
+        to_name = evolution["species"]["name"]
+
+        method, level = get_evolution_details(
+            evolution.get("evolution_details", [])
+        )
+
+        result.append({
+            "from": format_name(from_name),
+            "to": format_name(to_name),
+            "method": method,
+            "level": level
+        })
+
+        collect_evolution_chain(
+            evolution,
+            result
+        )
+
+
+def get_evolutions(species_url):
+
+    species = get_json(species_url)
+
+    chain_url = species["evolution_chain"]["url"]
+
+    chain_data = get_json(chain_url)
+
+    result = []
+
+    collect_evolution_chain(
+        chain_data["chain"],
+        result
+    )
+
+    return result
+
+
+def get_weakness(types):
+    type_data = {}
+
+    for type_name in types:
+        url = f"{API_BASE}/type/{type_name}"
+        type_data[type_name] = get_json(url)
+
+    multipliers = {}
+
+    attacking_types = [
+        "normal",
+        "fire",
+        "water",
+        "electric",
+        "grass",
+        "ice",
+        "fighting",
+        "poison",
+        "ground",
+        "flying",
+        "psychic",
+        "bug",
+        "rock",
+        "ghost",
+        "dragon",
+        "dark",
+        "steel",
+        "fairy"
+    ]
+
+    for attacking_type in attacking_types:
+        multiplier = 1.0
+
+        for defending_type in types:
+            relations = type_data[
+                defending_type
+            ]["damage_relations"]
+
+            no_effect = [
+                item["name"]
+                for item in relations["no_damage_from"]
+            ]
+
+            double_damage = [
+                item["name"]
+                for item in relations["double_damage_from"]
+            ]
+
+            half_damage = [
+                item["name"]
+                for item in relations["half_damage_from"]
+            ]
+
+            if attacking_type in no_effect:
+                multiplier *= 0
+
+            elif attacking_type in double_damage:
+                multiplier *= 2
+
+            elif attacking_type in half_damage:
+                multiplier *= 0.5
+
+        multipliers[attacking_type] = multiplier
+
+    weakness = {
+        "4X Weak To": [],
+        "2X Weak To": [],
+        "▪️Resist To": [],
+        "▪️▪️ Double Resist": [],
+        "🚫 No Effect": []
+    }
+
+    for type_name, multiplier in multipliers.items():
+
+        if multiplier == 4:
+            weakness["4X Weak To"].append(type_name)
+
+        elif multiplier == 2:
+            weakness["2X Weak To"].append(type_name)
+
+        elif multiplier == 0.5:
+            weakness["▪️Resist To"].append(type_name)
+
+        elif multiplier == 0.25:
+            weakness["▪️▪️ Double Resist"].append(type_name)
+
+        elif multiplier == 0:
+            weakness["🚫 No Effect"].append(type_name)
+
+    return weakness
+
+
+def get_moves(pokemon):
+    moves = []
+
+    for move_entry in pokemon["moves"]:
+        move_data = get_move_data(
+            move_entry["move"]["url"]
+        )
+
+        details = move_entry.get(
+            "version_group_details",
+            []
+        )
+
+        method = get_move_method(details)
+        level = get_move_level(details)
+
+        if method == "Level Up" and level is not None:
+            method = f"Level {level}"
+
+        move_data["method"] = method
+
+        if move_data["power"] is None:
+            move_data["power"] = "None"
+
+        if move_data["accuracy"] is None:
+            move_data["accuracy"] = "None"
+
+        moves.append(move_data)
+
+    return moves
+
+
+def get_stats(pokemon):
+    stats = {}
+
+    stat_map = {
+        "hp": "hp",
+        "attack": "attack",
+        "defense": "defense",
+        "special-attack": "sp_attack",
+        "special-defense": "sp_defense",
+        "speed": "speed"
+    }
+
+    for stat in pokemon["stats"]:
+        name = stat["stat"]["name"]
+
+        if name not in stat_map:
+            continue
+
+        key = stat_map[name]
+        base = stat["base_stat"]
+
+        if key == "hp":
+            minimum = (2 * base) + 110
+            maximum = (2 * base) + 204
+        else:
+            minimum = (2 * base) + 5
+            maximum = (2 * base) + 99
+
+        stats[key] = {
+            "base": base,
+            "range": f"{minimum}–{maximum}",
+            "bar": stat_bar(base)
         }
 
-        for stat in data["stats"]:
+    return stats
 
-            key = stat_map[stat["stat"]["name"]]
 
-            base = stat["base_stat"]
+def build_pokemon_data(name, existing_data=None):
+    pokemon = get_json(
+        f"{API_BASE}/pokemon/{name.lower()}"
+    )
 
-            stats[key] = {
-                "base": base,
-                "range": get_stat_range(base),
-                "bar": get_stat_bar(base)
-            }
+    species = get_json(
+        pokemon["species"]["url"]
+    )
 
-        moves = []
+    pokemon_id = pokemon["id"]
 
-        for move in data["moves"]:
+    types = [
+        item["type"]["name"]
+        for item in pokemon["types"]
+    ]
 
-            move_name = move["move"]["name"]
+    abilities = []
 
-            moves.append({
-                "name": move_name,
-                "type": "normal",
-                "method": "Unknown",
-                "power": 0,
-                "accuracy": 100,
-                "category": "unknown"
-            })
+    hidden_ability = None
 
-        pokemon_data[pokemon["name"]] = {
+    for ability in pokemon["abilities"]:
+        ability_name = format_name(
+            ability["ability"]["name"]
+        )
 
-            "name": pokemon["name"].title(),
+        if ability["is_hidden"]:
+            hidden_ability = ability_name
+        else:
+            abilities.append(ability_name)
 
-            "id": pokemon_id,
+    capture_rate = species.get(
+        "capture_rate",
+        0
+    )
 
-            "region": get_region(pokemon_id),
+    catch_percent = (
+        f"{(capture_rate / 255) * 100:.3f}%"
+    )
 
-            "types": types,
+    entry = {
+        "name": format_name(pokemon["name"]),
+        "id": pokemon_id,
+        "region": get_region(pokemon_id),
+        "types": types,
+        "rarity": "Unknown",
+        "catch_rate": capture_rate,
+        "catch_percent": catch_percent,
+        "abilities": abilities,
+        "hidden_ability": hidden_ability or "None",
+        "ev_yield": get_ev_yield(pokemon),
+        "stats": get_stats(pokemon),
+        "weakness": get_weakness(types),
+        "evolutions": get_evolutions(
+            pokemon["species"]["url"]
+        ),
+        "alternate_forms": [],
+        "file_id": "",
+        "moves": get_moves(pokemon)
+    }
 
-            "rarity": "Unknown",
+    if existing_data:
+        entry.update(existing_data)
 
-            "catch_rate": 0,
+    return entry
 
-            "catch_percent": "0%",
 
-            "abilities": abilities,
+def load_json(filename, default):
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return default
 
-            "hidden_ability": hidden_ability or "None",
 
-            "ev_yield": "",
-
-            "stats": stats,
-
-            "weakness": {
-                "4X Weak To": [],
-                "2X Weak To": [],
-                "▪️Resist To": [],
-                "▪️▪️ Double Resist": [],
-                "🚫 No Effect": []
-            },
-
-            "evolutions": [],
-
-            "alternate_forms": [],
-
-            "file_id": "",
-
-            "moves": moves
-        }
-
+def save_json(filename, data):
     with open(
-        "pokemon_data.json",
+        filename,
         "w",
         encoding="utf-8"
     ) as file:
-
         json.dump(
-            pokemon_data,
+            data,
             file,
-            ensure_ascii=False,
-            indent=4
+            indent=4,
+            ensure_ascii=False
         )
 
-    print()
-    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print("✅ XERXES DATA IMPORT COMPLETE")
-    print(f"📦 Pokémon imported: {len(pokemon_data)}")
-    print("📄 File: pokemon_data.json")
-    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+def main():
+    selected = load_json(
+        "selected_pokemon.json",
+        []
+    )
+
+    existing = load_json(
+        "pokemon_data.json",
+        {}
+    )
+
+    if not selected:
+        print("No Pokémon selected.")
+        return
+
+    total = len(selected)
+
+    print(
+        f"Starting import of {total} Pokémon..."
+    )
+
+    for index, name in enumerate(
+        selected,
+        start=1
+    ):
+        key = normalize_pokemon_name(name)
+
+        try:
+            print(
+                f"[{index}/{total}] "
+                f"Importing {name}..."
+            )
+
+            entry = build_pokemon_data(
+                name,
+                existing.get(key)
+            )
+
+            existing[key] = entry
+
+            save_json(
+                "pokemon_data.json",
+                existing
+            )
+
+            print(
+                f"✓ {entry['name']} imported"
+            )
+
+            time.sleep(0.2)
+
+        except Exception as error:
+            print(
+                f"✗ Failed: {name}"
+            )
+            print(
+                f"  Error: {error}"
+            )
+
+    print(
+        "\nImport completed."
+    )
+
+    print(
+        f"Total Pokémon in database: "
+        f"{len(existing)}"
+    )
 
 
 if __name__ == "__main__":
