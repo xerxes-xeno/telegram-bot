@@ -91,7 +91,10 @@ def get_pokemon(name):
 # AUTO POKEMON IMPORT
 # =========================================================
 
-if not POKEMON_DATA:
+if not POKEMON_DATA or any(
+    not data.get("file_id")
+    for data in POKEMON_DATA.values()
+):
     try:
         import import_pokemon
 
