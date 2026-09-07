@@ -2,7 +2,7 @@ import json
 import requests
 
 
-API_URL = "https://pokeapi.co/api/v2/pokemon?limit=1000"
+API_URL = "https://pokeapi.co/api/v2/pokemon?limit=5000"
 
 
 def get_json(url):
@@ -32,17 +32,40 @@ def get_region(pokemon_id):
         return "IX"
 
 
+def get_stat_range(base):
+    minimum = int(((2 * base) * 1.0) + 5)
+    maximum = int(((2 * base + 31) * 1.0) + 94)
+
+    return f"{minimum}–{maximum}"
+
+
+def get_stat_bar(base):
+    if base >= 100:
+        return "■■■■■"
+    elif base >= 80:
+        return "■■■■□"
+    elif base >= 60:
+        return "■■■□□"
+    elif base >= 40:
+        return "■■□□□"
+    else:
+        return "■□□□□"
+
+
 def main():
 
+    print("🔥 XERXES Pokémon Data Importer")
     print("Fetching Pokémon list...")
 
     pokemon_list = get_json(API_URL)["results"]
 
     pokemon_data = {}
 
+    total = len(pokemon_list)
+
     for index, pokemon in enumerate(pokemon_list, start=1):
 
-        print(f"[{index}/{len(pokemon_list)}] {pokemon['name']}")
+        print(f"[{index}/{total}] {pokemon['name']}")
 
         data = get_json(pokemon["url"])
 
@@ -83,24 +106,53 @@ def main():
 
             key = stat_map[stat["stat"]["name"]]
 
+            base = stat["base_stat"]
+
             stats[key] = {
-                "base": stat["base_stat"],
-                "range": "",
-                "bar": ""
+                "base": base,
+                "range": get_stat_range(base),
+                "bar": get_stat_bar(base)
             }
 
+        moves = []
+
+        for move in data["moves"]:
+
+            move_name = move["move"]["name"]
+
+            moves.append({
+                "name": move_name,
+                "type": "normal",
+                "method": "Unknown",
+                "power": 0,
+                "accuracy": 100,
+                "category": "unknown"
+            })
+
         pokemon_data[pokemon["name"]] = {
+
             "name": pokemon["name"].title(),
+
             "id": pokemon_id,
+
             "region": get_region(pokemon_id),
+
             "types": types,
+
             "rarity": "Unknown",
+
             "catch_rate": 0,
+
             "catch_percent": "0%",
+
             "abilities": abilities,
+
             "hidden_ability": hidden_ability or "None",
+
             "ev_yield": "",
+
             "stats": stats,
+
             "weakness": {
                 "4X Weak To": [],
                 "2X Weak To": [],
@@ -108,10 +160,14 @@ def main():
                 "▪️▪️ Double Resist": [],
                 "🚫 No Effect": []
             },
+
             "evolutions": [],
+
             "alternate_forms": [],
+
             "file_id": "",
-            "moves": []
+
+            "moves": moves
         }
 
     with open(
@@ -128,8 +184,11 @@ def main():
         )
 
     print()
-    print("✅ Pokémon data generated successfully!")
-    print(f"Total Pokémon: {len(pokemon_data)}")
+    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    print("✅ XERXES DATA IMPORT COMPLETE")
+    print(f"📦 Pokémon imported: {len(pokemon_data)}")
+    print("📄 File: pokemon_data.json")
+    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
 
 if __name__ == "__main__":
