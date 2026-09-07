@@ -232,11 +232,12 @@ EVOLUTION_CACHE = {}
 
 def get_evolutions(species_url):
 
-    species = get_json(species_url)
+    if species_url not in EVOLUTION_CACHE:
+        species = get_json(species_url)
+        chain_url = species["evolution_chain"]["url"]
+        EVOLUTION_CACHE[species_url] = get_json(chain_url)
 
-    chain_url = species["evolution_chain"]["url"]
-
-    chain_data = get_json(chain_url)
+    chain_data = EVOLUTION_CACHE[species_url]
 
     result = []
 
