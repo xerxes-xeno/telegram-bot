@@ -10,7 +10,6 @@ import hmac
 import difflib
 import math
 import json
-import re
 
 from flask import Flask, jsonify, request
 
@@ -59,10 +58,17 @@ TYPE_EMOJIS = {
     "fairy": "🧚",
 }
 
+# =========================================================
+# POKEMON DATA
+# =========================================================
+
+POKEMON_DATA_FILE = "/data/pokemon_data.json"
+
 try:
-    with open("/data/pokemon_data.json", "r", encoding="utf-8") as f:
+    with open(POKEMON_DATA_FILE, "r", encoding="utf-8") as f:
         POKEMON_DATA = json.load(f)
-except FileNotFoundError:
+
+except (FileNotFoundError, json.JSONDecodeError):
     POKEMON_DATA = {}
 
 def normalize_pokemon_name(name):
