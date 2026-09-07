@@ -463,6 +463,9 @@ def build_pokemon_data(name, existing_data=None, file_id=""):
     if existing_data:
         entry.update(existing_data)
 
+    if file_id:
+        entry["file_id"] = file_id
+    
     return entry
 
 
