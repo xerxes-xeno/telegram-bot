@@ -239,6 +239,9 @@ def get_evolutions(species_url):
     return result
 
 
+TYPE_CACHE = {}
+
+
 def get_weakness(types):
     type_data = {}
 
