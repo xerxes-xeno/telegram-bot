@@ -87,6 +87,27 @@ def get_pokemon(name):
 
     return None
 
+# =========================================================
+# AUTO POKEMON IMPORT
+# =========================================================
+
+if not POKEMON_DATA:
+    try:
+        import import_pokemon
+
+        print("📥 Pokémon data is empty. Starting importer...")
+        import_pokemon.main()
+
+        with open(POKEMON_DATA_FILE, "r", encoding="utf-8") as f:
+            POKEMON_DATA = json.load(f)
+
+        print(
+            f"✅ Pokémon data loaded: {len(POKEMON_DATA)} Pokémon"
+        )
+
+    except Exception as error:
+        print(f"❌ Pokémon importer failed: {error}")
+
 
 def get_pokemon_suggestions(name, limit=6):
     query = normalize_pokemon_name(name)
