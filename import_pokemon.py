@@ -503,7 +503,10 @@ def load_json(filename, default):
 
 def get_file_ids():
     return load_json(
-        "pokemon_file_ids.json",
+        os.path.join(
+            BASE_DIR,
+            "pokemon_file_ids.json"
+        ),
         {}
     )
 
