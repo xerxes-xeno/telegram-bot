@@ -511,10 +511,33 @@ def get_file_ids():
     print(f"📂 Looking for File IDs at: {file_path}")
     print(f"📂 File exists: {os.path.exists(file_path)}")
 
-    return load_json(
-        file_path,
-        {}
-    )
+    try:
+        with open(
+            file_path,
+            "r",
+            encoding="utf-8"
+        ) as file:
+            raw = file.read()
+
+        print(f"📂 File size: {len(raw)} characters")
+        print(f"📂 First 100 chars: {raw[:100]}")
+
+        data = json.loads(raw)
+
+        print(
+            f"📂 JSON loaded successfully: "
+            f"{len(data)} IDs"
+        )
+
+        return data
+
+    except Exception as error:
+        print(
+            f"❌ File ID JSON error: "
+            f"{type(error).__name__}: {error}"
+        )
+
+        return {}
 
 
 def save_json(filename, data):
