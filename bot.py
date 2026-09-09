@@ -8374,6 +8374,13 @@ def main():
     app.add_handler(CommandHandler("datadamage", datadamage))
     app.add_handler(CommandHandler("buildpoke", buildpoke))
     app.add_handler(CommandHandler("datatype", datatype))
+
+    app.add_handler(
+        CallbackQueryHandler(
+            dex_callback,
+            pattern=r"^dex_(suggest|info|moves|weakness|evolution|shiny)_"
+        )
+    )
     
     app.add_handler(
         CallbackQueryHandler(
