@@ -565,6 +565,11 @@ def main():
                 file_ids.get(key, "")
             )
 
+            print(
+                f"🖼️ {name}: "
+                f"{'FOUND → ' + entry.get('file_id', '')[:20] if entry.get('file_id') else 'MISSING'}"
+            )
+   
             existing[key] = entry
 
             save_json(
