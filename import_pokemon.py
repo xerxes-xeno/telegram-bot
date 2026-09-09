@@ -2,6 +2,8 @@ import json
 import requests
 import time
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def normalize_pokemon_name(name):
     return "".join(
         char for char in name.lower()
