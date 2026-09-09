@@ -87,14 +87,33 @@ def get_pokemon(name):
 
     return None
 
+
+try:
+    with open("selected_pokemon.json", "r", encoding="utf-8") as f:
+        SELECTED_POKEMON = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    SELECTED_POKEMON = []
+
+
+def selected_key(name):
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+needs_pokemon_import = (
+    not POKEMON_DATA
+    or any(
+        selected_key(name) not in POKEMON_DATA
+        or not POKEMON_DATA[selected_key(name)].get("file_id")
+        for name in SELECTED_POKEMON
+    )
+)
+
+    
 # =========================================================
 # AUTO POKEMON IMPORT
 # =========================================================
 
-if not POKEMON_DATA or any(
-    not data.get("file_id")
-    for data in POKEMON_DATA.values()
-):
+if needs_pokemon_import:
     try:
         import import_pokemon
 
