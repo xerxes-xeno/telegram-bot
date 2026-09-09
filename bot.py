@@ -391,17 +391,19 @@ async def dex_callback(update, context):
         await context.bot.send_message(
             chat_id=query.message.chat_id,
             text=build_info_text(data),
-            reply_markup=info_keyboard(pokemon_key),
+            reply_markup=info_keyboard(
+                normalize_pokemon_name(data["name"])
+            ),
             parse_mode="HTML"
         ) 
 
         await context.bot.send_photo(
             chat_id=query.message.chat_id,
             photo=data["file_id"],
-            caption=f"<blockquote>🖼️ {data['name']} • XERXES POKÉDEX</blockquote>",
+            caption=f"<blockquote>🖼️ {data['name']} • 𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫𝛴𝐷𝛴𝛸</blockquote>",
             parse_mode="HTML"
         )
-
+   
     elif data_parts[1] == "info":
         pokemon_key = "_".join(data_parts[2:])
         data = get_pokemon(pokemon_key)
