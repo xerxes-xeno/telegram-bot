@@ -503,11 +503,16 @@ def load_json(filename, default):
 
 
 def get_file_ids():
+    file_path = os.path.join(
+        BASE_DIR,
+        "pokemon_file_ids.json"
+    )
+
+    print(f"📂 Looking for File IDs at: {file_path}")
+    print(f"📂 File exists: {os.path.exists(file_path)}")
+
     return load_json(
-        os.path.join(
-            BASE_DIR,
-            "pokemon_file_ids.json"
-        ),
+        file_path,
         {}
     )
 
