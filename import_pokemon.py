@@ -532,6 +532,10 @@ def main():
     )
 
     file_ids = get_file_ids()
+
+    print(
+        f"🖼️ File IDs loaded: {len(file_ids)}"
+    ) 
     
     if not selected:
         print("No Pokémon selected.")
