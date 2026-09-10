@@ -159,7 +159,7 @@ def build_info_text(data):
     return (
         f"<blockquote>"
         f"╭━━『 𝐗 𝐄 𝐑 𝐗 𝐄 𝐒  』━━╮\n"
-        f"┃           𝐏 𝐎 𝐊 É 𝐃 𝐄 𝐗\n"
+        f"┃       𝐏 𝐎 𝐊 É 𝐃 𝐄 𝐗\n"
         f"┃ 𓋰𓋰𓋰𓋰𓋰𓋰𓋰𓋰\n"
         f"╰━━━━━━━━━━━━━━━━╯"
         f"</blockquote>\n"
@@ -816,6 +816,14 @@ def init_db():
             user_id INTEGER PRIMARY KEY,
             display_option TEXT NOT NULL DEFAULT 'iv',
             show_numbering INTEGER NOT NULL DEFAULT 1
+        )
+    """)
+    
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS dex_matrix (
+            user_id INTEGER PRIMARY KEY,
+            order_by TEXT NOT NULL DEFAULT 'iv',
+            direction TEXT NOT NULL DEFAULT 'desc'
         )
     """)
     
@@ -6951,12 +6959,301 @@ async def dexoverlay_callback(update, context):
 
 
 # =========================================================
-# START
+# DEX MATRIX
 # =========================================================
 
-async def start(update, context):
-    save_user(update.effective_user.id)
+async def matrix(update, context):
+    user_id = update.effective_user.id
 
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        INSERT OR IGNORE INTO dex_matrix (user_id)
+        VALUES (?)
+        """,
+        (user_id,)
+    )
+
+    cur.execute(
+        """
+        SELECT order_by, direction
+        FROM dex_matrix
+        WHERE user_id = ?
+        """,
+        (user_id,)
+    )
+
+    row = cur.fetchone()
+    conn.commit()
+    conn.close()
+
+    order_by, direction = row
+
+    order_names = {
+        "name": "Name",
+        "time": "Time",
+        "level": "Level",
+        "nature": "Nature",
+        "types": "Types",
+        "iv": "Total IVs",
+        "ev": "Total EVs",
+        "poke_id": "Poke ID"
+    }
+
+    current_order = order_names.get(
+        order_by,
+        "Total IVs"
+    )
+
+    current_direction = (
+        "Ascending"
+        if direction == "asc"
+        else "Descending"
+    )
+
+    text = (
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿 𝑴𝑨𝑻𝑹𝑰𝑿\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        "How would you like to order your Pokémon?\n\n"
+        "1. Name\n"
+        "2. Time\n"
+        "3. Level\n"
+        "4. Nature\n"
+        "5. Types\n"
+        "6. Total IVs\n"
+        "7. Total EVs\n"
+        "8. Poke ID\n\n"
+        f"Currently order: {current_order}\n"
+        f"Ordered by: {current_direction}"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "1️⃣ Name",
+                callback_data="matrix_name"
+            ),
+            InlineKeyboardButton(
+                "2️⃣ Time",
+                callback_data="matrix_time"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "3️⃣ Level",
+                callback_data="matrix_level"
+            ),
+            InlineKeyboardButton(
+                "4️⃣ Nature",
+                callback_data="matrix_nature"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "5️⃣ Types",
+                callback_data="matrix_types"
+            ),
+            InlineKeyboardButton(
+                "6️⃣ Total IVs",
+                callback_data="matrix_iv"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "7️⃣ Total EVs",
+                callback_data="matrix_ev"
+            ),
+            InlineKeyboardButton(
+                "8️⃣ Poke ID",
+                callback_data="matrix_poke_id"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "⬆️ Ascending",
+                callback_data="matrix_asc"
+            ),
+            InlineKeyboardButton(
+                "⬇️ Descending",
+                callback_data="matrix_desc"
+            )
+        ]
+    ]
+
+    await update.message.reply_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# DEX MATRIX CALLBACK
+# =========================================================
+
+async def matrix_callback(update, context):
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data
+    user_id = query.from_user.id
+
+    conn = db()
+    cur = conn.cursor()
+
+    if data == "matrix_asc":
+        cur.execute(
+            """
+            UPDATE dex_matrix
+            SET direction = 'asc'
+            WHERE user_id = ?
+            """,
+            (user_id,)
+        )
+
+    elif data == "matrix_desc":
+        cur.execute(
+            """
+            UPDATE dex_matrix
+            SET direction = 'desc'
+            WHERE user_id = ?
+            """,
+            (user_id,)
+        )
+
+    else:
+        order_by = data.replace("matrix_", "", 1)
+
+        cur.execute(
+            """
+            UPDATE dex_matrix
+            SET order_by = ?
+            WHERE user_id = ?
+            """,
+            (order_by, user_id)
+        )
+
+    conn.commit()
+
+    cur.execute(
+        """
+        SELECT order_by, direction
+        FROM dex_matrix
+        WHERE user_id = ?
+        """,
+        (user_id,)
+    )
+
+    row = cur.fetchone()
+    conn.close()
+
+    order_by, direction = row
+
+    order_names = {
+        "name": "Name",
+        "time": "Time",
+        "level": "Level",
+        "nature": "Nature",
+        "types": "Types",
+        "iv": "Total IVs",
+        "ev": "Total EVs",
+        "poke_id": "Poke ID"
+    }
+
+    current_order = order_names.get(
+        order_by,
+        "Total IVs"
+    )
+
+    current_direction = (
+        "Ascending"
+        if direction == "asc"
+        else "Descending"
+    )
+
+    text = (
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿 𝑴𝑨𝑻𝑹𝑰𝑿\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        "How would you like to order your Pokémon?\n\n"
+        "1. Name\n"
+        "2. Time\n"
+        "3. Level\n"
+        "4. Nature\n"
+        "5. Types\n"
+        "6. Total IVs\n"
+        "7. Total EVs\n"
+        "8. Poke ID\n\n"
+        f"Currently order: {current_order}\n"
+        f"Ordered by: {current_direction}"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "1️⃣ Name",
+                callback_data="matrix_name"
+            ),
+            InlineKeyboardButton(
+                "2️⃣ Time",
+                callback_data="matrix_time"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "3️⃣ Level",
+                callback_data="matrix_level"
+            ),
+            InlineKeyboardButton(
+                "4️⃣ Nature",
+                callback_data="matrix_nature"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "5️⃣ Types",
+                callback_data="matrix_types"
+            ),
+            InlineKeyboardButton(
+                "6️⃣ Total IVs",
+                callback_data="matrix_iv"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "7️⃣ Total EVs",
+                callback_data="matrix_ev"
+            ),
+            InlineKeyboardButton(
+                "8️⃣ Poke ID",
+                callback_data="matrix_poke_id"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "⬆️ Ascending",
+                callback_data="matrix_asc"
+            ),
+            InlineKeyboardButton(
+                "⬇️ Descending",
+                callback_data="matrix_desc"
+            )
+        ]
+    ]
+
+    await query.edit_message_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# XERXES START MENU
+# =========================================================
+
+async def show_start_menu(bot, chat_id, message_id=None):
     keyboard = [
         [
             InlineKeyboardButton(
@@ -6977,12 +7274,13 @@ async def start(update, context):
         [
             InlineKeyboardButton(
                 "𝐀𝐝𝐝 𝐦𝐞 𝐭𝐨 𝐠𝐫𝐨𝐮𝐩",
-                url=f"https://t.me/{context.bot.username}?startgroup=true"
+                url=f"https://t.me/{bot.username}?startgroup=true"
             )
         ]
     ]
-    
-    await update.message.reply_text(
+
+    text = (
+        "<blockquote>"
         "╭━━━━━━━━━━━━━━━━━╮\n"
         "         𝛸𝛴𝛤𝛸𝛴𝑆\n"
         "╰━━━━━━━━━━━━━━━━━╯\n"
@@ -6994,8 +7292,37 @@ async def start(update, context):
         "𝐇𝐞𝐫𝐞 𝐮 𝐠𝐞𝐭 𝐚𝐥𝐥 𝐭𝐡𝐞 𝐥𝐢𝐧𝐤𝐬 𝐚𝐧𝐝 𝐚𝐜𝐜𝐞𝐬𝐬 𝐭𝐨\n"
         "𝐚𝐥𝐥 𝐭𝐡𝐞 𝐠𝐫𝐨𝐮𝐩𝐬 𝐚𝐧𝐝 𝐜𝐡𝐚𝐧𝐧𝐞𝐥𝐬 𝐨𝐟 𝐭𝐡𝐞 𝐗𝐞𝐫𝐱𝐞𝐬 𝐜𝐨𝐦𝐦𝐮𝐧𝐢𝐭𝐲.\n\n"
         "https://t.me/XERXES_COMMUNITY\n\n"
-        "          ── ⋆⋅𖤓⋅⋆ ──",
-    reply_markup=InlineKeyboardMarkup(keyboard)
+        "              ── ⋆⋅𖤓⋅⋆ ──"
+        "</blockquote>"
+    )
+
+    if message_id:
+        await bot.edit_message_text(
+            chat_id=chat_id,
+            message_id=message_id,
+            text=text,
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode="HTML"
+        )
+    else:
+        await bot.send_message(
+            chat_id=chat_id,
+            text=text,
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            parse_mode="HTML"
+        )
+
+
+# =========================================================
+# START
+# =========================================================
+
+async def start(update, context):
+    save_user(update.effective_user.id)
+
+    await show_start_menu(
+        context.bot,
+        update.effective_chat.id
     )
     
 
@@ -7072,6 +7399,8 @@ async def start_menu_callback(update, context):
             "/warn\n"
             "/warnings\n"
             "/resetwarns\n"
+            "/pin\n"
+            "/unpin\n"
             "/antilink\n"
             "/antispam",
             reply_markup=InlineKeyboardMarkup([
@@ -7116,7 +7445,7 @@ async def start_menu_callback(update, context):
 
         await query.edit_message_text(
             "𝐌𝐮𝐬𝐢𝐜 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬\n\n"
-            "Music commands will be available here.",
+            "Music commands will be available on festival of light.",
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
@@ -7157,34 +7486,10 @@ async def start_menu_callback(update, context):
 
     elif query.data == "start_main":
 
-        keyboard = [
-            [
-                InlineKeyboardButton(
-                    "𝐒𝐭𝐚𝐫𝐭 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐉𝐨𝐮𝐫𝐧𝐞𝐲",
-                    callback_data="start_pokemon_journey"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "𝐔𝐩𝐝𝐚𝐭𝐞𝐬",
-                    callback_data="start_updates"
-                ),
-                InlineKeyboardButton(
-                    "𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
-                    callback_data="start_commands"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "𝐀𝐝𝐝 𝐦𝐞 𝐭𝐨 𝐠𝐫𝐨𝐮𝐩",
-                    url=f"https://t.me/{context.bot.username}?startgroup=true"
-                )
-            ]
-        ]
-
-        await query.edit_message_text(
-            "𝐖𝐞𝐥𝐜𝐨𝐦𝐞 𝐭𝐨 𝐗𝐄𝐑𝐗𝐄𝐒",
-            reply_markup=InlineKeyboardMarkup(keyboard)
+        await show_start_menu(
+            context.bot,
+            query.message.chat_id,
+            query.message.message_id
         )
     
 
@@ -8773,11 +9078,19 @@ def main():
     app.add_handler(CommandHandler("antispam", antispam))
     app.add_handler(CommandHandler("dexoverlay", dexoverlay)) 
     app.add_handler(CommandHandler("broadcast", broadcast))
-
+    app.add_handler(CommandHandler("matrix", matrix))
+    
     app.add_handler(
         CallbackQueryHandler(
             dexoverlay_callback,
             pattern=r"^dexoverlay_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            matrix_callback,
+            pattern=r"^matrix_"
         )
     )
     
