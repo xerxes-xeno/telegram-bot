@@ -812,6 +812,14 @@ def init_db():
     """)
     
     cur.execute("""
+        CREATE TABLE IF NOT EXISTS dex_overlay (
+            user_id INTEGER PRIMARY KEY,
+            display_option TEXT NOT NULL DEFAULT 'iv',
+            show_numbering INTEGER NOT NULL DEFAULT 1
+        )
+    """)
+    
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS pokedex (
             user_id INTEGER PRIMARY KEY,
             pokemon TEXT NOT NULL,
@@ -6693,6 +6701,256 @@ async def ondex(update, context):
 
 
 # =========================================================
+# DEX OVERLAY
+# =========================================================
+
+async def dexoverlay(update, context):
+    user_id = update.effective_user.id
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        INSERT OR IGNORE INTO dex_overlay (user_id)
+        VALUES (?)
+        """,
+        (user_id,)
+    )
+
+    cur.execute(
+        """
+        SELECT display_option, show_numbering
+        FROM dex_overlay
+        WHERE user_id = ?
+        """,
+        (user_id,)
+    )
+
+    row = cur.fetchone()
+    conn.commit()
+    conn.close()
+
+    display_option, show_numbering = row
+
+    option_names = {
+        "none": "None",
+        "level": "Level",
+        "nature": "Nature",
+        "types": "Types",
+        "iv": "Total IVs",
+        "ev": "Total EVs",
+        "type_symbol": "Type symbol",
+        "stats": "Total stats points"
+    }
+
+    current_display = option_names.get(
+        display_option,
+        "Total IVs"
+    )
+
+    numbering = "Yes" if show_numbering else "No"
+
+    text = (
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿 𝑶𝑽𝑬𝑹𝑳𝑨𝒀\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        "Which Pokémon detail would you like to display?\n\n"
+        "1. None\n"
+        "2. Level\n"
+        "3. Nature\n"
+        "4. Types\n"
+        "5. Total IVs\n"
+        "6. Total EVs\n"
+        "7. Type symbol\n"
+        "8. Total stats points\n\n"
+        f"Currently displaying: {current_display}\n"
+        f"Show Pokémon numbering: {numbering}"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton("1️⃣ None", callback_data="dexoverlay_none"),
+            InlineKeyboardButton("2️⃣ Level", callback_data="dexoverlay_level")
+        ],
+        [
+            InlineKeyboardButton("3️⃣ Nature", callback_data="dexoverlay_nature"),
+            InlineKeyboardButton("4️⃣ Types", callback_data="dexoverlay_types")
+        ],
+        [
+            InlineKeyboardButton("5️⃣ Total IVs", callback_data="dexoverlay_iv"),
+            InlineKeyboardButton("6️⃣ Total EVs", callback_data="dexoverlay_ev")
+        ],
+        [
+            InlineKeyboardButton("7️⃣ Type Symbol", callback_data="dexoverlay_type_symbol"),
+            InlineKeyboardButton("8️⃣ Total Stats", callback_data="dexoverlay_stats")
+        ],
+        [
+            InlineKeyboardButton(
+                f"🔢 Numbering: {numbering}",
+                callback_data="dexoverlay_numbering"
+            )
+        ]
+    ]
+
+    await update.message.reply_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# DEX OVERLAY CALLBACK
+# =========================================================
+
+async def dexoverlay_callback(update, context):
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data
+    user_id = query.from_user.id
+
+    conn = db()
+    cur = conn.cursor()
+
+    if data == "dexoverlay_numbering":
+        cur.execute(
+            """
+            UPDATE dex_overlay
+            SET show_numbering =
+                CASE
+                    WHEN show_numbering = 1 THEN 0
+                    ELSE 1
+                END
+            WHERE user_id = ?
+            """,
+            (user_id,)
+        )
+
+    else:
+        option = data.replace("dexoverlay_", "", 1)
+
+        cur.execute(
+            """
+            UPDATE dex_overlay
+            SET display_option = ?
+            WHERE user_id = ?
+            """,
+            (option, user_id)
+        )
+
+    conn.commit()
+    conn.close()
+
+    # Re-open the menu with updated settings
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT display_option, show_numbering
+        FROM dex_overlay
+        WHERE user_id = ?
+        """,
+        (user_id,)
+    )
+
+    row = cur.fetchone()
+    conn.close()
+
+    display_option, show_numbering = row
+
+    option_names = {
+        "none": "None",
+        "level": "Level",
+        "nature": "Nature",
+        "types": "Types",
+        "iv": "Total IVs",
+        "ev": "Total EVs",
+        "type_symbol": "Type symbol",
+        "stats": "Total stats points"
+    }
+
+    current_display = option_names.get(
+        display_option,
+        "Total IVs"
+    )
+
+    numbering = "Yes" if show_numbering else "No"
+
+    text = (
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿 𝑶𝑽𝑬𝑹𝑳𝑨𝒀\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        "Which Pokémon detail would you like to display?\n\n"
+        "1. None\n"
+        "2. Level\n"
+        "3. Nature\n"
+        "4. Types\n"
+        "5. Total IVs\n"
+        "6. Total EVs\n"
+        "7. Type symbol\n"
+        "8. Total stats points\n\n"
+        f"Currently displaying: {current_display}\n"
+        f"Show Pokémon numbering: {numbering}"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "1️⃣ None",
+                callback_data="dexoverlay_none"
+            ),
+            InlineKeyboardButton(
+                "2️⃣ Level",
+                callback_data="dexoverlay_level"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "3️⃣ Nature",
+                callback_data="dexoverlay_nature"
+            ),
+            InlineKeyboardButton(
+                "4️⃣ Types",
+                callback_data="dexoverlay_types"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "5️⃣ Total IVs",
+                callback_data="dexoverlay_iv"
+            ),
+            InlineKeyboardButton(
+                "6️⃣ Total EVs",
+                callback_data="dexoverlay_ev"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "7️⃣ Type Symbol",
+                callback_data="dexoverlay_type_symbol"
+            ),
+            InlineKeyboardButton(
+                "8️⃣ Total Stats",
+                callback_data="dexoverlay_stats"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                f"🔢 Numbering: {numbering}",
+                callback_data="dexoverlay_numbering"
+            )
+        ]
+    ]
+
+    await query.edit_message_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
 # START
 # =========================================================
 
@@ -8513,8 +8771,16 @@ def main():
 
     app.add_handler(CommandHandler("antilink", antilink))
     app.add_handler(CommandHandler("antispam", antispam))
+    app.add_handler(CommandHandler("dexoverlay", dexoverlay)) 
     app.add_handler(CommandHandler("broadcast", broadcast))
 
+    app.add_handler(
+        CallbackQueryHandler(
+            dexoverlay_callback,
+            pattern=r"^dexoverlay_"
+        )
+    )
+    
     app.add_handler(CommandHandler("filter", filter_command))
     app.add_handler(CommandHandler("filters", filters_command))
     app.add_handler(CommandHandler("stop", stop_filter))
