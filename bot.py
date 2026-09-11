@@ -1200,34 +1200,57 @@ def save_starter_to_personal(
 # =========================================================
 
 def get_personal_pokemon(user_id, species=None):
+
     conn = db()
     cur = conn.cursor()
 
-    if species:
-        cur.execute("""
-            SELECT *
-            FROM user_pokemon
-            WHERE user_id = ?
-              AND LOWER(species) = LOWER(?)
-            ORDER BY created_at ASC
-        """, (user_id, species))
-    else:
-        cur.execute("""
-            SELECT *
-            FROM user_pokemon
-            WHERE user_id = ?
-            ORDER BY created_at ASC
-        """, (user_id,))
+    cur.execute("""
+        SELECT *
+        FROM user_pokemon
+        WHERE user_id = ?
+        ORDER BY created_at ASC
+    """, (user_id,))
 
     rows = cur.fetchall()
-    columns = [description[0] for description in cur.description]
+    columns = [
+        description[0]
+        for description in cur.description
+    ]
 
     conn.close()
 
-    return [
+    pokemon_list = [
         dict(zip(columns, row))
         for row in rows
     ]
+
+    # -----------------------------------------------------
+    # RETURN ALL PERSONAL POKEMON
+    # -----------------------------------------------------
+
+    if not species:
+        return pokemon_list
+
+    # -----------------------------------------------------
+    # NORMALIZED SPECIES MATCH
+    # -----------------------------------------------------
+
+    target = normalize_pokemon_name(
+        species
+    )
+
+    matched = []
+
+    for pokemon in pokemon_list:
+
+        stored_species = normalize_pokemon_name(
+            pokemon["species"]
+        )
+
+        if stored_species == target:
+            matched.append(pokemon)
+
+    return matched
 
 
 # =========================================================
