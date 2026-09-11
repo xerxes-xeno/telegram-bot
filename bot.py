@@ -10,6 +10,7 @@ import hmac
 import difflib
 import math
 import json
+import unicodedata
 
 from flask import Flask, jsonify, request
 
@@ -1599,6 +1600,15 @@ async def personal_pokedex(update, context):
     # GET USER'S OWNED POKEMON
     # -----------------------------------------------------
 
+    print("DEBUG QUERY SPECIES:", repr(species))
+    print(
+        "DEBUG PERSONAL:",
+        [
+            repr(p["species"])
+            for p in get_personal_pokemon(user_id)
+        ]
+    )
+   
     pokemon_list = get_personal_pokemon(
         user_id,
         species
