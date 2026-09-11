@@ -73,7 +73,31 @@ except (FileNotFoundError, json.JSONDecodeError):
     POKEMON_DATA = {}
 
 def normalize_pokemon_name(name):
-    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+    if not name:
+        return ""
+
+    name = str(name)
+
+    # XERXES fancy Unicode letters → normal letters
+    fancy_upper = "𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙"
+    normal_upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+    fancy_lower = "𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳"
+    normal_lower = "abcdefghijklmnopqrstuvwxyz"
+
+    translation = str.maketrans(
+        fancy_upper + fancy_lower,
+        normal_upper + normal_lower
+    )
+
+    name = name.translate(translation)
+
+    return re.sub(
+        r"[^a-z0-9]",
+        "",
+        name.lower()
+    )
 
 
 def get_pokemon(name):
