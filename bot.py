@@ -1231,6 +1231,27 @@ def get_personal_pokemon(user_id, species=None):
 
 
 # =========================================================
+# GET MASTER DATA FOR PERSONAL POKEMON
+# =========================================================
+
+def get_personal_master_data(pokemon):
+    """
+    Connects a personal Pokémon record
+    with the official XERXES master Pokémon data.
+    """
+
+    if not pokemon:
+        return None
+
+    species = pokemon.get("species")
+
+    if not species:
+        return None
+
+    return get_pokemon(species)
+
+
+# =========================================================
 # APPLY PERSONAL POKEDEX MATRIX
 # =========================================================
 
@@ -1457,54 +1478,164 @@ async def personal_pokedex(update, context):
 
     user_id = update.effective_user.id
 
-    migrate_starter_to_personal(user_id)
-   
+    # -----------------------------------------------------
+    # POKEDEX SYSTEM CHECK
+    # -----------------------------------------------------
+
     if not is_pokedex_enabled():
         await update.message.reply_text(
             "🔴 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐢𝐬 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐎𝐅𝐅."
         )
         return
 
-    species = None
+    # -----------------------------------------------------
+    # MIGRATE OLD STARTER IF NEEDED
+    # -----------------------------------------------------
 
-    if context.args:
-        species = " ".join(context.args).strip()
+    migrate_starter_to_personal(user_id)
+
+    # -----------------------------------------------------
+    # POKEMON NAME REQUIRED
+    # -----------------------------------------------------
+
+    if not context.args:
+
+        await update.message.reply_text(
+            "❌ Please enter a Pokémon name.\n\n"
+            "Example:\n"
+            "/pokedex Bulbasaur"
+        )
+
+        return
+
+    query = " ".join(
+        context.args
+    ).strip()
+
+    # -----------------------------------------------------
+    # CHECK MASTER XERXES DATABASE
+    # -----------------------------------------------------
+
+    master_data = get_pokemon(query)
+
+    # -----------------------------------------------------
+    # NOT REGISTERED IN XERXES
+    # -----------------------------------------------------
+
+    if not master_data:
+
+        suggestions = get_pokemon_suggestions(
+            query
+        )
+
+        if not suggestions:
+
+            await update.message.reply_text(
+                "❌ This Pokémon is not registered "
+                "in XERXES yet."
+            )
+
+            return
+
+        keyboard = []
+
+        for name in suggestions[:6]:
+
+            data = POKEMON_DATA.get(name)
+
+            if not data:
+                continue
+
+            keyboard.append([
+                InlineKeyboardButton(
+                    data["name"],
+                    callback_data=f"personal_suggest_{name}"
+                )
+            ])
+
+        await update.message.reply_text(
+            "❌ Pokémon not found.\n\n"
+            "Maybe you meant one of these?",
+            reply_markup=InlineKeyboardMarkup(
+                keyboard
+            )
+        )
+
+        return
+
+    # -----------------------------------------------------
+    # USE CANONICAL MASTER NAME
+    # -----------------------------------------------------
+
+    species = master_data.get(
+        "name",
+        query
+    )
+
+    # -----------------------------------------------------
+    # GET USER'S OWNED POKEMON
+    # -----------------------------------------------------
 
     pokemon_list = get_personal_pokemon(
         user_id,
         species
     )
 
+    # -----------------------------------------------------
+    # REGISTERED GLOBALLY BUT NOT OWNED
+    # -----------------------------------------------------
+
+    if not pokemon_list:
+
+        await update.message.reply_text(
+            "❌ This Pokémon is not registered "
+            "in your Pokédex."
+        )
+
+        return
+
+    # -----------------------------------------------------
+    # APPLY MATRIX
+    # -----------------------------------------------------
+
     pokemon_list = apply_pokedex_matrix(
         user_id,
         pokemon_list
     )
 
-    display_option, show_numbering = get_pokedex_overlay(
-        user_id
+    # -----------------------------------------------------
+    # GET OVERLAY SETTINGS
+    # -----------------------------------------------------
+
+    display_option, show_numbering = (
+        get_pokedex_overlay(user_id)
     )
-    
-    if not pokemon_list:
-        if species:
-            await update.message.reply_text(
-                f"❌ You don't have any {species} in your Personal Pokédex."
-            )
-        else:
-            await update.message.reply_text(
-                "📖 Your Personal Pokédex is currently empty."
-            )
-        return
+
+    # -----------------------------------------------------
+    # HEADER
+    # -----------------------------------------------------
 
     text = (
+        "<blockquote>"
         "╭━━━━━━━━━━━━━━━━━━━━╮\n"
         "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿\n"
         "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🐾 <b>{species}</b>\n"
+        f"📦 Registered: {len(pokemon_list)}\n\n"
         "Choose a Pokémon to view its details:"
+        "</blockquote>"
     )
+
+    # -----------------------------------------------------
+    # INDIVIDUAL POKEMON BUTTONS
+    # -----------------------------------------------------
 
     keyboard = []
 
-    for index, pokemon in enumerate(pokemon_list, start=1):
+    for index, pokemon in enumerate(
+        pokemon_list,
+        start=1
+    ):
 
         overlay_text = get_personal_overlay_text(
             pokemon,
@@ -1512,24 +1643,161 @@ async def personal_pokedex(update, context):
         )
 
         if show_numbering:
+
             button_text = (
-                f"{index}. {pokemon['species']} : {overlay_text}"
+                f"{index}. "
+                f"{pokemon['species']} : "
+                f"{overlay_text}"
             )
+
         else:
+
             button_text = (
-                f"{pokemon['species']} : {overlay_text}"
+                f"{pokemon['species']} : "
+                f"{overlay_text}"
             )
 
         keyboard.append([
             InlineKeyboardButton(
                 button_text,
-                callback_data=f"personal_poke_{pokemon['poke_id']}"
+                callback_data=(
+                    f"personal_poke_"
+                    f"{pokemon['poke_id']}"
+                )
             )
         ])
 
+    # -----------------------------------------------------
+    # SEND PERSONAL SPECIES LIST
+    # -----------------------------------------------------
+
     await update.message.reply_text(
         text,
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(
+            keyboard
+        ),
+        parse_mode="HTML"
+    )
+
+
+# =========================================================
+# PERSONAL POKEDEX SUGGESTION CALLBACK
+# =========================================================
+
+async def personal_pokedex_suggestion_callback(
+    update,
+    context
+):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    # Get selected Pokémon
+    pokemon_key = query.data.replace(
+        "personal_suggest_",
+        ""
+    )
+
+    # Get official master data
+    master_data = POKEMON_DATA.get(
+        pokemon_key
+    )
+
+    if not master_data:
+        await query.message.reply_text(
+            "❌ This Pokémon is not registered "
+            "in XERXES yet."
+        )
+        return
+
+    species = master_data.get(
+        "name",
+        pokemon_key
+    )
+
+    # Get user's Pokémon
+    pokemon_list = get_personal_pokemon(
+        user_id,
+        species
+    )
+
+    # Registered globally but not owned
+    if not pokemon_list:
+
+        await query.message.edit_text(
+            "❌ This Pokémon is not registered "
+            "in your Pokédex."
+        )
+
+        return
+
+    # Apply Matrix
+    pokemon_list = apply_pokedex_matrix(
+        user_id,
+        pokemon_list
+    )
+
+    # Apply Overlay
+    display_option, show_numbering = (
+        get_pokedex_overlay(user_id)
+    )
+
+    text = (
+        "<blockquote>"
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🐾 <b>{species}</b>\n"
+        f"📦 Registered: {len(pokemon_list)}\n\n"
+        "Choose a Pokémon to view its details:"
+        "</blockquote>"
+    )
+
+    keyboard = []
+
+    for index, pokemon in enumerate(
+        pokemon_list,
+        start=1
+    ):
+
+        overlay_text = get_personal_overlay_text(
+            pokemon,
+            display_option
+        )
+
+        if show_numbering:
+
+            button_text = (
+                f"{index}. "
+                f"{pokemon['species']} : "
+                f"{overlay_text}"
+            )
+
+        else:
+
+            button_text = (
+                f"{pokemon['species']} : "
+                f"{overlay_text}"
+            )
+
+        keyboard.append([
+            InlineKeyboardButton(
+                button_text,
+                callback_data=(
+                    f"personal_poke_"
+                    f"{pokemon['poke_id']}"
+                )
+            )
+        ])
+
+    await query.message.edit_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(
+            keyboard
+        ),
+        parse_mode="HTML"
     )
 
 
@@ -1572,6 +1840,22 @@ async def personal_pokemon_callback(update, context):
 
     pokemon = dict(zip(columns, row))
 
+    # =====================================================
+    # CONNECT PERSONAL POKEMON TO MASTER DATA
+    # =====================================================
+
+    master_data = get_personal_master_data(pokemon)
+
+    if not master_data:
+        await query.message.reply_text(
+            "❌ This Pokémon is not registered in XERXES yet."
+        )
+        return
+
+    # =====================================================
+    # PERSONAL DATA
+    # =====================================================
+
     iv_total = (
         pokemon["iv_hp"]
         + pokemon["iv_attack"]
@@ -1590,81 +1874,137 @@ async def personal_pokemon_callback(update, context):
         + pokemon["ev_speed"]
     )
 
-    global_data = get_pokemon(
+    # =====================================================
+    # MASTER DATA
+    # =====================================================
+
+    pokemon_name = master_data.get(
+        "name",
         pokemon["species"]
     )
 
-    file_id = None
+    dex_id = master_data.get(
+        "id",
+        "Unknown"
+    )
 
-    if global_data:
-        file_id = global_data.get("file_id")
+    region = master_data.get(
+        "region",
+        "Unknown"
+    )
+
+    rarity = master_data.get(
+        "rarity",
+        "Unknown"
+    )
+
+    types = master_data.get(
+        "types",
+        []
+    )
+
+    type_text = " / ".join(
+        str(pokemon_type).title()
+        for pokemon_type in types
+    )
+
+    if not type_text:
+        type_text = "Unknown"
+
+    file_id = master_data.get(
+        "file_id"
+    )
+
+    # =====================================================
+    # PERSONAL POKEMON PAGE
+    # =====================================================
 
     text = (
         "<blockquote>"
         "╭━━━━━━━━━━━━━━━━━━━━╮\n"
         "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑷𝑶𝑲𝑬́𝑫𝑬𝑿\n"
         "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-        f"🐾 <b>{pokemon['species']}</b>\n"
-        f"🆔 ID: {pokemon['poke_id']}\n"
-        f"⭐ Level: {pokemon['level']}\n"
-        f"🌿 Nature: {pokemon['nature']}\n"
-        f"⚡ Ability: {pokemon['ability']}\n"
-        f"💎 Total IVs: {iv_total}/186\n"
-        f"📈 Total EVs: {ev_total}\n"
+        f"🐾 <b>{pokemon_name}</b>\n"
+        f"★ 𝑷𝒆𝒓𝒔𝒐𝒏𝒂𝒍 𝑰𝑫: {pokemon['poke_id']}\n"
+        f"★ 𝑷𝒐𝒌é𝒅𝒆𝒙 𝑰𝑫: {dex_id}\n"
+        f"★ 𝑹𝒆𝒈𝒊𝒐𝒏: {region}\n"
+        f"★ 𝑻𝒚𝒑𝒆: {type_text}\n"
+        f"★ 𝑹𝒂𝒓𝒊𝒕𝒚: {rarity}\n\n"
+        f"★ 𝑳𝒆𝒗𝒆𝒍: {pokemon['level']}\n"
+        f"★ 𝑵𝒂𝒕𝒖𝒓𝒆: {pokemon['nature']}\n"
+        f"★ 𝑨𝒃𝒊𝒍𝒊𝒕𝒚: {pokemon['ability']}\n"
+        f"★ 𝑻𝒐𝒕𝒂𝒍 𝑰𝑽𝒔: {iv_total}/186\n"
+        f"★ 𝑻𝒐𝒕𝒂𝒍 𝑬𝑽𝒔: {ev_total}\n"
         "</blockquote>"
     )
 
     keyboard = [
         [
             InlineKeyboardButton(
-                "🧬 IVs",
+                "★ 𝐈𝐕𝐬",
                 callback_data=f"personal_ivs_{poke_id}"
             ),
             InlineKeyboardButton(
-                "📈 EVs",
+                "★ 𝐄𝐕𝐬",
                 callback_data=f"personal_evs_{poke_id}"
             )
         ],
         [
             InlineKeyboardButton(
-                "⚔️ Moves",
+                "★ 𝐌𝐨𝐯𝐞𝐬",
                 callback_data=f"personal_moves_{poke_id}"
             ),
             InlineKeyboardButton(
-                "🆔 Info",
+                "★ 𝐈𝐧𝐟𝐨",
                 callback_data=f"personal_info_{poke_id}"
             )
         ],
         [
             InlineKeyboardButton(
-                "🔙 Back",
-                callback_data="personal_pokedex_back"
+                "🔙 𝐁𝐚𝐜𝐤",
+                callback_data=f"personal_species_{pokemon_name}"
             )
         ]
     ]
 
-    # Send PFP if available
+    # =====================================================
+    # SEND MASTER PFP
+    # =====================================================
+
     if file_id:
+
         try:
+
             await query.message.delete()
 
             await context.bot.send_photo(
                 chat_id=query.message.chat_id,
                 photo=file_id,
                 caption=text,
-                reply_markup=InlineKeyboardMarkup(keyboard),
+                reply_markup=InlineKeyboardMarkup(
+                    keyboard
+                ),
                 parse_mode="HTML"
             )
 
             return
 
         except Exception as e:
-            print("Personal Pokémon PFP error:", e)
 
-    # Fallback if PFP is unavailable
+            print(
+                "Personal Pokémon PFP error:",
+                e
+            )
+
+    # =====================================================
+    # FALLBACK
+    # =====================================================
+
     await query.message.edit_text(
         text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=InlineKeyboardMarkup(
+            keyboard
+        ),
         parse_mode="HTML"
     )
         
@@ -10277,6 +10617,13 @@ def main():
     app.add_handler(CommandHandler("dexoverlay", dexoverlay)) 
     app.add_handler(CommandHandler("broadcast", broadcast))
     app.add_handler(CommandHandler("matrix", matrix))
+    
+    app.add_handler(
+        CallbackQueryHandler(
+            personal_pokedex_suggestion_callback,
+            pattern=r"^personal_suggest_"
+        )
+    )
     
     app.add_handler(
         CallbackQueryHandler(
