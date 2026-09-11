@@ -826,6 +826,36 @@ def init_db():
             direction TEXT NOT NULL DEFAULT 'desc'
         )
     """)
+
+    # =====================================================
+    # PERSONAL POKEMON
+    # =====================================================
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS user_pokemon (
+            poke_id TEXT PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            species TEXT NOT NULL,
+            level INTEGER NOT NULL DEFAULT 1,
+            xp INTEGER NOT NULL DEFAULT 0,
+            nature TEXT NOT NULL DEFAULT 'Hardy',
+            ability TEXT NOT NULL DEFAULT 'Unknown',
+            iv_hp INTEGER NOT NULL DEFAULT 0,
+            iv_attack INTEGER NOT NULL DEFAULT 0,
+            iv_defense INTEGER NOT NULL DEFAULT 0,
+            iv_sp_attack INTEGER NOT NULL DEFAULT 0,
+            iv_sp_defense INTEGER NOT NULL DEFAULT 0,
+            iv_speed INTEGER NOT NULL DEFAULT 0,
+            ev_hp INTEGER NOT NULL DEFAULT 0,
+            ev_attack INTEGER NOT NULL DEFAULT 0,
+            ev_defense INTEGER NOT NULL DEFAULT 0,
+            ev_sp_attack INTEGER NOT NULL DEFAULT 0,
+            ev_sp_defense INTEGER NOT NULL DEFAULT 0,
+            ev_speed INTEGER NOT NULL DEFAULT 0,
+            moves TEXT NOT NULL DEFAULT '[]',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
     
     cur.execute("""
         CREATE TABLE IF NOT EXISTS pokedex (
@@ -875,6 +905,282 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+
+# =========================================================
+# PERSONAL POKEMON ID GENERATOR
+# =========================================================
+
+def generate_poke_id():
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT poke_id
+        FROM user_pokemon
+        WHERE poke_id LIKE 'XS-PK-%'
+        ORDER BY rowid DESC
+        LIMIT 1
+    """)
+
+    row = cur.fetchone()
+    conn.close()
+
+    if not row:
+        number = 1
+    else:
+        try:
+            number = int(
+                row[0].replace("XS-PK-", "")
+            ) + 1
+        except (ValueError, TypeError):
+            number = 1
+
+    return f"XS-PK-{number:06d}"
+
+
+# =========================================================
+# SAVE PERSONAL POKEMON
+# =========================================================
+
+def save_personal_pokemon(
+    user_id,
+    species,
+    level=1,
+    xp=0,
+    nature="Hardy",
+    ability="Unknown",
+    ivs=None,
+    evs=None,
+    moves=None
+):
+    if ivs is None:
+        ivs = {
+            "hp": 0,
+            "attack": 0,
+            "defense": 0,
+            "sp_attack": 0,
+            "sp_defense": 0,
+            "speed": 0
+        }
+
+    if evs is None:
+        evs = {
+            "hp": 0,
+            "attack": 0,
+            "defense": 0,
+            "sp_attack": 0,
+            "sp_defense": 0,
+            "speed": 0
+        }
+
+    if moves is None:
+        moves = []
+
+    poke_id = generate_poke_id()
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO user_pokemon (
+            poke_id,
+            user_id,
+            species,
+            level,
+            xp,
+            nature,
+            ability,
+            iv_hp,
+            iv_attack,
+            iv_defense,
+            iv_sp_attack,
+            iv_sp_defense,
+            iv_speed,
+            ev_hp,
+            ev_attack,
+            ev_defense,
+            ev_sp_attack,
+            ev_sp_defense,
+            ev_speed,
+            moves
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        poke_id,
+        user_id,
+        species,
+        level,
+        xp,
+        nature,
+        ability,
+        ivs.get("hp", 0),
+        ivs.get("attack", 0),
+        ivs.get("defense", 0),
+        ivs.get("sp_attack", 0),
+        ivs.get("sp_defense", 0),
+        ivs.get("speed", 0),
+        evs.get("hp", 0),
+        evs.get("attack", 0),
+        evs.get("defense", 0),
+        evs.get("sp_attack", 0),
+        evs.get("sp_defense", 0),
+        evs.get("speed", 0),
+        json.dumps(moves)
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return poke_id
+
+
+# =========================================================
+# MIGRATE EXISTING STARTER TO PERSONAL POKEMON
+# =========================================================
+
+def migrate_starter_to_personal(user_id):
+    conn = db()
+    cur = conn.cursor()
+
+    # Check if this user already has a personal Pokémon
+    cur.execute("""
+        SELECT poke_id
+        FROM user_pokemon
+        WHERE user_id = ?
+        LIMIT 1
+    """, (user_id,))
+
+    if cur.fetchone():
+        conn.close()
+        return None
+
+    # Get existing starter
+    cur.execute("""
+        SELECT
+            pokemon,
+            nature,
+            hp,
+            attack,
+            defense,
+            sp_attack,
+            sp_defense,
+            speed
+        FROM pokedex
+        WHERE user_id = ?
+    """, (user_id,))
+
+    starter = cur.fetchone()
+
+    if not starter:
+        conn.close()
+        return None
+
+    (
+        species,
+        nature,
+        hp,
+        attack,
+        defense,
+        sp_attack,
+        sp_defense,
+        speed
+    ) = starter
+
+    conn.close()
+
+    # Create personal Pokémon
+    poke_id = save_personal_pokemon(
+        user_id=user_id,
+        species=species,
+        level=1,
+        xp=0,
+        nature=nature,
+        ability="Unknown",
+        ivs={
+            "hp": hp,
+            "attack": attack,
+            "defense": defense,
+            "sp_attack": sp_attack,
+            "sp_defense": sp_defense,
+            "speed": speed
+        },
+        evs={
+            "hp": 0,
+            "attack": 0,
+            "defense": 0,
+            "sp_attack": 0,
+            "sp_defense": 0,
+            "speed": 0
+        },
+        moves=[]
+    )
+
+    return poke_id
+
+
+# =========================================================
+# SAVE STARTER TO PERSONAL POKEMON
+# =========================================================
+
+def save_starter_to_personal(
+    user_id,
+    pokemon,
+    nature,
+    ivs
+):
+    # Prevent duplicate personal starter
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT poke_id
+        FROM user_pokemon
+        WHERE user_id = ?
+        LIMIT 1
+    """, (user_id,))
+
+    if cur.fetchone():
+        conn.close()
+        return None
+
+    conn.close()
+
+    # Remove decorative emoji from starter name
+    species = pokemon
+
+    for emoji in ["🌱", "🔥", "💧", "⚡", "✨", "🥊", "🔮", "🐉"]:
+        species = species.replace(emoji, "")
+
+    species = species.strip()
+
+    poke_id = save_personal_pokemon(
+        user_id=user_id,
+        species=species,
+        level=1,
+        xp=0,
+        nature=nature,
+        ability="Unknown",
+        ivs={
+            "hp": ivs[0],
+            "attack": ivs[1],
+            "defense": ivs[2],
+            "sp_attack": ivs[3],
+            "sp_defense": ivs[4],
+            "speed": ivs[5]
+        },
+        evs={
+            "hp": 0,
+            "attack": 0,
+            "defense": 0,
+            "sp_attack": 0,
+            "sp_defense": 0,
+            "speed": 0
+        },
+        moves=[]
+    )
+
+    return poke_id
 
 
 # =========================================================
@@ -8822,6 +9128,14 @@ async def starter_selected(update, context):
         ivs
     )
 
+    # Save starter in Personal Pokémon system
+    personal_poke_id = save_starter_to_personal(
+        user_id,
+        pokemon,
+        nature,
+        ivs
+    )
+   
     # Delete starter selection message
     try:
         await query.message.delete()
