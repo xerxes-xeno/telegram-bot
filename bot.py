@@ -1040,10 +1040,11 @@ def save_personal_pokemon(
 # =========================================================
 
 def migrate_starter_to_personal(user_id):
+
+    # Already migrated?
     conn = db()
     cur = conn.cursor()
 
-    # Check if this user already has a personal Pokémon
     cur.execute("""
         SELECT poke_id
         FROM user_pokemon
@@ -1055,7 +1056,7 @@ def migrate_starter_to_personal(user_id):
         conn.close()
         return None
 
-    # Get existing starter
+    # Get old starter
     cur.execute("""
         SELECT
             pokemon,
@@ -1072,8 +1073,9 @@ def migrate_starter_to_personal(user_id):
 
     starter = cur.fetchone()
 
+    conn.close()
+
     if not starter:
-        conn.close()
         return None
 
     (
@@ -1087,10 +1089,22 @@ def migrate_starter_to_personal(user_id):
         speed
     ) = starter
 
-    conn.close()
+    # Remove decorative emoji if old starter has one
+    for emoji in [
+        "🌱",
+        "🔥",
+        "💧",
+        "⚡",
+        "✨",
+        "🥊",
+        "🔮",
+        "🐉"
+    ]:
+        species = species.replace(emoji, "")
 
-    # Create personal Pokémon
-    poke_id = save_personal_pokemon(
+    species = species.strip()
+
+    return save_personal_pokemon(
         user_id=user_id,
         species=species,
         level=1,
@@ -1115,8 +1129,6 @@ def migrate_starter_to_personal(user_id):
         },
         moves=[]
     )
-
-    return poke_id
 
 
 # =========================================================
@@ -1181,6 +1193,877 @@ def save_starter_to_personal(
     )
 
     return poke_id
+
+
+# =========================================================
+# GET PERSONAL POKEMON
+# =========================================================
+
+def get_personal_pokemon(user_id, species=None):
+    conn = db()
+    cur = conn.cursor()
+
+    if species:
+        cur.execute("""
+            SELECT *
+            FROM user_pokemon
+            WHERE user_id = ?
+              AND LOWER(species) = LOWER(?)
+            ORDER BY created_at ASC
+        """, (user_id, species))
+    else:
+        cur.execute("""
+            SELECT *
+            FROM user_pokemon
+            WHERE user_id = ?
+            ORDER BY created_at ASC
+        """, (user_id,))
+
+    rows = cur.fetchall()
+    columns = [description[0] for description in cur.description]
+
+    conn.close()
+
+    return [
+        dict(zip(columns, row))
+        for row in rows
+    ]
+
+
+# =========================================================
+# APPLY PERSONAL POKEDEX MATRIX
+# =========================================================
+
+def apply_pokedex_matrix(user_id, pokemon_list):
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT order_by, direction
+        FROM dex_matrix
+        WHERE user_id = ?
+    """, (user_id,))
+
+    row = cur.fetchone()
+
+    conn.close()
+
+    if not row:
+        order_by = "iv"
+        direction = "desc"
+    else:
+        order_by, direction = row
+
+    def total_iv(pokemon):
+        return (
+            pokemon["iv_hp"]
+            + pokemon["iv_attack"]
+            + pokemon["iv_defense"]
+            + pokemon["iv_sp_attack"]
+            + pokemon["iv_sp_defense"]
+            + pokemon["iv_speed"]
+        )
+
+    def total_ev(pokemon):
+        return (
+            pokemon["ev_hp"]
+            + pokemon["ev_attack"]
+            + pokemon["ev_defense"]
+            + pokemon["ev_sp_attack"]
+            + pokemon["ev_sp_defense"]
+            + pokemon["ev_speed"]
+        )
+
+    def sort_key(pokemon):
+
+        if order_by == "name":
+            return pokemon["species"].lower()
+
+        if order_by == "time":
+            return pokemon["created_at"]
+
+        if order_by == "level":
+            return pokemon["level"]
+
+        if order_by == "nature":
+            return pokemon["nature"].lower()
+
+        if order_by == "types":
+            global_data = get_pokemon(
+                pokemon["species"]
+            )
+
+            if global_data:
+                return " / ".join(
+                    str(t).lower()
+                    for t in global_data.get("types", [])
+                )
+
+            return ""
+
+        if order_by == "iv":
+            return total_iv(pokemon)
+
+        if order_by == "ev":
+            return total_ev(pokemon)
+
+        if order_by == "poke_id":
+            return pokemon["poke_id"]
+
+        return total_iv(pokemon)
+
+    reverse = direction == "desc"
+
+    return sorted(
+        pokemon_list,
+        key=sort_key,
+        reverse=reverse
+    )
+
+
+# =========================================================
+# APPLY PERSONAL POKEDEX OVERLAY
+# =========================================================
+
+def get_pokedex_overlay(user_id):
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT display_option, show_numbering
+        FROM dex_overlay
+        WHERE user_id = ?
+    """, (user_id,))
+
+    row = cur.fetchone()
+
+    conn.close()
+
+    if not row:
+        return "iv", 1
+
+    return row[0], row[1]
+
+
+def get_personal_overlay_text(
+    pokemon,
+    display_option
+):
+
+    if display_option == "level":
+        return f"Lv.{pokemon['level']}"
+
+    if display_option == "nature":
+        return pokemon["nature"]
+
+    if display_option == "types":
+
+        global_data = get_pokemon(
+            pokemon["species"]
+        )
+
+        if global_data:
+            types = global_data.get("types", [])
+
+            return " / ".join(
+                str(t).title()
+                for t in types
+            )
+
+        return "Unknown"
+
+    if display_option == "iv":
+
+        total_iv = (
+            pokemon["iv_hp"]
+            + pokemon["iv_attack"]
+            + pokemon["iv_defense"]
+            + pokemon["iv_sp_attack"]
+            + pokemon["iv_sp_defense"]
+            + pokemon["iv_speed"]
+        )
+
+        return f"{total_iv} IVs"
+
+    if display_option == "ev":
+
+        total_ev = (
+            pokemon["ev_hp"]
+            + pokemon["ev_attack"]
+            + pokemon["ev_defense"]
+            + pokemon["ev_sp_attack"]
+            + pokemon["ev_sp_defense"]
+            + pokemon["ev_speed"]
+        )
+
+        return f"{total_ev} EVs"
+
+    if display_option == "type_symbol":
+
+        global_data = get_pokemon(
+            pokemon["species"]
+        )
+
+        if global_data:
+            types = global_data.get("types", [])
+
+            symbols = []
+
+            for pokemon_type in types:
+                emoji = TYPE_EMOJIS.get(
+                    str(pokemon_type).lower(),
+                    ""
+                )
+
+                if emoji:
+                    symbols.append(emoji)
+
+            return "".join(symbols) or "❔"
+
+        return "❔"
+
+    if display_option == "stats":
+
+        total_iv = (
+            pokemon["iv_hp"]
+            + pokemon["iv_attack"]
+            + pokemon["iv_defense"]
+            + pokemon["iv_sp_attack"]
+            + pokemon["iv_sp_defense"]
+            + pokemon["iv_speed"]
+        )
+
+        total_ev = (
+            pokemon["ev_hp"]
+            + pokemon["ev_attack"]
+            + pokemon["ev_defense"]
+            + pokemon["ev_sp_attack"]
+            + pokemon["ev_sp_defense"]
+            + pokemon["ev_speed"]
+        )
+
+        return f"{total_iv + total_ev} Stats"
+
+    return f"{pokemon['species']}"
+
+
+# =========================================================
+# PERSONAL POKEDEX COMMAND
+# =========================================================
+
+async def personal_pokedex(update, context):
+
+    user_id = update.effective_user.id
+
+    migrate_starter_to_personal(user_id)
+   
+    if not is_pokedex_enabled():
+        await update.message.reply_text(
+            "🔴 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤é𝐃𝐞𝐱 𝐢𝐬 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐎𝐅𝐅."
+        )
+        return
+
+    species = None
+
+    if context.args:
+        species = " ".join(context.args).strip()
+
+    pokemon_list = get_personal_pokemon(
+        user_id,
+        species
+    )
+
+    pokemon_list = apply_pokedex_matrix(
+        user_id,
+        pokemon_list
+    )
+
+    display_option, show_numbering = get_pokedex_overlay(
+        user_id
+    )
+    
+    if not pokemon_list:
+        if species:
+            await update.message.reply_text(
+                f"❌ You don't have any {species} in your Personal Pokédex."
+            )
+        else:
+            await update.message.reply_text(
+                "📖 Your Personal Pokédex is currently empty."
+            )
+        return
+
+    text = (
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        "Choose a Pokémon to view its details:"
+    )
+
+    keyboard = []
+
+    for index, pokemon in enumerate(pokemon_list, start=1):
+
+        overlay_text = get_personal_overlay_text(
+            pokemon,
+            display_option
+        )
+
+        if show_numbering:
+            button_text = (
+                f"{index}. {pokemon['species']} : {overlay_text}"
+            )
+        else:
+            button_text = (
+                f"{pokemon['species']} : {overlay_text}"
+            )
+
+        keyboard.append([
+            InlineKeyboardButton(
+                button_text,
+                callback_data=f"personal_poke_{pokemon['poke_id']}"
+            )
+        ])
+
+    await update.message.reply_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# =========================================================
+# PERSONAL POKEMON DETAILS
+# =========================================================
+
+async def personal_pokemon_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    poke_id = query.data.replace(
+        "personal_poke_",
+        ""
+    )
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM user_pokemon
+        WHERE poke_id = ?
+          AND user_id = ?
+    """, (poke_id, user_id))
+
+    row = cur.fetchone()
+    columns = [description[0] for description in cur.description]
+
+    conn.close()
+
+    if not row:
+        await query.message.reply_text(
+            "❌ This Pokémon could not be found in your Pokédex."
+        )
+        return
+
+    pokemon = dict(zip(columns, row))
+
+    iv_total = (
+        pokemon["iv_hp"]
+        + pokemon["iv_attack"]
+        + pokemon["iv_defense"]
+        + pokemon["iv_sp_attack"]
+        + pokemon["iv_sp_defense"]
+        + pokemon["iv_speed"]
+    )
+
+    ev_total = (
+        pokemon["ev_hp"]
+        + pokemon["ev_attack"]
+        + pokemon["ev_defense"]
+        + pokemon["ev_sp_attack"]
+        + pokemon["ev_sp_defense"]
+        + pokemon["ev_speed"]
+    )
+
+    global_data = get_pokemon(
+        pokemon["species"]
+    )
+
+    file_id = None
+
+    if global_data:
+        file_id = global_data.get("file_id")
+
+    text = (
+        "<blockquote>"
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑷𝑶𝑲𝑬́𝑫𝑬𝑿\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🐾 <b>{pokemon['species']}</b>\n"
+        f"🆔 ID: {pokemon['poke_id']}\n"
+        f"⭐ Level: {pokemon['level']}\n"
+        f"🌿 Nature: {pokemon['nature']}\n"
+        f"⚡ Ability: {pokemon['ability']}\n"
+        f"💎 Total IVs: {iv_total}/186\n"
+        f"📈 Total EVs: {ev_total}\n"
+        "</blockquote>"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🧬 IVs",
+                callback_data=f"personal_ivs_{poke_id}"
+            ),
+            InlineKeyboardButton(
+                "📈 EVs",
+                callback_data=f"personal_evs_{poke_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "⚔️ Moves",
+                callback_data=f"personal_moves_{poke_id}"
+            ),
+            InlineKeyboardButton(
+                "🆔 Info",
+                callback_data=f"personal_info_{poke_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🔙 Back",
+                callback_data="personal_pokedex_back"
+            )
+        ]
+    ]
+
+    # Send PFP if available
+    if file_id:
+        try:
+            await query.message.delete()
+
+            await context.bot.send_photo(
+                chat_id=query.message.chat_id,
+                photo=file_id,
+                caption=text,
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode="HTML"
+            )
+
+            return
+
+        except Exception as e:
+            print("Personal Pokémon PFP error:", e)
+
+    # Fallback if PFP is unavailable
+    await query.message.edit_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode="HTML"
+    )
+        
+
+# =========================================================
+# PERSONAL POKEMON IV DETAILS
+# =========================================================
+
+async def personal_ivs_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    poke_id = query.data.replace(
+        "personal_ivs_",
+        ""
+    )
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM user_pokemon
+        WHERE poke_id = ?
+          AND user_id = ?
+    """, (poke_id, user_id))
+
+    row = cur.fetchone()
+    columns = [description[0] for description in cur.description]
+
+    conn.close()
+
+    if not row:
+        await query.message.reply_text(
+            "❌ This Pokémon could not be found in your Pokédex."
+        )
+        return
+
+    pokemon = dict(zip(columns, row))
+
+    total_iv = (
+        pokemon["iv_hp"]
+        + pokemon["iv_attack"]
+        + pokemon["iv_defense"]
+        + pokemon["iv_sp_attack"]
+        + pokemon["iv_sp_defense"]
+        + pokemon["iv_speed"]
+    )
+
+    text = (
+        "<blockquote>"
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑰𝑽 𝑫𝑨𝑻𝑨\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🐾 <b>{pokemon['species']}</b>\n"
+        f"🆔 {pokemon['poke_id']}\n\n"
+        f"❤️ HP: {pokemon['iv_hp']}/31\n"
+        f"⚔️ Attack: {pokemon['iv_attack']}/31\n"
+        f"🛡️ Defense: {pokemon['iv_defense']}/31\n"
+        f"✨ Sp. Attack: {pokemon['iv_sp_attack']}/31\n"
+        f"🔰 Sp. Defense: {pokemon['iv_sp_defense']}/31\n"
+        f"💨 Speed: {pokemon['iv_speed']}/31\n\n"
+        f"💎 <b>Total IVs: {total_iv}/186</b>\n"
+        "</blockquote>"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🔙 Back to Pokémon",
+                callback_data=f"personal_poke_{poke_id}"
+            )
+        ]
+    ]
+
+    await query.message.edit_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode="HTML"
+    )
+
+
+# =========================================================
+# PERSONAL POKEMON EV DETAILS
+# =========================================================
+
+async def personal_evs_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    poke_id = query.data.replace(
+        "personal_evs_",
+        ""
+    )
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM user_pokemon
+        WHERE poke_id = ?
+          AND user_id = ?
+    """, (poke_id, user_id))
+
+    row = cur.fetchone()
+    columns = [description[0] for description in cur.description]
+
+    conn.close()
+
+    if not row:
+        await query.message.reply_text(
+            "❌ This Pokémon could not be found in your Pokédex."
+        )
+        return
+
+    pokemon = dict(zip(columns, row))
+
+    total_ev = (
+        pokemon["ev_hp"]
+        + pokemon["ev_attack"]
+        + pokemon["ev_defense"]
+        + pokemon["ev_sp_attack"]
+        + pokemon["ev_sp_defense"]
+        + pokemon["ev_speed"]
+    )
+
+    text = (
+        "<blockquote>"
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑬𝑽 𝑫𝑨𝑻𝑨\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🐾 <b>{pokemon['species']}</b>\n"
+        f"🆔 {pokemon['poke_id']}\n\n"
+        f"❤️ HP: {pokemon['ev_hp']}\n"
+        f"⚔️ Attack: {pokemon['ev_attack']}\n"
+        f"🛡️ Defense: {pokemon['ev_defense']}\n"
+        f"✨ Sp. Attack: {pokemon['ev_sp_attack']}\n"
+        f"🔰 Sp. Defense: {pokemon['ev_sp_defense']}\n"
+        f"💨 Speed: {pokemon['ev_speed']}\n\n"
+        f"📈 <b>Total EVs: {total_ev}</b>\n"
+        "</blockquote>"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🔙 Back to Pokémon",
+                callback_data=f"personal_poke_{poke_id}"
+            )
+        ]
+    ]
+
+    await query.message.edit_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode="HTML"
+    )
+
+
+# =========================================================
+# PERSONAL POKEMON MOVES
+# =========================================================
+
+async def personal_moves_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    poke_id = query.data.replace(
+        "personal_moves_",
+        ""
+    )
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM user_pokemon
+        WHERE poke_id = ?
+          AND user_id = ?
+    """, (poke_id, user_id))
+
+    row = cur.fetchone()
+    columns = [description[0] for description in cur.description]
+
+    conn.close()
+
+    if not row:
+        await query.message.reply_text(
+            "❌ This Pokémon could not be found in your Pokédex."
+        )
+        return
+
+    pokemon = dict(zip(columns, row))
+
+    try:
+        moves = json.loads(pokemon["moves"])
+    except (json.JSONDecodeError, TypeError):
+        moves = []
+
+    if not moves:
+        moves_text = "⚔️ No moves registered yet."
+    else:
+        move_lines = []
+
+        for index, move in enumerate(moves, start=1):
+
+            if isinstance(move, dict):
+                move_name = move.get("name", "Unknown")
+            else:
+                move_name = str(move)
+
+            move_lines.append(
+                f"🔹 {index}. {move_name}"
+            )
+
+        moves_text = "\n".join(move_lines)
+
+    text = (
+        "<blockquote>"
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑴𝑶𝑽𝑬𝑺\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🐾 <b>{pokemon['species']}</b>\n"
+        f"🆔 {pokemon['poke_id']}\n"
+        f"⭐ Level: {pokemon['level']}\n\n"
+        f"{moves_text}"
+        "</blockquote>"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🔙 Back to Pokémon",
+                callback_data=f"personal_poke_{poke_id}"
+            )
+        ]
+    ]
+
+    await query.message.edit_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode="HTML"
+    )
+
+
+# =========================================================
+# PERSONAL POKEMON INFO
+# =========================================================
+
+async def personal_info_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    poke_id = query.data.replace(
+        "personal_info_",
+        ""
+    )
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM user_pokemon
+        WHERE poke_id = ?
+          AND user_id = ?
+    """, (poke_id, user_id))
+
+    row = cur.fetchone()
+    columns = [description[0] for description in cur.description]
+
+    conn.close()
+
+    if not row:
+        await query.message.reply_text(
+            "❌ This Pokémon could not be found in your Pokédex."
+        )
+        return
+
+    pokemon = dict(zip(columns, row))
+
+    global_data = get_pokemon(
+        pokemon["species"]
+    )
+
+    if global_data:
+        types = global_data.get("types", [])
+        type_text = " / ".join(
+            str(t).title()
+            for t in types
+        )
+
+        region = global_data.get(
+            "region",
+            "Unknown"
+        )
+
+        rarity = global_data.get(
+            "rarity",
+            "Unknown"
+        )
+
+        dex_id = global_data.get(
+            "id",
+            "Unknown"
+        )
+    else:
+        type_text = "Unknown"
+        region = "Unknown"
+        rarity = "Unknown"
+        dex_id = "Unknown"
+
+    text = (
+        "<blockquote>"
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑷𝑶𝑲𝑬́𝑫𝑬𝑿\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🐾 <b>{pokemon['species']}</b>\n"
+        f"🆔 Personal ID: {pokemon['poke_id']}\n"
+        f"📖 Pokédex ID: {dex_id}\n"
+        f"🌍 Region: {region}\n"
+        f"🔰 Type: {type_text}\n"
+        f"💎 Rarity: {rarity}\n\n"
+        f"⭐ Level: {pokemon['level']}\n"
+        f"✨ Nature: {pokemon['nature']}\n"
+        f"⚡ Ability: {pokemon['ability']}\n"
+        "</blockquote>"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🔙 Back to Pokémon",
+                callback_data=f"personal_poke_{poke_id}"
+            )
+        ]
+    ]
+
+    await query.message.edit_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        parse_mode="HTML"
+    )
+
+
+# =========================================================
+# PERSONAL POKEDEX BACK
+# =========================================================
+
+async def personal_pokedex_back_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    pokemon_list = get_personal_pokemon(user_id)
+
+    if not pokemon_list:
+        await query.message.edit_text(
+            "📖 Your Personal Pokédex is currently empty."
+        )
+        return
+
+    text = (
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        "Choose a Pokémon to view its details:"
+    )
+
+    keyboard = []
+
+    for pokemon in pokemon_list:
+        keyboard.append([
+            InlineKeyboardButton(
+                f"{pokemon['species']} • Lv.{pokemon['level']}",
+                callback_data=f"personal_poke_{pokemon['poke_id']}"
+            )
+        ])
+
+    await query.message.edit_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
 
 # =========================================================
@@ -9278,7 +10161,7 @@ def main():
     app.add_handler(CommandHandler("datatm", datatm))
     app.add_handler(CommandHandler("pokeballs", pokeballs))
     app.add_handler(CommandHandler("move", move))
-  
+    
     app.add_handler(
         CallbackQueryHandler(
             tm_callback,
@@ -9327,7 +10210,8 @@ def main():
             pattern="^(start_commands|start_main|start_updates|commands_management|commands_pokemon|commands_music)$"
         )
     )
-  
+   
+    app.add_handler(CommandHandler("pokedex", personal_pokedex)) 
     app.add_handler(CommandHandler("trainer", trainer))
     app.add_handler(CommandHandler("status", status))
     app.add_handler(CommandHandler("bag", bag))
@@ -9405,6 +10289,48 @@ def main():
         CallbackQueryHandler(
             matrix_callback,
             pattern=r"^matrix_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            personal_pokemon_callback,
+            pattern=r"^personal_poke_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            personal_ivs_callback,
+            pattern=r"^personal_ivs_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            personal_evs_callback,
+            pattern=r"^personal_evs_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            personal_moves_callback,
+            pattern=r"^personal_moves_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            personal_info_callback,
+            pattern=r"^personal_info_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            personal_pokedex_back_callback,
+            pattern=r"^personal_pokedex_back$"
         )
     )
     
