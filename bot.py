@@ -1644,13 +1644,145 @@ async def personal_pokedex(update, context):
 
     if not pokemon_list:
 
-        await update.message.reply_text(
-            "❌ This Pokémon is not registered "
-            "in your Pokédex."
-        )
+        personal_pokemon = get_personal_pokemon(user_id)
 
+        # =====================================================
+        # OLD USER — STARTER NOT SELECTED
+        # =====================================================
+
+        if not personal_pokemon:
+
+            text = (
+                "<blockquote>"
+                "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+                "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿\n"
+                "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+                "❌ <b>This Pokémon is not registered in your Pokédex.</b>\n\n"
+                "🎁 <b>You haven't selected a starter yet.</b>\n"
+                "Choose your starter to begin your journey."
+                "</blockquote>"
+            )
+
+            keyboard = [
+                [
+                    InlineKeyboardButton(
+                        "🌱 Bulbasaur",
+                        callback_data="starter_bulbasaur"
+                    ),
+                    InlineKeyboardButton(
+                        "🔥 Charmander",
+                        callback_data="starter_charmander"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "💧 Squirtle",
+                        callback_data="starter_squirtle"
+                    ),
+                    InlineKeyboardButton(
+                        "⚡ Pikachu",
+                        callback_data="starter_pikachu"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "✨ Eevee",
+                        callback_data="starter_eevee"
+                    ),
+                    InlineKeyboardButton(
+                        "🥊 Riolu",
+                        callback_data="starter_riolu"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🔮 Ralts",
+                        callback_data="starter_ralts"
+                    ),
+                    InlineKeyboardButton(
+                        "🐉 Axew",
+                        callback_data="starter_axew"
+                    )
+                ]
+            ]
+
+            await update.message.reply_text(
+                text,
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode="HTML"
+            )
+            return
+
+        # =====================================================
+        # USER ALREADY HAS A STARTER
+        # =====================================================
+
+        await update.message.reply_text(
+            "❌ This Pokémon is not registered in your Pokédex."
+        )
         return
 
+    pokemon_list = apply_pokedex_matrix(
+        user_id,
+        pokemon_list
+    )
+
+    display_option, show_numbering = (
+        get_pokedex_overlay(user_id)
+    )
+
+    text = (
+        "<blockquote>"
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🐾 <b>{species}</b>\n"
+        f"📦 Registered: {len(pokemon_list)}\n\n"
+        "Choose a Pokémon to view its details:"
+        "</blockquote>"
+    )
+
+    keyboard = []
+
+    for index, pokemon in enumerate(
+        pokemon_list,
+        start=1
+    ):
+        overlay_text = get_personal_overlay_text(
+            pokemon,
+            display_option
+        )
+
+        if show_numbering:
+            button_text = (
+                f"{index}. "
+                f"{pokemon['species']} : "
+                f"{overlay_text}"
+            )
+        else:
+            button_text = (
+                f"{pokemon['species']} : "
+                f"{overlay_text}"
+            )
+
+        keyboard.append([
+            InlineKeyboardButton(
+                button_text,
+                callback_data=(
+                    f"personal_poke_"
+                    f"{pokemon['poke_id']}"
+                )
+            )
+        ])
+
+    await update.message.reply_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(
+            keyboard
+        ),
+        parse_mode="HTML"
+    )
+    
     # -----------------------------------------------------
     # APPLY MATRIX
     # -----------------------------------------------------
