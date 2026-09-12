@@ -2046,12 +2046,11 @@ async def personal_pokemon_callback(update, context):
     # SEND MASTER PFP
     # =====================================================
 
+    print("DEBUG MASTER FILE_ID:", repr(file_id))
+    print("DEBUG MASTER NAME:", repr(pokemon_name))
+
     if file_id:
-
         try:
-
-            await query.message.delete()
-
             await context.bot.send_photo(
                 chat_id=query.message.chat_id,
                 photo=file_id,
@@ -2060,12 +2059,12 @@ async def personal_pokemon_callback(update, context):
                     keyboard
                 ),
                 parse_mode="HTML"
-            )
+            ) 
 
+            await query.message.delete()
             return
 
         except Exception as e:
-
             print(
                 "Personal Pokémon PFP error:",
                 e
