@@ -1862,6 +1862,28 @@ async def personal_pokedex_suggestion_callback(
 # PERSONAL POKEMON DETAILS
 # =========================================================
 
+async def edit_personal_message(
+    query,
+    text,
+    keyboard
+):
+    reply_markup = InlineKeyboardMarkup(
+        keyboard
+    )
+
+    if query.message.photo:
+        await query.message.edit_caption(
+            caption=text,
+            reply_markup=reply_markup,
+            parse_mode="HTML"
+        )
+    else:
+        await query.message.edit_text(
+            text=text,
+            reply_markup=reply_markup,
+            parse_mode="HTML"
+        )
+
 async def personal_pokemon_callback(update, context):
 
     query = update.callback_query
@@ -1979,19 +2001,15 @@ async def personal_pokemon_callback(update, context):
     text = (
         "<blockquote>"
         "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑷𝑶𝑲𝑬́𝑫𝑬𝑿\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝛲𝛩𝛫𝛴𝐷𝛴𝛸\n"
         "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-        f"🐾 <b>{pokemon_name}</b>\n"
-        f"★ 𝑷𝒆𝒓𝒔𝒐𝒏𝒂𝒍 𝑰𝑫: {pokemon['poke_id']}\n"
-        f"★ 𝑷𝒐𝒌é𝒅𝒆𝒙 𝑰𝑫: {dex_id}\n"
-        f"★ 𝑹𝒆𝒈𝒊𝒐𝒏: {region}\n"
-        f"★ 𝑻𝒚𝒑𝒆: {type_text}\n"
-        f"★ 𝑹𝒂𝒓𝒊𝒕𝒚: {rarity}\n\n"
-        f"★ 𝑳𝒆𝒗𝒆𝒍: {pokemon['level']}\n"
-        f"★ 𝑵𝒂𝒕𝒖𝒓𝒆: {pokemon['nature']}\n"
-        f"★ 𝑨𝒃𝒊𝒍𝒊𝒕𝒚: {pokemon['ability']}\n"
-        f"★ 𝑻𝒐𝒕𝒂𝒍 𝑰𝑽𝒔: {iv_total}/186\n"
-        f"★ 𝑻𝒐𝒕𝒂𝒍 𝑬𝑽𝒔: {ev_total}\n"
+        f"🐾 <b>𝐏𝐎𝐊É𝐌𝐎𝐍: {pokemon_name}</b>\n"
+        f"★ 𝐏𝐞𝐫𝐬𝐨𝐧𝐚𝐥 𝐈𝐃: {pokemon['poke_id']}\n"
+        f"★ 𝐏𝐨𝐤é𝐝𝐞𝐱 𝐈𝐃: {dex_id}\n"
+        f"★ 𝐑𝐞𝐠𝐢𝐨𝐧: {region}\n"
+        f"★ 𝐓𝐲𝐩𝐞: {type_text}\n"
+        f"★ 𝐑𝐚𝐫𝐢𝐭𝐲: {rarity}\n\n"
+        f"★ 𝐋𝐞𝐯𝐞𝐥: {pokemon['level']}\n"
         "</blockquote>"
     )
 
@@ -2117,19 +2135,19 @@ async def personal_ivs_callback(update, context):
     text = (
         "<blockquote>"
         "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑰𝑽 𝑫𝑨𝑻𝑨\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝛪𝛻 𝐷𝛥𝛵𝛥\n"
         "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-        f"🐾 <b>{pokemon['species']}</b>\n"
-        f"🆔 {pokemon['poke_id']}\n\n"
-        f"❤️ HP: {pokemon['iv_hp']}/31\n"
-        f"⚔️ Attack: {pokemon['iv_attack']}/31\n"
-        f"🛡️ Defense: {pokemon['iv_defense']}/31\n"
-        f"✨ Sp. Attack: {pokemon['iv_sp_attack']}/31\n"
-        f"🔰 Sp. Defense: {pokemon['iv_sp_defense']}/31\n"
-        f"💨 Speed: {pokemon['iv_speed']}/31\n\n"
-        f"💎 <b>Total IVs: {total_iv}/186</b>\n"
+        f"★ <b>𝐏𝐎𝐊É𝐌𝐎𝐍: {pokemon['species']}</b>\n"
+        f"★ 𝐏𝐞𝐫𝐬𝐨𝐧𝐚𝐥 𝐈𝐃: {pokemon['poke_id']}\n\n"
+        f"★ 𝐇𝐏: {pokemon['iv_hp']}/31\n"
+        f"★ 𝐀𝐭𝐭𝐚𝐜𝐤: {pokemon['iv_attack']}/31\n"
+        f"★ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞: {pokemon['iv_defense']}/31\n"
+        f"★ 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤: {pokemon['iv_sp_attack']}/31\n"
+        f"★ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞: {pokemon['iv_sp_defense']}/31\n"
+        f"★ 𝐒𝐩𝐞𝐞𝐝: {pokemon['iv_speed']}/31\n\n"
+        f"★ <b>𝐓𝐨𝐭𝐚𝐥 𝐈𝐕𝐬: {total_iv}/186</b>\n"
         "</blockquote>"
-    )
+    ) 
 
     keyboard = [
         [
@@ -2140,10 +2158,10 @@ async def personal_ivs_callback(update, context):
         ]
     ]
 
-    await query.message.edit_text(
+    await edit_personal_message(
+        query,
         text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode="HTML"
+        keyboard
     )
 
 
@@ -2198,17 +2216,17 @@ async def personal_evs_callback(update, context):
     text = (
         "<blockquote>"
         "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑬𝑽 𝑫𝑨𝑻𝑨\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝛴𝛻 𝐷𝛥𝛵𝛥\n"
         "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-        f"🐾 <b>{pokemon['species']}</b>\n"
-        f"🆔 {pokemon['poke_id']}\n\n"
-        f"❤️ HP: {pokemon['ev_hp']}\n"
-        f"⚔️ Attack: {pokemon['ev_attack']}\n"
-        f"🛡️ Defense: {pokemon['ev_defense']}\n"
-        f"✨ Sp. Attack: {pokemon['ev_sp_attack']}\n"
-        f"🔰 Sp. Defense: {pokemon['ev_sp_defense']}\n"
-        f"💨 Speed: {pokemon['ev_speed']}\n\n"
-        f"📈 <b>Total EVs: {total_ev}</b>\n"
+        f"★ <b>𝐏𝐎𝐊É𝐌𝐎𝐍: {pokemon['species']}</b>\n"
+        f"★ 𝐏𝐞𝐫𝐬𝐨𝐧𝐚𝐥 𝐈𝐃: {pokemon['poke_id']}\n\n"
+        f"★ 𝐇𝐏: {pokemon['ev_hp']}\n"
+        f"★ 𝐀𝐭𝐭𝐚𝐜𝐤: {pokemon['ev_attack']}\n"
+        f"★ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞: {pokemon['ev_defense']}\n"
+        f"★ 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤: {pokemon['ev_sp_attack']}\n"
+        f"★ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞: {pokemon['ev_sp_defense']}\n"
+        f"★ 𝐒𝐩𝐞𝐞𝐝: {pokemon['ev_speed']}\n\n"
+        f"★ <b>𝐓𝐨𝐭𝐚𝐥 𝐄𝐕𝐬: {total_ev}</b>\n"
         "</blockquote>"
     )
 
@@ -2221,10 +2239,10 @@ async def personal_evs_callback(update, context):
         ]
     ]
 
-    await query.message.edit_text(
+    await edit_personal_message(
+        query,
         text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode="HTML"
+        keyboard
     )
 
 
@@ -2293,15 +2311,15 @@ async def personal_moves_callback(update, context):
     text = (
         "<blockquote>"
         "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑴𝑶𝑽𝑬𝑺\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑀𝛩𝛻𝛴𝑆 \n"
         "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-        f"🐾 <b>{pokemon['species']}</b>\n"
-        f"🆔 {pokemon['poke_id']}\n"
-        f"⭐ Level: {pokemon['level']}\n\n"
+        f"★ <b>𝐏𝐎𝐊É𝐌𝐎𝐍: {pokemon['species']}</b>\n"
+        f"★ 𝐏𝐞𝐫𝐬𝐨𝐧𝐚𝐥 𝐈𝐃: {pokemon['poke_id']}\n"
+        f"★ 𝐋𝐞𝐯𝐞𝐥: {pokemon['level']}\n\n"
         f"{moves_text}"
         "</blockquote>"
     )
-
+   
     keyboard = [
         [
             InlineKeyboardButton(
@@ -2311,10 +2329,10 @@ async def personal_moves_callback(update, context):
         ]
     ]
 
-    await query.message.edit_text(
+    await edit_personal_message(
+        query,
         text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode="HTML"
+        keyboard
     )
 
 
@@ -2414,12 +2432,12 @@ async def personal_info_callback(update, context):
         ]
     ]
 
-    await query.message.edit_text(
+    await edit_personal_message(
+        query,
         text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
-        parse_mode="HTML"
+        keyboard
     )
-
+    
 
 # =========================================================
 # PERSONAL POKEDEX BACK
