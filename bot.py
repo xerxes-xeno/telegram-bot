@@ -1644,18 +1644,30 @@ async def personal_pokedex(update, context):
 
     if not pokemon_list:
 
-        personal_pokemon = get_personal_pokemon(user_id)
+        # Check whether the user has ever selected a starter
+        conn = db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT 1
+            FROM pokedex
+            WHERE user_id = ?
+            LIMIT 1
+        """, (user_id,))
+
+        starter_record = cur.fetchone()
+        conn.close()
 
         # =====================================================
-        # OLD USER — STARTER NOT SELECTED
+        # OLD USER — NO STARTER SELECTED
         # =====================================================
 
-        if not personal_pokemon:
+        if not starter_record:
 
             text = (
                 "<blockquote>"
                 "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-                "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿\n"
+                "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝐷𝛴𝛸\n"
                 "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
                 "❌ <b>This Pokémon is not registered in your Pokédex.</b>\n\n"
                 "🎁 <b>You haven't selected a starter yet.</b>\n"
@@ -1692,9 +1704,9 @@ async def personal_pokedex(update, context):
                     InlineKeyboardButton(
                         "🥊 Riolu",
                         callback_data="starter_riolu"
-                    )
+                    )          
                 ],
-                [
+                [    
                     InlineKeyboardButton(
                         "🔮 Ralts",
                         callback_data="starter_ralts"
@@ -1711,6 +1723,7 @@ async def personal_pokedex(update, context):
                 reply_markup=InlineKeyboardMarkup(keyboard),
                 parse_mode="HTML"
             )
+
             return
 
         # =====================================================
@@ -1720,69 +1733,9 @@ async def personal_pokedex(update, context):
         await update.message.reply_text(
             "❌ This Pokémon is not registered in your Pokédex."
         )
+
         return
-
-    pokemon_list = apply_pokedex_matrix(
-        user_id,
-        pokemon_list
-    )
-
-    display_option, show_numbering = (
-        get_pokedex_overlay(user_id)
-    )
-
-    text = (
-        "<blockquote>"
-        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
-        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑫𝑬𝑿\n"
-        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
-        f"🐾 <b>{species}</b>\n"
-        f"📦 Registered: {len(pokemon_list)}\n\n"
-        "Choose a Pokémon to view its details:"
-        "</blockquote>"
-    )
-
-    keyboard = []
-
-    for index, pokemon in enumerate(
-        pokemon_list,
-        start=1
-    ):
-        overlay_text = get_personal_overlay_text(
-            pokemon,
-            display_option
-        )
-
-        if show_numbering:
-            button_text = (
-                f"{index}. "
-                f"{pokemon['species']} : "
-                f"{overlay_text}"
-            )
-        else:
-            button_text = (
-                f"{pokemon['species']} : "
-                f"{overlay_text}"
-            )
-
-        keyboard.append([
-            InlineKeyboardButton(
-                button_text,
-                callback_data=(
-                    f"personal_poke_"
-                    f"{pokemon['poke_id']}"
-                )
-            )
-        ])
-
-    await update.message.reply_text(
-        text,
-        reply_markup=InlineKeyboardMarkup(
-            keyboard
-        ),
-        parse_mode="HTML"
-    )
-    
+        
     # -----------------------------------------------------
     # APPLY MATRIX
     # -----------------------------------------------------
