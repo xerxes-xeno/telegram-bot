@@ -10839,6 +10839,13 @@ def main():
             pattern=r"^personal_pokedex_back$"
         )
     )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            starter_selected,
+            pattern=r"^starter_(bulbasaur|charmander|squirtle|pikachu|eevee|riolu|ralts|axew)$"
+        )
+    )
     
     app.add_handler(CommandHandler("filter", filter_command))
     app.add_handler(CommandHandler("filters", filters_command))
