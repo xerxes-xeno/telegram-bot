@@ -2295,7 +2295,7 @@ async def personal_back_callback(update, context):
         [
             InlineKeyboardButton(
                 "🔙 𝐁𝐚𝐜𝐤",
-                callback_data=f"personal_species_{pokemon_name}"
+                callback_data=f"personal_back_{poke_id}"
             )
         ]
     ]
@@ -2314,7 +2314,11 @@ async def personal_back_callback(update, context):
 async def personal_ivs_callback(update, context):
 
     query = update.callback_query
-    await query.answer()
+    
+    try:
+        await query.answer()
+    except Exception:
+        pass
 
     user_id = query.from_user.id
 
@@ -2395,7 +2399,11 @@ async def personal_ivs_callback(update, context):
 async def personal_evs_callback(update, context):
 
     query = update.callback_query
-    await query.answer()
+    
+    try:
+        await query.answer()
+    except Exception:
+        pass
 
     user_id = query.from_user.id
 
@@ -2476,7 +2484,11 @@ async def personal_evs_callback(update, context):
 async def personal_moves_callback(update, context):
 
     query = update.callback_query
-    await query.answer()
+
+    try:
+        await query.answer()
+    except Exception:
+        pass
 
     user_id = query.from_user.id
 
@@ -2566,7 +2578,11 @@ async def personal_moves_callback(update, context):
 async def personal_info_callback(update, context):
 
     query = update.callback_query
-    await query.answer()
+
+    try:
+        await query.answer()
+    except Exception:
+        pass
 
     user_id = query.from_user.id
 
