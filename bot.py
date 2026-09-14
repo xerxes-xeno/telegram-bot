@@ -2122,7 +2122,7 @@ async def personal_pokemon_callback(update, context):
         [
             InlineKeyboardButton(
                 "🔙 𝐁𝐚𝐜𝐤",
-                callback_data=f"personal_species_{pokemon_name}"
+                callback_data=f"personal_back_{poke_id}"
             )
         ]
     ]
@@ -2167,6 +2167,145 @@ async def personal_pokemon_callback(update, context):
         parse_mode="HTML"
     )
         
+
+# =========================================================
+# PERSONAL POKEMON — BACK TO INFO
+# =========================================================
+
+async def personal_back_callback(update, context):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    poke_id = query.data.replace(
+        "personal_back_",
+        ""
+    )
+
+    conn = db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM user_pokemon
+        WHERE poke_id = ?
+          AND user_id = ?
+    """, (poke_id, user_id))
+
+    row = cur.fetchone()
+
+    columns = [
+        description[0]
+        for description in cur.description
+    ]
+
+    conn.close()
+
+    if not row:
+        await query.answer(
+            "❌ Pokémon not found.",
+            show_alert=True
+        )
+        return
+
+    pokemon = dict(zip(columns, row))
+
+    master_data = get_personal_master_data(
+        pokemon
+    )
+
+    if not master_data:
+        await query.answer(
+            "❌ Pokémon data not found.",
+            show_alert=True
+        )
+        return
+
+    pokemon_name = master_data.get(
+        "name",
+        pokemon["species"]
+    )
+
+    dex_id = master_data.get(
+        "id",
+        "Unknown"
+    )
+
+    region = master_data.get(
+        "region",
+        "Unknown"
+    )
+
+    rarity = master_data.get(
+        "rarity",
+        "Unknown"
+    )
+
+    types = master_data.get(
+        "types",
+        []
+    )
+
+    type_text = " / ".join(
+        str(pokemon_type).title()
+        for pokemon_type in types
+    )
+
+    if not type_text:
+        type_text = "Unknown"
+
+    text = (
+        "<blockquote>"
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "┃   𝛸𝛴𝛤𝛸𝛴𝑆 𝑷𝑶𝑲𝑬́𝑫𝑬𝑿\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+        f"🐾 <b>𝐏𝐎𝐊É𝐌𝐎𝐍: {pokemon_name}</b>\n"
+        f"★ 𝐏𝐞𝐫𝐬𝐨𝐧𝐚𝐥 𝐈𝐃: {pokemon['poke_id']}\n"
+        f"★ 𝐏𝐨𝐤é𝐝𝐞𝐱 𝐈𝐃: {dex_id}\n"
+        f"★ 𝐑𝐞𝐠𝐢𝐨𝐧: {region}\n"
+        f"★ 𝐓𝐲𝐩𝐞: {type_text}\n"
+        f"★ 𝐑𝐚𝐫𝐢𝐭𝐲: {rarity}\n\n"
+        f"★ 𝐋𝐞𝐯𝐞𝐥: {pokemon['level']}\n"
+        "</blockquote>"
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "★ 𝐈𝐕𝐬",
+                callback_data=f"personal_ivs_{poke_id}"
+            ),
+            InlineKeyboardButton(
+                "★ 𝐄𝐕𝐬",
+                callback_data=f"personal_evs_{poke_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "★ 𝐌𝐨𝐯𝐞𝐬",
+                callback_data=f"personal_moves_{poke_id}"
+            ),
+            InlineKeyboardButton(
+                "★ 𝐈𝐧𝐟𝐨",
+                callback_data=f"personal_info_{poke_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🔙 𝐁𝐚𝐜𝐤",
+                callback_data=f"personal_species_{pokemon_name}"
+            )
+        ]
+    ]
+
+    await edit_personal_message(
+        query,
+        text,
+        keyboard
+    )
+
 
 # =========================================================
 # PERSONAL POKEMON IV DETAILS
@@ -10781,6 +10920,13 @@ def main():
         CallbackQueryHandler(
             personal_pokedex_suggestion_callback,
             pattern=r"^personal_suggest_"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            personal_back_callback,
+            pattern=r"^personal_back_"
         )
     )
     
