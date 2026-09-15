@@ -2721,6 +2721,1027 @@ async def personal_pokedex_back_callback(update, context):
 
 
 # =========================================================
+# XERXES DAMAGE ENGINE
+# =========================================================
+
+def calculate_stat(base, iv, ev, level, nature_multiplier=1.0):
+    """
+    Calculates a Pokémon's battle stat using
+    Base Stat + IV + EV + Level + Nature.
+    """
+
+    stat = (
+        ((2 * base + iv + (ev // 4)) * level) // 100
+    ) + 5
+
+    return int(stat * nature_multiplier)
+
+
+def get_nature_multiplier(nature, stat):
+    """
+    Returns the Nature multiplier for a stat.
+
+    1.1  = boosted
+    0.9  = reduced
+    1.0  = neutral
+    """
+
+    nature_chart = {
+        "Hardy": (None, None),
+        "Lonely": ("attack", "defense"),
+        "Brave": ("attack", "speed"),
+        "Adamant": ("attack", "sp_attack"),
+        "Naughty": ("attack", "sp_defense"),
+
+        "Bold": ("defense", "attack"),
+        "Docile": (None, None),
+        "Relaxed": ("defense", "speed"),
+        "Impish": ("defense", "sp_attack"),
+        "Lax": ("defense", "sp_defense"),
+
+        "Timid": ("speed", "attack"),
+        "Hasty": ("speed", "defense"),
+        "Serious": (None, None),
+        "Jolly": ("speed", "sp_attack"),
+        "Naive": ("speed", "sp_defense"),
+
+        "Modest": ("sp_attack", "attack"),
+        "Mild": ("sp_attack", "defense"),
+        "Quiet": ("sp_attack", "speed"),
+        "Rash": ("sp_attack", "sp_defense"),
+        "Bashful": (None, None),
+
+        "Calm": ("sp_defense", "attack"),
+        "Gentle": ("sp_defense", "defense"),
+        "Sassy": ("sp_defense", "speed"),
+        "Careful": ("sp_defense", "sp_attack"),
+        "Quirky": (None, None),
+    }
+
+    boosted, reduced = nature_chart.get(
+        nature,
+        (None, None)
+    )
+
+    if stat == boosted:
+        return 1.1
+
+    if stat == reduced:
+        return 0.9
+
+    return 1.0
+    
+
+def calculate_pokemon_stats(data, ivs, evs, level, nature):
+    """
+    Calculate a Pokémon's actual battle stats
+    from Base Stats + IVs + EVs + Level + Nature.
+    """
+
+    base_stats = data.get("base_stats", {})
+
+    hp_base = int(base_stats.get("hp", 0))
+    attack_base = int(base_stats.get("attack", 0))
+    defense_base = int(base_stats.get("defense", 0))
+    sp_attack_base = int(base_stats.get("sp_attack", 0))
+    sp_defense_base = int(base_stats.get("sp_defense", 0))
+    speed_base = int(base_stats.get("speed", 0))
+
+    hp_iv = int(ivs.get("hp", 0))
+    attack_iv = int(ivs.get("attack", 0))
+    defense_iv = int(ivs.get("defense", 0))
+    sp_attack_iv = int(ivs.get("sp_attack", 0))
+    sp_defense_iv = int(ivs.get("sp_defense", 0))
+    speed_iv = int(ivs.get("speed", 0))
+
+    hp_ev = int(evs.get("hp", 0))
+    attack_ev = int(evs.get("attack", 0))
+    defense_ev = int(evs.get("defense", 0))
+    sp_attack_ev = int(evs.get("sp_attack", 0))
+    sp_defense_ev = int(evs.get("sp_defense", 0))
+    speed_ev = int(evs.get("speed", 0))
+
+    # HP has no Nature modifier
+    hp = (
+        ((2 * hp_base + hp_iv + (hp_ev // 4)) * level) // 100
+    ) + level + 10
+
+    attack = calculate_stat(
+        attack_base,
+        attack_iv,
+        attack_ev,
+        level,
+        get_nature_multiplier(nature, "attack")
+    )
+
+    defense = calculate_stat(
+        defense_base,
+        defense_iv,
+        defense_ev,
+        level,
+        get_nature_multiplier(nature, "defense")
+    )
+
+    sp_attack = calculate_stat(
+        sp_attack_base,
+        sp_attack_iv,
+        sp_attack_ev,
+        level,
+        get_nature_multiplier(nature, "sp_attack")
+    )
+
+    sp_defense = calculate_stat(
+        sp_defense_base,
+        sp_defense_iv,
+        sp_defense_ev,
+        level,
+        get_nature_multiplier(nature, "sp_defense")
+    )
+
+    speed = calculate_stat(
+        speed_base,
+        speed_iv,
+        speed_ev,
+        level,
+        get_nature_multiplier(nature, "speed")
+    )
+
+    return {
+        "hp": hp,
+        "attack": attack,
+        "defense": defense,
+        "sp_attack": sp_attack,
+        "sp_defense": sp_defense,
+        "speed": speed
+    }
+
+
+# =========================================================
+# MOVE + TYPE ANALYSIS
+# =========================================================
+
+TYPE_CHART = {
+    "normal": {
+        "rock": 0.5,
+        "ghost": 0.0,
+        "steel": 0.5
+    },
+    "fire": {
+        "fire": 0.5,
+        "water": 0.5,
+        "grass": 2.0,
+        "ice": 2.0,
+        "bug": 2.0,
+        "rock": 0.5,
+        "dragon": 0.5,
+        "steel": 2.0
+    },
+    "water": {
+        "fire": 2.0,
+        "water": 0.5,
+        "grass": 0.5,
+        "ground": 2.0,
+        "rock": 2.0,
+        "dragon": 0.5
+    },
+    "electric": {
+        "water": 2.0,
+        "electric": 0.5,
+        "grass": 0.5,
+        "ground": 0.0,
+        "flying": 2.0,
+        "dragon": 0.5
+    },
+    "grass": {
+        "fire": 0.5,
+        "water": 2.0,
+        "grass": 0.5,
+        "poison": 0.5,
+        "ground": 2.0,
+        "flying": 0.5,
+        "bug": 0.5,
+        "rock": 2.0,
+        "dragon": 0.5,
+        "steel": 0.5
+    },
+    "ice": {
+        "fire": 0.5,
+        "water": 0.5,
+        "grass": 2.0,
+        "ice": 0.5,
+        "ground": 2.0,
+        "flying": 2.0,
+        "dragon": 2.0,
+        "steel": 0.5
+    },
+    "fighting": {
+        "normal": 2.0,
+        "ice": 2.0,
+        "poison": 0.5,
+        "flying": 0.5,
+        "psychic": 0.5,
+        "bug": 0.5,
+        "rock": 2.0,
+        "ghost": 0.0,
+        "dark": 2.0,
+        "steel": 2.0,
+        "fairy": 0.5
+    },
+    "poison": {
+        "grass": 2.0,
+        "poison": 0.5,
+        "ground": 0.5,
+        "rock": 0.5,
+        "ghost": 0.5,
+        "steel": 0.0,
+        "fairy": 2.0
+    },
+    "ground": {
+        "fire": 2.0,
+        "electric": 2.0,
+        "grass": 0.5,
+        "poison": 2.0,
+        "flying": 0.0,
+        "bug": 0.5,
+        "rock": 2.0,
+        "steel": 2.0
+    },
+    "flying": {
+        "electric": 0.5,
+        "grass": 2.0,
+        "fighting": 2.0,
+        "bug": 2.0,
+        "rock": 0.5,
+        "steel": 0.5
+    },
+    "psychic": {
+        "fighting": 2.0,
+        "poison": 2.0,
+        "psychic": 0.5,
+        "steel": 0.5,
+        "dark": 0.0
+    },
+    "bug": {
+        "fire": 0.5,
+        "grass": 2.0,
+        "fighting": 0.5,
+        "poison": 0.5,
+        "flying": 0.5,
+        "psychic": 2.0,
+        "ghost": 0.5,
+        "dark": 2.0,
+        "steel": 0.5,
+        "fairy": 0.5
+    },
+    "rock": {
+        "fire": 2.0,
+        "ice": 2.0,
+        "fighting": 0.5,
+        "ground": 0.5,
+        "flying": 2.0,
+        "bug": 2.0,
+        "steel": 0.5
+    },
+    "ghost": {
+        "normal": 0.0,
+        "fire": 1.0,
+        "grass": 1.0,
+        "poison": 1.0,
+        "flying": 1.0,
+        "bug": 1.0,
+        "rock": 1.0,
+        "ghost": 2.0,
+        "dark": 0.5
+    },
+    "dragon": {
+        "dragon": 2.0,
+        "steel": 0.5,
+        "fairy": 0.0
+    },
+    "dark": {
+        "fighting": 0.5,
+        "psychic": 2.0,
+        "ghost": 2.0,
+        "dark": 0.5,
+        "fairy": 0.5
+    },
+    "steel": {
+        "fire": 0.5,
+        "water": 0.5,
+        "electric": 0.5,
+        "ice": 2.0,
+        "rock": 2.0,
+        "steel": 0.5,
+        "fairy": 2.0
+    },
+    "fairy": {
+        "fire": 0.5,
+        "fighting": 2.0,
+        "poison": 0.5,
+        "dragon": 2.0,
+        "dark": 2.0,
+        "steel": 0.5
+    }
+}
+
+
+def get_move_data(pokemon_data, move_name):
+    """
+    Find a move inside the Pokémon's master move list.
+    """
+
+    moves = pokemon_data.get("moves", [])
+
+    target = normalize_pokemon_name(move_name)
+
+    for move in moves:
+
+        if not isinstance(move, dict):
+            continue
+
+        name = move.get("name", "")
+
+        if normalize_pokemon_name(name) == target:
+            return move
+
+    return None
+
+
+def get_type_effectiveness(move_type, defender_types):
+    """
+    Calculates combined type effectiveness.
+    Supports dual-type Pokémon.
+    """
+
+    move_type = str(move_type).lower()
+
+    multiplier = 1.0
+
+    for defender_type in defender_types:
+
+        defender_type = str(
+            defender_type
+        ).lower()
+
+        multiplier *= TYPE_CHART.get(
+            move_type,
+            {}
+        ).get(
+            defender_type,
+            1.0
+        )
+
+    return multiplier
+
+
+def get_stab_multiplier(attacker_types, move_type):
+    """
+    Same-Type Attack Bonus.
+    """
+
+    move_type = str(move_type).lower()
+
+    attacker_types = [
+        str(pokemon_type).lower()
+        for pokemon_type in attacker_types
+    ]
+
+    if move_type in attacker_types:
+        return 1.5
+
+    return 1.0
+
+
+def get_move_category(move):
+    """
+    Returns Physical, Special or Status.
+    """
+
+    category = str(
+        move.get("category", "")
+    ).lower()
+
+    if category in ("physical", "special", "status"):
+        return category.title()
+
+    return "Status"
+
+
+# =========================================================
+# XERXES DAMAGE CALCULATION
+# =========================================================
+
+def calculate_damage_range(
+    attacker_data,
+    defender_data,
+    attacker_stats,
+    defender_stats,
+    move,
+    level=50
+):
+    """
+    Calculates the minimum and maximum damage
+    using the standard Pokémon damage formula.
+
+    Returns:
+        minimum_damage
+        maximum_damage
+        effectiveness
+        stab
+    """
+
+    if not move:
+        return {
+            "min_damage": 0,
+            "max_damage": 0,
+            "effectiveness": 1.0,
+            "stab": 1.0,
+            "category": "Status"
+        }
+
+    category = get_move_category(move)
+
+    # Status moves do not directly deal damage
+    if category == "Status":
+        return {
+            "min_damage": 0,
+            "max_damage": 0,
+            "effectiveness": 1.0,
+            "stab": 1.0,
+            "category": category
+        }
+
+    power = int(move.get("power", 0) or 0)
+
+    if power <= 0:
+        return {
+            "min_damage": 0,
+            "max_damage": 0,
+            "effectiveness": 1.0,
+            "stab": 1.0,
+            "category": category
+        }
+
+    attacker_types = attacker_data.get("types", [])
+    defender_types = defender_data.get("types", [])
+
+    move_type = str(
+        move.get("type", "normal")
+    ).lower()
+
+    # -----------------------------------------------------
+    # STAB
+    # -----------------------------------------------------
+
+    stab = get_stab_multiplier(
+        attacker_types,
+        move_type
+    )
+
+    # -----------------------------------------------------
+    # TYPE EFFECTIVENESS
+    # -----------------------------------------------------
+
+    effectiveness = get_type_effectiveness(
+        move_type,
+        defender_types
+    )
+
+    # -----------------------------------------------------
+    # SELECT ATTACK / DEFENSE STATS
+    # -----------------------------------------------------
+
+    if category == "Physical":
+
+        attack_stat = attacker_stats["attack"]
+        defense_stat = defender_stats["defense"]
+
+    else:
+
+        attack_stat = attacker_stats["sp_attack"]
+        defense_stat = defender_stats["sp_defense"]
+
+    # -----------------------------------------------------
+    # BASE DAMAGE
+    # -----------------------------------------------------
+
+    base_damage = (
+        (
+            (
+                (2 * level) // 5
+            ) + 2
+        ) * power * attack_stat
+    ) // defense_stat
+
+    base_damage = (
+        base_damage // 50
+    ) + 2
+
+    # -----------------------------------------------------
+    # STAB + TYPE EFFECTIVENESS
+    # -----------------------------------------------------
+
+    minimum_damage = int(
+        base_damage * stab * effectiveness * 217 / 255
+    )
+
+    maximum_damage = int(
+        base_damage * stab * effectiveness
+    )
+
+    # Damage cannot normally be below 1
+    if effectiveness > 0:
+
+        minimum_damage = max(
+            1,
+            minimum_damage
+        )
+
+        maximum_damage = max(
+            1,
+            maximum_damage
+        )
+
+    else:
+
+        minimum_damage = 0
+        maximum_damage = 0
+
+    return {
+        "min_damage": minimum_damage,
+        "max_damage": maximum_damage,
+        "effectiveness": effectiveness,
+        "stab": stab,
+        "category": category
+    }
+
+
+# =========================================================
+# DAMAGE CALCULATOR FORM PARSER
+# =========================================================
+
+def parse_damage_form(text):
+    """
+    Parses the XERXES /datadamage calculator template.
+    """
+
+    if not text:
+        return None
+
+    attacker_match = re.search(
+        r"---\s*𝐀𝐓𝐓𝐀𝐂𝐊𝐄𝐑\s*---(.*?)(?=---\s*𝐃𝐄𝐅𝐄𝐍𝐃𝐄𝐑\s*---)",
+        text,
+        re.IGNORECASE | re.DOTALL
+    )
+
+    defender_match = re.search(
+        r"---\s*𝐃𝐄𝐅𝐄𝐍𝐃𝐄𝐑\s*---(.*)",
+        text,
+        re.IGNORECASE | re.DOTALL
+    )
+
+    if not attacker_match or not defender_match:
+        return None
+
+    attacker_text = attacker_match.group(1)
+    defender_text = defender_match.group(1)
+
+    def get_value(block, field):
+        match = re.search(
+            rf"{field}\s*:\s*(.*)",
+            block,
+            re.IGNORECASE
+        )
+
+        if not match:
+            return ""
+
+        return match.group(1).strip()
+
+    def parse_iv_ev(block, stat):
+        value = get_value(
+            block,
+            rf"{stat}\s+IV/EV"
+        )
+
+        match = re.match(
+            r"(\d+)\s*,\s*(\d+)",
+            value
+        )
+
+        if not match:
+            return 31, 0
+
+        return (
+            int(match.group(1)),
+            int(match.group(2))
+        )
+
+    def parse_section(block):
+        hp_iv, hp_ev = parse_iv_ev(
+            block,
+            "HP"
+        )
+
+        atk_iv, atk_ev = parse_iv_ev(
+            block,
+            "ATK"
+        )
+
+        defense_iv, defense_ev = parse_iv_ev(
+            block,
+            "DEF"
+        )
+
+        spa_iv, spa_ev = parse_iv_ev(
+            block,
+            "SPA"
+        )
+
+        spd_iv, spd_ev = parse_iv_ev(
+            block,
+            "SPD"
+        )
+
+        spe_iv, spe_ev = parse_iv_ev(
+            block,
+            "SPE"
+        )
+
+        return {
+            "name": get_value(
+                block,
+                "Name"
+            ),
+
+            "nature": get_value(
+                block,
+                "Nature"
+            ),
+
+            "move": get_value(
+                block,
+                "Move"
+            ),
+
+            "ivs": {
+                "hp": hp_iv,
+                "attack": atk_iv,
+                "defense": defense_iv,
+                "sp_attack": spa_iv,
+                "sp_defense": spd_iv,
+                "speed": spe_iv
+            },
+
+            "evs": {
+                "hp": hp_ev,
+                "attack": atk_ev,
+                "defense": defense_ev,
+                "sp_attack": spa_ev,
+                "sp_defense": spd_ev,
+                "speed": spe_ev
+            }
+        }
+
+    return {
+        "attacker": parse_section(
+            attacker_text
+        ),
+        "defender": parse_section(
+            defender_text
+        )
+    }
+
+
+# =========================================================
+# XERXES DAMAGE ANALYZER
+# =========================================================
+
+def analyze_damage_calculation(form_data, level=50):
+    """
+    Connects the damage form parser with
+    Pokémon data, stat calculation and damage calculation.
+    """
+
+    if not form_data:
+        return None
+
+    attacker_input = form_data.get("attacker", {})
+    defender_input = form_data.get("defender", {})
+
+    attacker_name = attacker_input.get("name", "").strip()
+    defender_name = defender_input.get("name", "").strip()
+    move_name = attacker_input.get("move", "").strip()
+
+    if not attacker_name or not defender_name or not move_name:
+        return {
+            "error": "Missing attacker, defender or move."
+        }
+
+    # -----------------------------------------------------
+    # FIND POKÉMON MASTER DATA
+    # -----------------------------------------------------
+
+    attacker_data = get_pokemon(attacker_name)
+    defender_data = get_pokemon(defender_name)
+
+    if not attacker_data:
+        return {
+            "error": f"Attacker Pokémon '{attacker_name}' was not found."
+        }
+
+    if not defender_data:
+        return {
+            "error": f"Defender Pokémon '{defender_name}' was not found."
+        }
+
+    # -----------------------------------------------------
+    # FIND MOVE
+    # -----------------------------------------------------
+
+    move = get_move_data(
+        attacker_data,
+        move_name
+    )
+
+    if not move:
+        return {
+            "error": (
+                f"Move '{move_name}' was not found "
+                f"for {attacker_data.get('name', attacker_name)}."
+            )
+        }
+
+    # -----------------------------------------------------
+    # CALCULATE ATTACKER STATS
+    # -----------------------------------------------------
+
+    attacker_stats = calculate_pokemon_stats(
+        attacker_data,
+        attacker_input.get("ivs", {}),
+        attacker_input.get("evs", {}),
+        level,
+        attacker_input.get("nature", "Hardy")
+    )
+
+    # -----------------------------------------------------
+    # CALCULATE DEFENDER STATS
+    # -----------------------------------------------------
+
+    defender_stats = calculate_pokemon_stats(
+        defender_data,
+        defender_input.get("ivs", {}),
+        defender_input.get("evs", {}),
+        level,
+        defender_input.get("nature", "Hardy")
+    )
+
+    # -----------------------------------------------------
+    # CALCULATE DAMAGE
+    # -----------------------------------------------------
+
+    damage = calculate_damage_range(
+        attacker_data,
+        defender_data,
+        attacker_stats,
+        defender_stats,
+        move,
+        level
+    )
+
+    # -----------------------------------------------------
+    # DAMAGE PERCENTAGE
+    # -----------------------------------------------------
+
+    defender_hp = defender_stats["hp"]
+
+    if defender_hp > 0:
+
+        min_percent = (
+            damage["min_damage"] /
+            defender_hp
+        ) * 100
+
+        max_percent = (
+            damage["max_damage"] /
+            defender_hp
+        ) * 100
+
+    else:
+
+        min_percent = 0
+        max_percent = 0
+
+    # -----------------------------------------------------
+    # EFFECTIVENESS TEXT
+    # -----------------------------------------------------
+
+    effectiveness = damage["effectiveness"]
+
+    if effectiveness == 0:
+        effectiveness_text = "No Effect"
+
+    elif effectiveness >= 4:
+        effectiveness_text = "Extremely Effective"
+
+    elif effectiveness == 2:
+        effectiveness_text = "Super Effective"
+
+    elif effectiveness > 1:
+        effectiveness_text = "Super Effective"
+
+    elif effectiveness == 0.5:
+        effectiveness_text = "Not Very Effective"
+
+    elif effectiveness < 1:
+        effectiveness_text = "Not Very Effective"
+
+    else:
+        effectiveness_text = "Normal Effectiveness"
+
+    return {
+        "attacker": attacker_data,
+        "defender": defender_data,
+        "move": move,
+
+        "attacker_input": attacker_input,
+        "defender_input": defender_input,
+
+        "attacker_stats": attacker_stats,
+        "defender_stats": defender_stats,
+
+        "damage": damage,
+
+        "defender_hp": defender_hp,
+
+        "min_percent": min_percent,
+        "max_percent": max_percent,
+
+        "effectiveness_text": effectiveness_text
+        }
+
+
+# =========================================================
+# XERXES DAMAGE FORM ANALYSIS
+# =========================================================
+
+async def process_damage_form(update, context):
+
+    if not update.message or not update.message.text:
+        return
+
+    text = update.message.text
+
+    # Check whether this is a damage calculator form
+    if "--- 𝐀𝐓𝐓𝐀𝐂𝐊𝐄𝐑 ---" not in text:
+        return
+
+    if "--- 𝐃𝐄𝐅𝐄𝐍𝐃𝐄𝐑 ---" not in text:
+        return
+
+    # -----------------------------------------------------
+    # PARSE FORM
+    # -----------------------------------------------------
+
+    form_data = parse_damage_form(text)
+
+    if not form_data:
+        await update.message.reply_text(
+            "❌ 𝐈𝐧𝐯𝐚𝐥𝐢𝐝 𝐃𝐚𝐦𝐚𝐠𝐞 𝐂𝐚𝐥𝐜𝐮𝐥𝐚𝐭𝐨𝐫 𝐟𝐨𝐫𝐦.\n\n"
+            "Please copy the original template from /datadamage "
+            "and fill it in without changing the field names."
+        )
+        return
+
+    # -----------------------------------------------------
+    # ANALYZE
+    # -----------------------------------------------------
+
+    result = analyze_damage_calculation(
+        form_data,
+        level=50
+    )
+
+    if not result:
+        await update.message.reply_text(
+            "❌ 𝐔𝐧𝐚𝐛𝐥𝐞 𝐭𝐨 𝐚𝐧𝐚𝐥𝐲𝐳𝐞 𝐭𝐡𝐢𝐬 𝐟𝐨𝐫𝐦."
+        )
+        return
+
+    # -----------------------------------------------------
+    # ERROR
+    # -----------------------------------------------------
+
+    if result.get("error"):
+
+        await update.message.reply_text(
+            f"❌ {result['error']}"
+        )
+        return
+
+    # -----------------------------------------------------
+    # DATA
+    # -----------------------------------------------------
+
+    attacker = result["attacker"]
+    defender = result["defender"]
+    move = result["move"]
+
+    attacker_stats = result["attacker_stats"]
+    defender_stats = result["defender_stats"]
+
+    damage = result["damage"]
+
+    min_damage = damage["min_damage"]
+    max_damage = damage["max_damage"]
+
+    min_percent = result["min_percent"]
+    max_percent = result["max_percent"]
+
+    effectiveness_text = result["effectiveness_text"]
+
+    stab = damage["stab"]
+    effectiveness = damage["effectiveness"]
+
+    # -----------------------------------------------------
+    # EFFECTIVENESS DISPLAY
+    # -----------------------------------------------------
+
+    if effectiveness == 0:
+        effectiveness_display = "🚫 No Effect"
+
+    elif effectiveness >= 4:
+        effectiveness_display = "💥 4× Extremely Effective"
+
+    elif effectiveness == 2:
+        effectiveness_display = "🔥 2× Super Effective"
+
+    elif effectiveness > 1:
+        effectiveness_display = f"🔥 {effectiveness:g}× Super Effective"
+
+    elif effectiveness == 0.5:
+        effectiveness_display = "🛡️ 0.5× Not Very Effective"
+
+    elif effectiveness < 1:
+        effectiveness_display = (
+            f"🛡️ {effectiveness:g}× Not Very Effective"
+        )
+
+    else:
+        effectiveness_display = "⚪ 1× Normal"
+
+    # -----------------------------------------------------
+    # STAB DISPLAY
+    # -----------------------------------------------------
+
+    if stab == 1.5:
+        stab_display = "✅ STAB ×1.5"
+    else:
+        stab_display = "➖ No STAB"
+
+    # -----------------------------------------------------
+    # RESULT
+    # -----------------------------------------------------
+
+    result_text = (
+        "<blockquote>"
+        "╭━━━━━━━━━━━━━━━━━━━━╮\n"
+        "     ⚔️ 𝐃𝐀𝐌𝐀𝐆𝐄 𝐑𝐄𝐒𝐔𝐋𝐓\n"
+        "╰━━━━━━━━━━━━━━━━━━━━╯\n\n"
+
+        f"⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤𝐞𝐫: {attacker['name']}\n"
+        f"🛡️ 𝐃𝐞𝐟𝐞𝐧𝐝𝐞𝐫: {defender['name']}\n"
+        f"🎯 𝐌𝐨𝐯𝐞: {move.get('name', 'Unknown')}\n"
+        f"◈ 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲: {move.get('category', 'Unknown')}\n"
+        f"⚡ 𝐏𝐨𝐰𝐞𝐫: {move.get('power', '—')}\n\n"
+
+        "📊 𝐁𝐀𝐓𝐓𝐋𝐄 𝐒𝐓𝐀𝐓𝐒\n"
+        f"⚔️ Attack: {attacker_stats['attack']}\n"
+        f"🔮 Sp. Attack: {attacker_stats['sp_attack']}\n"
+        f"🛡️ Defense: {defender_stats['defense']}\n"
+        f"🔮 Sp. Defense: {defender_stats['sp_defense']}\n"
+        f"❤️ Defender HP: {defender_stats['hp']}\n\n"
+
+        "💥 𝐃𝐀𝐌𝐀𝐆𝐄\n"
+        f"⚔️ Damage Range: {min_damage} — {max_damage}\n"
+        f"❤️ HP Damage: {min_percent:.1f}% — {max_percent:.1f}%\n\n"
+
+        "🧮 𝐌𝐎𝐃𝐈𝐅𝐈𝐄𝐑𝐒\n"
+        f"{stab_display}\n"
+        f"{effectiveness_display}\n\n"
+
+        f"🎯 𝐄𝐅𝐅𝐄𝐂𝐓: {effectiveness_text}\n"
+        f"📈 𝐋𝐞𝐯𝐞𝐥: 50"
+        "</blockquote>"
+    )
+
+    await update.message.reply_text(
+        result_text,
+        parse_mode="HTML"
+        )
+
+
+# =========================================================
 # TRAINER PROFILE COMMAND
 # =========================================================
 
@@ -10789,7 +11810,7 @@ def main():
     app.add_handler(CommandHandler("datadamage", datadamage))
     app.add_handler(CommandHandler("buildpoke", buildpoke))
     app.add_handler(CommandHandler("datatype", datatype))
-
+    
     app.add_handler(
         CallbackQueryHandler(
             dex_callback,
@@ -10865,150 +11886,6 @@ def main():
             pattern="^(start_commands|start_main|start_updates|commands_management|commands_pokemon|commands_music)$"
         )
     )
-   
-    app.add_handler(CommandHandler("pokedex", personal_pokedex)) 
-    app.add_handler(CommandHandler("trainer", trainer))
-    app.add_handler(CommandHandler("status", status))
-    app.add_handler(CommandHandler("bag", bag))
-  
-    app.add_handler(
-        CallbackQueryHandler(
-            bag_callback,
-            pattern="^bag_"
-        )
-    )
- 
-    app.add_handler(CommandHandler("stopdex", stopdex))
-    app.add_handler(CommandHandler("ondex", ondex))
-    pokedex_registration = ConversationHandler(
-    entry_points=[
-        CommandHandler("startpokedex", start_pokedex),
-        CallbackQueryHandler(
-            start_pokemon_journey,
-            pattern="^start_pokemon_journey$"
-        )
-    ],
-        states={
-            TRAINER_NAME: [
-                MessageHandler(
-                    filters.TEXT & ~filters.COMMAND,
-                    trainer_name
-                )
-            ],
-            TRAINER_HOMETOWN: [
-                MessageHandler(
-                    filters.TEXT & ~filters.COMMAND,
-                    trainer_hometown
-                )
-            ],
-            TRAINER_REGION: [
-                CallbackQueryHandler(
-                    trainer_region,
-                    pattern="^region_"
-                )
-            ]
-        },
-        fallbacks=[]
-    )
-
-    app.add_handler(pokedex_registration)
-
-    app.add_handler(CommandHandler("id", user_id))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("ban", ban))
-    app.add_handler(CommandHandler("unban", unban))
-    app.add_handler(CommandHandler("kick", kick))
-    app.add_handler(CommandHandler("mute", mute))
-    app.add_handler(CommandHandler("unmute", unmute))
-    app.add_handler(CommandHandler("pin", pin))
-    app.add_handler(CommandHandler("unpin", unpin))
-
-    app.add_handler(CommandHandler("warn", warn))
-    app.add_handler(CommandHandler("warnings", warnings))
-    app.add_handler(CommandHandler("resetwarns", resetwarns))
-
-    app.add_handler(CommandHandler("antilink", antilink))
-    app.add_handler(CommandHandler("antispam", antispam))
-    app.add_handler(CommandHandler("dexoverlay", dexoverlay)) 
-    app.add_handler(CommandHandler("broadcast", broadcast))
-    app.add_handler(CommandHandler("matrix", matrix))
-    
-    app.add_handler(
-        CallbackQueryHandler(
-            personal_pokedex_suggestion_callback,
-            pattern=r"^personal_suggest_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            personal_back_callback,
-            pattern=r"^personal_back_"
-        )
-    )
-    
-    app.add_handler(
-        CallbackQueryHandler(
-            dexoverlay_callback,
-            pattern=r"^dexoverlay_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            matrix_callback,
-            pattern=r"^matrix_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            personal_pokemon_callback,
-            pattern=r"^personal_poke_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            personal_ivs_callback,
-            pattern=r"^personal_ivs_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            personal_evs_callback,
-            pattern=r"^personal_evs_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            personal_moves_callback,
-            pattern=r"^personal_moves_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            personal_info_callback,
-            pattern=r"^personal_info_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            personal_pokedex_back_callback,
-            pattern=r"^personal_pokedex_back$"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            starter_selected,
-            pattern=r"^starter_(bulbasaur|charmander|squirtle|pikachu|eevee|riolu|ralts|axew)$"
-        )
-    )
     
     app.add_handler(CommandHandler("filter", filter_command))
     app.add_handler(CommandHandler("filters", filters_command))
@@ -11023,6 +11900,13 @@ def main():
         MessageHandler(
             filters.StatusUpdate.NEW_CHAT_MEMBERS,
             welcome
+        )
+    )
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT,
+            process_damage_form
         )
     )
     
