@@ -9140,21 +9140,22 @@ async def show_start_menu(bot, chat_id, message_id=None):
     )
 
     if message_id:
-        await bot.edit_message_text(
+        await bot.edit_message_caption(
             chat_id=chat_id,
             message_id=message_id,
-            text=text,
+            caption=text,
             reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode="HTML"
         )
     else:
-        await bot.send_message(
+        await bot.send_photo(
             chat_id=chat_id,
-            text=text,
+            photo="AgACAgUAAxkBAAIGlmqpPTnBMYl7U2qj_ckff_e0_UeYAAKYGGsboSpJVWdv4ayEqgodAQADAgADeQADPQQ",
+            caption=text,
             reply_markup=InlineKeyboardMarkup(keyboard),
             parse_mode="HTML"
         )
-
+    
 
 # =========================================================
 # START
