@@ -2798,7 +2798,7 @@ def calculate_pokemon_stats(data, ivs, evs, level, nature):
     from Base Stats + IVs + EVs + Level + Nature.
     """
 
-    base_stats = data.get("base_stats", {})
+    base_stats = data.get("stats", {})
 
     hp_base = int(base_stats.get("hp", 0))
     attack_base = int(base_stats.get("attack", 0))
