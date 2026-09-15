@@ -2800,13 +2800,13 @@ def calculate_pokemon_stats(data, ivs, evs, level, nature):
 
     base_stats = data.get("stats", {})
 
-    hp_base = int(base_stats.get("hp", 0))
-    attack_base = int(base_stats.get("attack", 0))
-    defense_base = int(base_stats.get("defense", 0))
-    sp_attack_base = int(base_stats.get("sp_attack", 0))
-    sp_defense_base = int(base_stats.get("sp_defense", 0))
-    speed_base = int(base_stats.get("speed", 0))
-
+    hp_base = int(base_stats.get("hp", {}).get("base", 0))
+    attack_base = int(base_stats.get("attack", {}).get("base", 0))
+    defense_base = int(base_stats.get("defense", {}).get("base", 0))
+    sp_attack_base = int(base_stats.get("sp_attack", {}).get("base", 0))
+    sp_defense_base = int(base_stats.get("sp_defense", {}).get("base", 0))
+    speed_base = int(base_stats.get("speed", {}).get("base", 0))
+ 
     hp_iv = int(ivs.get("hp", 0))
     attack_iv = int(ivs.get("attack", 0))
     defense_iv = int(ivs.get("defense", 0))
