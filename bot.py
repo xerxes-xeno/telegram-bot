@@ -3137,7 +3137,7 @@ def calculate_damage_range(
     attacker_stats,
     defender_stats,
     move,
-    level=50
+    level=100
 ):
     """
     Calculates the minimum and maximum damage
@@ -3417,7 +3417,7 @@ def parse_damage_form(text):
 # XERXES DAMAGE ANALYZER
 # =========================================================
 
-def analyze_damage_calculation(form_data, level=50):
+def analyze_damage_calculation(form_data, level=100):
     """
     Connects the damage form parser with
     Pokémon data, stat calculation and damage calculation.
@@ -3619,7 +3619,7 @@ async def process_damage_form(update, context):
 
     result = analyze_damage_calculation(
         form_data,
-        level=50
+        level=100
     )
 
     if not result:
@@ -3714,7 +3714,9 @@ async def process_damage_form(update, context):
         f"🎯 𝐌𝐨𝐯𝐞: {move.get('name', 'Unknown')}\n"
         f"◈ 𝐂𝐚𝐭𝐞𝐠𝐨𝐫𝐲: {move.get('category', 'Unknown')}\n"
         f"⚡ 𝐏𝐨𝐰𝐞𝐫: {move.get('power', '—')}\n\n"
+        "</blockquote>"
 
+        "<blockquote>"
         "📊 𝐁𝐀𝐓𝐓𝐋𝐄 𝐒𝐓𝐀𝐓𝐒\n"
         f"⚔️ Attack: {attacker_stats['attack']}\n"
         f"🔮 Sp. Attack: {attacker_stats['sp_attack']}\n"
@@ -3731,7 +3733,7 @@ async def process_damage_form(update, context):
         f"{effectiveness_display}\n\n"
 
         f"🎯 𝐄𝐅𝐅𝐄𝐂𝐓: {effectiveness_text}\n"
-        f"📈 𝐋𝐞𝐯𝐞𝐥: 50"
+        f"📈 𝐋𝐞𝐯𝐞𝐥: 100"
         "</blockquote>"
     )
 
