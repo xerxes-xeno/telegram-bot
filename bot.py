@@ -4973,55 +4973,75 @@ async def helpdex_callback(update, context):
 
     elif query.data == "dex_ev":
 
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "❤️ 𝐇𝐏",
+                    callback_data="ev_hp"
+                ),
+                InlineKeyboardButton(
+                    "⚡ 𝐒𝐩𝐞𝐞𝐝",
+                    callback_data="ev_speed"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "⚔️ 𝐀𝐭𝐭𝐚𝐜𝐤",
+                    callback_data="ev_attack"
+                ),
+                InlineKeyboardButton(
+                    "🛡️ 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                    callback_data="ev_defense"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🔮 𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
+                    callback_data="ev_spattack"
+                ),
+                InlineKeyboardButton(
+                    "✨ 𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
+                    callback_data="ev_spdefense"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "❓ 𝐇𝐨𝐰 𝐄𝐕𝐬 𝐖𝐨𝐫𝐤",
+                    callback_data="ev_how"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "◀️ 𝐁𝐚𝐜𝐤 𝐭𝐨 𝐇𝐞𝐥𝐩𝐝𝐞𝐱",
+                    callback_data="dex_help_main"
+                )
+            ]
+        ]
+
+        text = (
+            "<blockquote>"
+            "🏋️ <b>𝐄𝐕 𝐓𝐑𝐀𝐈𝐍𝐈𝐍𝐆 𝐀𝐑𝐂𝐇𝐈𝐕𝐄</b>\n\n"
+
+            "Effort Values, or <b>EVs</b>, are hidden training "
+            "points that influence how a Pokémon's stats develop.\n\n"
+
+            "Every training choice matters. By targeting specific "
+            "stats, Trainers can shape their Pokémon for different "
+            "battle roles, strategies, and team compositions.\n\n"
+
+            "📖 <b>TRAINING PRINCIPLE</b>\n"
+            "Defeat the right Pokémon, accumulate the desired EVs, "
+            "and build a stat spread suited to your strategy.\n\n"
+
+            "⤷ <b>Select a stat below to access its EV Training "
+            "Archive.</b>"
+            "</blockquote>"
+        )
+        
         await query.edit_message_caption(
-            caption=(
-                "🏋️ 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐆𝐮𝐢𝐝𝐞\n\n"
-                "Select a stat to see Pokémon used for EV training."
-            ),
-            reply_markup=InlineKeyboardMarkup([
-                [
-                    InlineKeyboardButton(
-                        "𝐇𝐏",
-                        callback_data="ev_hp"
-                    ),
-                    InlineKeyboardButton(
-                        "𝐀𝐭𝐭𝐚𝐜𝐤",
-                        callback_data="ev_attack"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
-                        callback_data="ev_defense"
-                    ),
-                    InlineKeyboardButton(
-                        "𝐒𝐩. 𝐀𝐭𝐭𝐚𝐜𝐤",
-                        callback_data="ev_spattack"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "𝐒𝐩. 𝐃𝐞𝐟𝐞𝐧𝐬𝐞",
-                        callback_data="ev_spdefense"
-                    ),
-                    InlineKeyboardButton(
-                        "𝐒𝐩𝐞𝐞𝐝",
-                        callback_data="ev_speed"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "𝐇𝐨𝐰 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐖𝐨𝐫𝐤𝐬",
-                        callback_data="ev_how"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "◀️ 𝐁𝐚𝐜𝐤",
-                        callback_data="dex_help_main"
-                    )
-                ]
-            ])
+            caption=text,
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
     elif query.data == "dex_tm":
@@ -5293,13 +5313,65 @@ async def datadamage(update, context):
 
 
 # =========================================================
-# POKEMON BUILD FORM
+# 🧬 POKÉMON BUILD FORM
 # =========================================================
 
 async def buildpoke(update, context):
 
+    # -----------------------------------------------------
+    # Pokémon name required
+    # -----------------------------------------------------
+
+    if not context.args:
+        await update.message.reply_text(
+            "🧬 <b>𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐁𝐔𝐈𝐋𝐃 𝐄𝐍𝐆𝐈𝐍𝐄</b>\n\n"
+            "<blockquote>"
+            "Please provide a Pokémon name to create your build."
+            "</blockquote>\n\n"
+            "⤷ <b>Example:</b>\n"
+            "<code>/buildpoke Charizard</code>",
+            parse_mode="HTML"
+        )
+        return
+
+    pokemon_name = " ".join(context.args).strip()
+
+    # -----------------------------------------------------
+    # Check official Pokémon database
+    # -----------------------------------------------------
+
+    pokemon_data = find_pokemon_for_build(pokemon_name)
+
+    if pokemon_data is None:
+        await update.message.reply_text(
+            "❌ <b>𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐍𝐎𝐓 𝐅𝐎𝐔𝐍𝐃</b>\n\n"
+            f"<blockquote>"
+            f"<b>{pokemon_name.title()}</b> "
+            "is not available in the Pokémon database."
+            "</blockquote>\n\n"
+            "Please enter a valid Pokémon name and try again.",
+            parse_mode="HTML"
+        )
+        return
+
+    # -----------------------------------------------------
+    # Create build session
+    # -----------------------------------------------------
+
+    user_id = update.effective_user.id
+
+    build_sessions[user_id] = create_build_session(
+        user_id,
+        pokemon_name,
+        pokemon_data
+    )
+
+    # -----------------------------------------------------
+    # Pokémon Build Form
+    # -----------------------------------------------------
+
     await update.message.reply_text(
-        "📋 𝐏𝐎𝐊𝐄𝐌𝐎𝐍 𝐁𝐔𝐈𝐋𝐃 𝐅𝐎𝐑𝐌\n\n"
+        "📋 <b>𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐁𝐔𝐈𝐋𝐃 𝐅𝐎𝐑𝐌</b>\n\n"
 
         "<blockquote>"
         "𝐂𝐨𝐩𝐲 𝐚𝐧𝐝 𝐩𝐚𝐬𝐭𝐞 𝐭𝐡𝐢𝐬 𝐭𝐞𝐦𝐩𝐥𝐚𝐭𝐞, "
@@ -5308,7 +5380,7 @@ async def buildpoke(update, context):
 
         "<pre>"
         "--- 𝐁𝐔𝐈𝐋𝐃 ---\n"
-        "Name : \n"
+        f"Name : {pokemon_name.title()}\n"
         "Nature : \n"
         "HP IV/EV : 31 , 0\n"
         "ATK IV/EV : 31 , 0\n"
@@ -5316,10 +5388,12 @@ async def buildpoke(update, context):
         "SPA IV/EV : 31 , 0\n"
         "SPD IV/EV : 31 , 0\n"
         "SPE IV/EV : 31 , 0"
-        "</pre>",
+        "</pre>\n\n"
 
+        "📌 <b>𝐄𝐗𝐀𝐌𝐏𝐋𝐄</b>\n"
+        "<code>/buildpoke Charizard</code>",
         parse_mode="HTML"
-)
+    )
 
 
 # =========================================================
