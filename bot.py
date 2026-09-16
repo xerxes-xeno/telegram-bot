@@ -1359,7 +1359,7 @@ def generate_build_stats(build):
     # RESOLVE POKÉMON
     # -----------------------------------------------------
 
-    pokemon = resolve_build_pokemon(build)
+    resolve_build_pokemon_safe(build)
 
     if not pokemon:
         return None
@@ -6694,7 +6694,7 @@ async def buildpoke(update, context):
         "</blockquote>\n\n"
 
         "<pre>"
-        "--- 𝐁𝐔𝐈𝐋𝐃 ---\n"
+        "--- BUILD ---\n"
         f"Name : {pokemon_name.title()}\n"
         "Nature : \n"
         "Level : \n"
