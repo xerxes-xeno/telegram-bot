@@ -133,7 +133,176 @@ needs_pokemon_import = (
     )
 )
 
-    
+
+# =========================================================
+# 🧬 BUILD ENGINE — POKÉMON DATA
+# =========================================================
+
+def load_pokemon_data():
+    try:
+        with open(POKEMON_DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def find_pokemon_for_build(pokemon_name):
+    pokemon_data = load_pokemon_data()
+
+    name = pokemon_name.strip().lower()
+
+    for key, data in pokemon_data.items():
+        if str(key).strip().lower() == name:
+            return data
+
+    return None
+
+
+# =========================================================
+# 🧬 BUILD ENGINE — /BUILDPOKE
+# =========================================================
+
+async def buildpoke(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    # Pokémon name check
+    if not context.args:
+        await update.message.reply_text(
+            "🧬 <b>Pokémon Build Engine</b>\n\n"
+            "Use the command like this:\n"
+            "<code>/buildpoke Charizard</code>\n\n"
+            "Build your Pokémon with Nature, Ability, "
+            "Held Item, IVs, EVs, Moves and Role.",
+            parse_mode="HTML"
+        )
+        return
+
+    pokemon_name = " ".join(context.args).strip()
+
+    # Find Pokémon in official database
+    pokemon_data = find_pokemon_for_build(pokemon_name)
+
+    if pokemon_data is None:
+        await update.message.reply_text(
+            "❌ <b>Pokémon Not Found</b>\n\n"
+            f"I couldn't find <b>{pokemon_name.title()}</b> "
+            "in the Pokémon database.\n\n"
+            "Please check the Pokémon name and try again.",
+            parse_mode="HTML"
+        )
+        return
+
+    # Create build session
+    build_sessions[user_id] = create_build_session(
+        user_id,
+        pokemon_name,
+        pokemon_data
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🌿 Nature",
+                callback_data="build_nature"
+            ),
+            InlineKeyboardButton(
+                "🧬 Ability",
+                callback_data="build_ability"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🎒 Held Item",
+                callback_data="build_item"
+            ),
+            InlineKeyboardButton(
+                "📊 IV / EV",
+                callback_data="build_ivev"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "⚔️ Moveset",
+                callback_data="build_moves"
+            ),
+            InlineKeyboardButton(
+                "🎯 Role",
+                callback_data="build_role"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "📋 Build Summary",
+                callback_data="build_summary"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "❌ Cancel",
+                callback_data="build_cancel"
+            )
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        "🧬 <b>POKÉMON BUILD ENGINE</b>\n\n"
+        f"🔹 Pokémon: <b>{pokemon_name.title()}</b>\n\n"
+        "Configure your competitive build using the options below.\n\n"
+        "🌿 Nature\n"
+        "🧬 Ability\n"
+        "🎒 Held Item\n"
+        "📊 IV / EV\n"
+        "⚔️ Moveset\n"
+        "🎯 Role\n\n"
+        "Choose a component to begin.",
+        parse_mode="HTML",
+        reply_markup=reply_markup
+    )
+
+
+# =========================================================
+# 🧬 POKÉMON BUILD ENGINE
+# =========================================================
+
+build_sessions = {}
+
+
+def create_build_session(user_id, pokemon_name, pokemon_data):
+    return {
+        "user_id": user_id,
+        "pokemon": pokemon_name,
+        "pokemon_data": pokemon_data,
+
+        "nature": None,
+        "ability": None,
+        "held_item": None,
+
+        "ivs": {
+            "hp": 31,
+            "atk": 31,
+            "def": 31,
+            "spa": 31,
+            "spd": 31,
+            "spe": 31,
+        },
+
+        "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0,
+        },
+
+        "moves": [],
+        "role": None,
+        "objective": None,
+    }
+
+
 # =========================================================
 # AUTO POKEMON IMPORT
 # =========================================================
