@@ -932,7 +932,10 @@ async def build_form_message(update, context):
     # ONLY PROCESS BUILD FORMS
     # -----------------------------------------------------
 
-    if "--- BUILD ---" not in text:
+    if (
+        "--- BUILD ---" not in text
+        and "--- 𝐁𝐔𝐈𝐋𝐃 ---" not in text
+    ):
         return
 
     # -----------------------------------------------------
@@ -13721,13 +13724,13 @@ def main():
     # =====================================================
     # BUILD FORM MESSAGE
     # =====================================================
-    # Only messages containing "--- BUILD ---"
-    # are processed by the Build Engine.
 
     app.add_handler(
         MessageHandler(
             filters.TEXT
-            & filters.Regex(r"(?s).*--- BUILD ---.*"),
+            & filters.Regex(
+                r"(?s).*---\s*(?:BUILD|𝐁𝐔𝐈𝐋𝐃)\s*---.*"
+            ),
             build_form_message
         )
     )
