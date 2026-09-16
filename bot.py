@@ -651,6 +651,1318 @@ def create_build_session(user_id, pokemon_name, pokemon_data):
 
 
 # =========================================================
+# 🧬 BUILD FORM PARSER — STEP 1
+# =========================================================
+
+def parse_build_form(text):
+
+    lines = text.strip().splitlines()
+
+    build = {
+        "name": None,
+        "nature": None,
+        "level": None,
+        "iv": {},
+        "ev": {}
+    }
+
+    for line in lines:
+
+        line = line.strip()
+
+        if not line:
+            continue
+
+        # -------------------------------------------------
+        # NAME
+        # -------------------------------------------------
+
+        if line.lower().startswith("name"):
+            if ":" in line:
+                build["name"] = line.split(":", 1)[1].strip()
+
+        # -------------------------------------------------
+        # NATURE
+        # -------------------------------------------------
+
+        elif line.lower().startswith("nature"):
+            if ":" in line:
+                build["nature"] = line.split(":", 1)[1].strip()
+
+        # -------------------------------------------------
+        # LEVEL
+        # -------------------------------------------------
+
+        elif line.lower().startswith("level"):
+            if ":" in line:
+                build["level"] = line.split(":", 1)[1].strip()
+
+        # -------------------------------------------------
+        # IV / EV STATS
+        # -------------------------------------------------
+
+        stat_map = {
+            "hp": "hp",
+            "atk": "atk",
+            "def": "def",
+            "spa": "spa",
+            "spd": "spd",
+            "spe": "spe"
+        }
+
+        for prefix, stat in stat_map.items():
+
+            if line.lower().startswith(prefix + " iv/ev"):
+
+                if ":" not in line:
+                    break
+
+                value = line.split(":", 1)[1].strip()
+
+                parts = value.split(",")
+
+                if len(parts) != 2:
+                    break
+
+                iv_value = parts[0].strip()
+                ev_value = parts[1].strip()
+
+                build["iv"][stat] = iv_value
+                build["ev"][stat] = ev_value
+
+                break
+
+    return build
+
+
+# =========================================================
+# 🧬 BUILD FORM VALIDATOR — STEP 2
+# =========================================================
+
+VALID_NATURES = {
+    "Hardy",
+    "Lonely",
+    "Brave",
+    "Adamant",
+    "Naughty",
+
+    "Bold",
+    "Docile",
+    "Relaxed",
+    "Impish",
+    "Lax",
+
+    "Timid",
+    "Hasty",
+    "Serious",
+    "Jolly",
+    "Naive",
+
+    "Bashful",
+    "Quirky",
+    "Sassy",
+    "Careful",
+    "Rash",
+
+    "Modest",
+    "Mild",
+    "Quiet",
+    "Gentle",
+    "Calm",
+}
+
+
+def validate_build(build):
+
+    errors = []
+
+    # -----------------------------------------------------
+    # NAME
+    # -----------------------------------------------------
+
+    if not build.get("name"):
+        errors.append(
+            "❌ Pokémon name is missing."
+        )
+
+    # -----------------------------------------------------
+    # NATURE
+    # -----------------------------------------------------
+
+    nature = build.get("nature")
+
+    if not nature:
+        errors.append(
+            "❌ Nature is missing."
+        )
+
+    elif nature.title() not in VALID_NATURES:
+        errors.append(
+            f"❌ Invalid Nature: {nature}"
+        )
+
+    # -----------------------------------------------------
+    # LEVEL
+    # -----------------------------------------------------
+
+    level = build.get("level")
+
+    if level is None or level == "":
+        errors.append(
+            "❌ Level is missing."
+        )
+
+    else:
+        try:
+            level = int(level)
+
+            if level < 1 or level > 100:
+                errors.append(
+                    "❌ Level must be between 1 and 100."
+                )
+
+        except (ValueError, TypeError):
+            errors.append(
+                "❌ Level must be a number."
+            )
+
+    # -----------------------------------------------------
+    # REQUIRED STATS
+    # -----------------------------------------------------
+
+    required_stats = [
+        "hp",
+        "atk",
+        "def",
+        "spa",
+        "spd",
+        "spe"
+    ]
+
+    total_evs = 0
+
+    # -----------------------------------------------------
+    # IV / EV VALIDATION
+    # -----------------------------------------------------
+
+    for stat in required_stats:
+
+        # -------------------------------------------------
+        # IV
+        # -------------------------------------------------
+
+        iv_value = build["iv"].get(stat)
+
+        if iv_value is None or iv_value == "":
+            errors.append(
+                f"❌ {stat.upper()} IV is missing."
+            )
+
+        else:
+            try:
+                iv_value = int(iv_value)
+
+                if iv_value < 0 or iv_value > 31:
+                    errors.append(
+                        f"❌ {stat.upper()} IV must be between 0 and 31."
+                    )
+
+            except (ValueError, TypeError):
+                errors.append(
+                    f"❌ {stat.upper()} IV must be a number."
+                )
+
+        # -------------------------------------------------
+        # EV
+        # -------------------------------------------------
+
+        ev_value = build["ev"].get(stat)
+
+        if ev_value is None or ev_value == "":
+            errors.append(
+                f"❌ {stat.upper()} EV is missing."
+            )
+
+        else:
+            try:
+                ev_value = int(ev_value)
+
+                if ev_value < 0 or ev_value > 252:
+                    errors.append(
+                        f"❌ {stat.upper()} EV must be between 0 and 252."
+                    )
+
+                else:
+                    total_evs += ev_value
+
+            except (ValueError, TypeError):
+                errors.append(
+                    f"❌ {stat.upper()} EV must be a number."
+                )
+
+    # -----------------------------------------------------
+    # TOTAL EV
+    # -----------------------------------------------------
+
+    if total_evs != 510:
+        errors.append(
+            f"❌ Total EVs must be exactly 510. "
+            f"Current total: {total_evs}."
+        )
+
+    # -----------------------------------------------------
+    # RETURN VALIDATION ERRORS
+    # -----------------------------------------------------
+
+    return errors
+
+
+# =========================================================
+# 🧬 BUILD FORM MESSAGE HANDLER — STEP 3
+# =========================================================
+
+async def build_form_message(update, context):
+
+    if not update.message or not update.message.text:
+        return
+
+    text = update.message.text.strip()
+
+    # -----------------------------------------------------
+    # ONLY PROCESS BUILD FORMS
+    # -----------------------------------------------------
+
+    if "--- BUILD ---" not in text:
+        return
+
+    # -----------------------------------------------------
+    # PARSE BUILD FORM
+    # -----------------------------------------------------
+
+    build = parse_build_form(text)
+
+    # -----------------------------------------------------
+    # VALIDATE BUILD FORM
+    # -----------------------------------------------------
+
+    errors = validate_build(build)
+
+    # -----------------------------------------------------
+    # INVALID BUILD
+    # -----------------------------------------------------
+
+    if errors:
+
+        error_text = (
+            "<blockquote>"
+            "❌ <b>𝐈𝐍𝐕𝐀𝐋𝐈𝐃 𝐁𝐔𝐈𝐋𝐃</b>\n\n"
+            "Please fix the following errors:\n\n"
+            + "\n".join(errors)
+            + "\n\n"
+            "Edit your build form and send it again."
+            "</blockquote>"
+        )
+
+        await update.message.reply_text(
+            error_text,
+            parse_mode="HTML"
+        )
+
+        return
+
+    # -----------------------------------------------------
+    # TOTAL EV
+    # -----------------------------------------------------
+
+    total_evs = sum(
+        int(build["ev"].get(stat, 0))
+        for stat in [
+            "hp",
+            "atk",
+            "def",
+            "spa",
+            "spd",
+            "spe"
+        ]
+    )
+
+    # -----------------------------------------------------
+    # VALID BUILD RESPONSE
+    # -----------------------------------------------------
+
+    result = (
+        "<blockquote>"
+        "✅ <b>𝐁𝐔𝐈𝐋𝐃 𝐅𝐎𝐑𝐌 𝐕𝐀𝐋𝐈𝐃𝐀𝐓𝐄𝐃</b>\n\n"
+
+        f"📋 <b>Pokémon:</b> {build['name']}\n"
+        f"🌿 <b>Nature:</b> {build['nature'].title()}\n"
+        f"📈 <b>Level:</b> {build['level']}\n\n"
+
+        "📊 <b>𝐈𝐕 / 𝐄𝐕</b>\n\n"
+
+        f"❤️ HP: {build['iv']['hp']} / "
+        f"{build['ev']['hp']}\n"
+
+        f"⚔️ ATK: {build['iv']['atk']} / "
+        f"{build['ev']['atk']}\n"
+
+        f"🛡️ DEF: {build['iv']['def']} / "
+        f"{build['ev']['def']}\n"
+
+        f"🔮 SPA: {build['iv']['spa']} / "
+        f"{build['ev']['spa']}\n"
+
+        f"✨ SPD: {build['iv']['spd']} / "
+        f"{build['ev']['spd']}\n"
+
+        f"⚡ SPE: {build['iv']['spe']} / "
+        f"{build['ev']['spe']}\n\n"
+
+        f"📈 <b>Total EVs:</b> {total_evs} / 510\n\n"
+
+        "⏳ <b>Build accepted for the next stage.</b>"
+        "</blockquote>"
+    )
+
+    await update.message.reply_text(
+        result,
+        parse_mode="HTML"
+    )
+
+
+# =========================================================
+# 🧬 BUILD DATA NORMALIZER — STEP 4
+# =========================================================
+
+def normalize_build(build):
+
+    normalized = {
+        "name": build["name"].strip(),
+        "nature": build["nature"].strip().title(),
+        "iv": {},
+        "ev": {}
+    }
+
+    # -----------------------------------------------------
+    # STATS
+    # -----------------------------------------------------
+
+    stats = [
+        "hp",
+        "atk",
+        "def",
+        "spa",
+        "spd",
+        "spe"
+    ]
+
+    for stat in stats:
+
+        normalized["iv"][stat] = int(
+            build["iv"][stat]
+        )
+
+        normalized["ev"][stat] = int(
+            build["ev"][stat]
+        )
+
+    return normalized
+
+
+# =========================================================
+# 🧬 POKÉMON DATA RESOLVER — STEP 5
+# =========================================================
+
+def resolve_build_pokemon(build):
+
+    # -----------------------------------------------------
+    # GET POKÉMON FROM EXISTING JSON DATABASE
+    # -----------------------------------------------------
+
+    pokemon = get_pokemon(build["name"])
+
+    if not pokemon:
+        return None
+
+    # -----------------------------------------------------
+    # RETURN ORIGINAL POKÉMON DATA
+    # -----------------------------------------------------
+
+    return pokemon
+
+
+# =========================================================
+# 🧬 BASE STATS EXTRACTION — STEP 6
+# =========================================================
+
+def get_build_base_stats(pokemon):
+
+    if not pokemon:
+        return None
+
+    stats = pokemon.get("stats")
+
+    if not isinstance(stats, dict):
+        return None
+
+    required_stats = [
+        "hp",
+        "atk",
+        "def",
+        "spa",
+        "spd",
+        "spe"
+    ]
+
+    base_stats = {}
+
+    for stat in required_stats:
+
+        value = stats.get(stat)
+
+        if value is None:
+            return None
+
+        try:
+            base_stats[stat] = int(value)
+
+        except (ValueError, TypeError):
+            return None
+
+    return base_stats
+
+
+# =========================================================
+# 🧬 BUILD CALCULATION INPUTS — STEP 7
+# =========================================================
+
+def prepare_build_calculation(build, pokemon):
+
+    base_stats = get_build_base_stats(pokemon)
+
+    if not base_stats:
+        return None
+
+    return {
+        "name": build["name"],
+        "nature": build["nature"],
+        "level": int(build["level"]),
+
+        "base_stats": base_stats,
+
+        "iv": {
+            "hp": int(build["iv"]["hp"]),
+            "atk": int(build["iv"]["atk"]),
+            "def": int(build["iv"]["def"]),
+            "spa": int(build["iv"]["spa"]),
+            "spd": int(build["iv"]["spd"]),
+            "spe": int(build["iv"]["spe"]),
+        },
+
+        "ev": {
+            "hp": int(build["ev"]["hp"]),
+            "atk": int(build["ev"]["atk"]),
+            "def": int(build["ev"]["def"]),
+            "spa": int(build["ev"]["spa"]),
+            "spd": int(build["ev"]["spd"]),
+            "spe": int(build["ev"]["spe"]),
+        }
+    }
+
+
+# =========================================================
+# 🧬 POKÉMON STAT CALCULATOR — STEP 9
+# =========================================================
+
+def calculate_build_stats(calculation_data):
+
+    if not calculation_data:
+        return None
+
+    level = int(calculation_data["level"])
+
+    base_stats = calculation_data["base_stats"]
+    ivs = calculation_data["iv"]
+    evs = calculation_data["ev"]
+
+    final_stats = {}
+
+    # -----------------------------------------------------
+    # HP
+    # -----------------------------------------------------
+
+    hp = (
+        (
+            2 * base_stats["hp"]
+            + ivs["hp"]
+            + (evs["hp"] // 4)
+        )
+        * level
+        // 100
+    ) + level + 10
+
+    final_stats["hp"] = hp
+
+    # -----------------------------------------------------
+    # OTHER STATS
+    # -----------------------------------------------------
+
+    for stat in [
+        "atk",
+        "def",
+        "spa",
+        "spd",
+        "spe"
+    ]:
+
+        stat_value = (
+            (
+                2 * base_stats[stat]
+                + ivs[stat]
+                + (evs[stat] // 4)
+            )
+            * level
+            // 100
+        ) + 5
+
+        final_stats[stat] = stat_value
+
+    # -----------------------------------------------------
+    # RETURN FINAL RAW STATS
+    # -----------------------------------------------------
+
+    return final_stats
+
+
+# =========================================================
+# 🧬 NATURE MODIFIER ENGINE — STEP 10
+# =========================================================
+
+NATURE_MODIFIERS = {
+
+    # -----------------------------------------------------
+    # ATTACK
+    # -----------------------------------------------------
+
+    "Lonely":  ("atk", "def"),
+    "Brave":   ("atk", "spe"),
+    "Adamant": ("atk", "spa"),
+    "Naughty": ("atk", "spd"),
+
+    # -----------------------------------------------------
+    # DEFENSE
+    # -----------------------------------------------------
+
+    "Bold":    ("def", "atk"),
+    "Relaxed": ("def", "spe"),
+    "Impish":  ("def", "spa"),
+    "Lax":     ("def", "spd"),
+
+    # -----------------------------------------------------
+    # SPEED
+    # -----------------------------------------------------
+
+    "Timid": ("spe", "atk"),
+    "Hasty": ("spe", "def"),
+    "Jolly": ("spe", "spa"),
+    "Naive": ("spe", "spd"),
+
+    # -----------------------------------------------------
+    # SPECIAL ATTACK
+    # -----------------------------------------------------
+
+    "Modest": ("spa", "atk"),
+    "Mild":   ("spa", "def"),
+    "Quiet":  ("spa", "spe"),
+    "Rash":   ("spa", "spd"),
+
+    # -----------------------------------------------------
+    # SPECIAL DEFENSE
+    # -----------------------------------------------------
+
+    "Calm":    ("spd", "atk"),
+    "Gentle":  ("spd", "def"),
+    "Sassy":   ("spd", "spe"),
+    "Careful": ("spd", "spa"),
+
+}
+
+
+def apply_nature_modifier(stats, nature):
+
+    if not stats:
+        return None
+
+    if not nature:
+        return stats.copy()
+
+    nature = nature.strip().title()
+
+    modified_stats = stats.copy()
+
+    # -----------------------------------------------------
+    # NEUTRAL NATURE
+    # -----------------------------------------------------
+
+    if nature in {
+        "Hardy",
+        "Docile",
+        "Bashful",
+        "Quirky",
+        "Serious"
+    }:
+        return modified_stats
+
+    # -----------------------------------------------------
+    # NATURE MODIFIER
+    # -----------------------------------------------------
+
+    modifier = NATURE_MODIFIERS.get(nature)
+
+    if not modifier:
+        return modified_stats
+
+    increased_stat, decreased_stat = modifier
+
+    # -----------------------------------------------------
+    # +10% STAT
+    # -----------------------------------------------------
+
+    modified_stats[increased_stat] = (
+        modified_stats[increased_stat] * 110
+    ) // 100
+
+    # -----------------------------------------------------
+    # -10% STAT
+    # -----------------------------------------------------
+
+    modified_stats[decreased_stat] = (
+        modified_stats[decreased_stat] * 90
+    ) // 100
+
+    return modified_stats
+
+
+# =========================================================
+# 🧬 FINAL BUILD STAT PIPELINE — STEP 11
+# =========================================================
+
+def generate_build_stats(build):
+
+    if not build:
+        return None
+
+    # -----------------------------------------------------
+    # RESOLVE POKÉMON
+    # -----------------------------------------------------
+
+    pokemon = resolve_build_pokemon(build)
+
+    if not pokemon:
+        return None
+
+    # -----------------------------------------------------
+    # PREPARE CALCULATION DATA
+    # -----------------------------------------------------
+
+    calculation_data = prepare_build_calculation(
+        build,
+        pokemon
+    )
+
+    if not calculation_data:
+        return None
+
+    # -----------------------------------------------------
+    # CALCULATE RAW STATS
+    # -----------------------------------------------------
+
+    raw_stats = calculate_build_stats(
+        calculation_data
+    )
+
+    if not raw_stats:
+        return None
+
+    # -----------------------------------------------------
+    # APPLY NATURE
+    # -----------------------------------------------------
+
+    final_stats = apply_nature_modifier(
+        raw_stats,
+        build["nature"]
+    )
+
+    if not final_stats:
+        return None
+
+    # -----------------------------------------------------
+    # RETURN COMPLETE BUILD RESULT
+    # -----------------------------------------------------
+
+    return {
+        "name": build["name"],
+        "level": int(build["level"]),
+        "nature": build["nature"].title(),
+
+        "base_stats": calculation_data["base_stats"],
+
+        "iv": calculation_data["iv"],
+        "ev": calculation_data["ev"],
+
+        "raw_stats": raw_stats,
+
+        "final_stats": final_stats
+    }
+
+
+# =========================================================
+# 🧬 BUILD RESULT FORMATTER — STEP 12
+# =========================================================
+
+def format_build_result(build_result):
+
+    if not build_result:
+        return None
+
+    final_stats = build_result.get("final_stats")
+
+    if not final_stats:
+        return None
+
+    return (
+        "<blockquote>"
+        "🧬 <b>𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐁𝐔𝐈𝐋𝐃 𝐑𝐄𝐒𝐔𝐋𝐓</b>\n\n"
+
+        f"📋 <b>Pokémon:</b> "
+        f"{build_result['name']}\n"
+
+        f"📈 <b>Level:</b> "
+        f"{build_result['level']}\n"
+
+        f"🌿 <b>Nature:</b> "
+        f"{build_result['nature']}\n\n"
+
+        "📊 <b>𝐅𝐈𝐍𝐀𝐋 𝐒𝐓𝐀𝐓𝐒</b>\n\n"
+
+        f"❤️ HP: "
+        f"{final_stats['hp']}\n"
+
+        f"⚔️ ATK: "
+        f"{final_stats['atk']}\n"
+
+        f"🛡️ DEF: "
+        f"{final_stats['def']}\n"
+
+        f"🔮 SPA: "
+        f"{final_stats['spa']}\n"
+
+        f"✨ SPD: "
+        f"{final_stats['spd']}\n"
+
+        f"⚡ SPE: "
+        f"{final_stats['spe']}\n"
+
+        "</blockquote>"
+    )
+
+
+# =========================================================
+# 🧬 BUILD RESULT DETAILS — STEP 13
+# =========================================================
+
+def format_build_result(build_result):
+
+    if not build_result:
+        return None
+
+    final_stats = build_result.get("final_stats")
+
+    if not final_stats:
+        return None
+
+    ivs = build_result.get("iv", {})
+    evs = build_result.get("ev", {})
+
+    total_evs = sum(
+        int(evs.get(stat, 0))
+        for stat in [
+            "hp",
+            "atk",
+            "def",
+            "spa",
+            "spd",
+            "spe"
+        ]
+    )
+
+    return (
+        "<blockquote>"
+        "🧬 <b>𝐏𝐎𝐊𝐄́𝐌𝐎𝐍 𝐁𝐔𝐈𝐋𝐃 𝐑𝐄𝐒𝐔𝐋𝐓</b>\n\n"
+
+        f"📋 <b>Pokémon:</b> "
+        f"{build_result['name']}\n"
+
+        f"📈 <b>Level:</b> "
+        f"{build_result['level']}\n"
+
+        f"🌿 <b>Nature:</b> "
+        f"{build_result['nature']}\n\n"
+
+        "📊 <b>𝐈𝐕 / 𝐄𝐕</b>\n\n"
+
+        f"❤️ HP: {ivs['hp']} / {evs['hp']}\n"
+        f"⚔️ ATK: {ivs['atk']} / {evs['atk']}\n"
+        f"🛡️ DEF: {ivs['def']} / {evs['def']}\n"
+        f"🔮 SPA: {ivs['spa']} / {evs['spa']}\n"
+        f"✨ SPD: {ivs['spd']} / {evs['spd']}\n"
+        f"⚡ SPE: {ivs['spe']} / {evs['spe']}\n\n"
+
+        f"📈 <b>Total EVs:</b> "
+        f"{total_evs} / 510\n\n"
+
+        "📊 <b>𝐅𝐈𝐍𝐀𝐋 𝐒𝐓𝐀𝐓𝐒</b>\n\n"
+
+        f"❤️ HP: {final_stats['hp']}\n"
+        f"⚔️ ATK: {final_stats['atk']}\n"
+        f"🛡️ DEF: {final_stats['def']}\n"
+        f"🔮 SPA: {final_stats['spa']}\n"
+        f"✨ SPD: {final_stats['spd']}\n"
+        f"⚡ SPE: {final_stats['spe']}\n"
+
+        "</blockquote>"
+    )
+
+
+# =========================================================
+# 🧬 BUILD RESULT GENERATOR — STEP 14
+# =========================================================
+
+def generate_build_result(build):
+
+    if not build:
+        return None
+
+    # -----------------------------------------------------
+    # GENERATE CALCULATED STATS
+    # -----------------------------------------------------
+
+    build_result = generate_build_stats(build)
+
+    if not build_result:
+        return None
+
+    # -----------------------------------------------------
+    # FORMAT RESULT FOR TELEGRAM
+    # -----------------------------------------------------
+
+    result_text = format_build_result(
+        build_result
+    )
+
+    if not result_text:
+        return None
+
+    return result_text
+
+
+# =========================================================
+# 🧬 BUILD DATA BINDING — STEP 15
+# =========================================================
+
+def bind_build_pokemon_data(build):
+
+    if not build:
+        return None
+
+    pokemon = resolve_build_pokemon_safe(build)
+
+    if not pokemon:
+        return None
+
+    calculation_data = prepare_build_calculation(
+        build,
+        pokemon
+    )
+
+    if not calculation_data:
+        return None
+
+    return {
+        "pokemon": pokemon,
+        "calculation": calculation_data
+    }
+
+
+# =========================================================
+# 🧬 COMPLETE BUILD CALCULATION PIPELINE — STEP 16
+# =========================================================
+
+def calculate_complete_build(build):
+
+    if not build:
+        return None
+
+    # -----------------------------------------------------
+    # BIND POKÉMON DATA
+    # -----------------------------------------------------
+
+    bound_data = bind_build_pokemon_data(build)
+
+    if not bound_data:
+        return None
+
+    calculation_data = bound_data["calculation"]
+
+    # -----------------------------------------------------
+    # CALCULATE RAW STATS
+    # -----------------------------------------------------
+
+    raw_stats = calculate_build_stats(
+        calculation_data
+    )
+
+    if not raw_stats:
+        return None
+
+    # -----------------------------------------------------
+    # APPLY NATURE
+    # -----------------------------------------------------
+
+    final_stats = apply_nature_modifier(
+        raw_stats,
+        build["nature"]
+    )
+
+    if not final_stats:
+        return None
+
+    # -----------------------------------------------------
+    # COMPLETE RESULT
+    # -----------------------------------------------------
+
+    return {
+        "pokemon": bound_data["pokemon"],
+
+        "name": build["name"],
+        "level": int(build["level"]),
+        "nature": build["nature"].title(),
+
+        "base_stats": calculation_data["base_stats"],
+
+        "iv": calculation_data["iv"],
+        "ev": calculation_data["ev"],
+
+        "raw_stats": raw_stats,
+        "final_stats": final_stats
+    }
+
+
+# =========================================================
+# 🧬 FINAL BUILD OUTPUT — STEP 17
+# =========================================================
+
+def create_final_build_output(build):
+
+    if not build:
+        return None
+
+    # -----------------------------------------------------
+    # COMPLETE CALCULATION
+    # -----------------------------------------------------
+
+    build_result = calculate_complete_build(build)
+
+    if not build_result:
+        return None
+
+    # -----------------------------------------------------
+    # FORMAT TELEGRAM OUTPUT
+    # -----------------------------------------------------
+
+    result_text = format_build_result(
+        build_result
+    )
+
+    if not result_text:
+        return None
+
+    return {
+        "text": result_text,
+        "data": build_result
+    }
+
+
+# =========================================================
+# 🧬 BUILD CALCULATION SAFETY CHECK — STEP 18
+# =========================================================
+
+def validate_build_calculation(build):
+
+    if not build:
+        return False
+
+    # -----------------------------------------------------
+    # REQUIRED BUILD DATA
+    # -----------------------------------------------------
+
+    required_fields = [
+        "name",
+        "nature",
+        "level",
+        "iv",
+        "ev"
+    ]
+
+    for field in required_fields:
+
+        if field not in build:
+            return False
+
+    # -----------------------------------------------------
+    # LEVEL
+    # -----------------------------------------------------
+
+    try:
+        level = int(build["level"])
+
+    except (ValueError, TypeError):
+        return False
+
+    if level < 1 or level > 100:
+        return False
+
+    # -----------------------------------------------------
+    # REQUIRED STATS
+    # -----------------------------------------------------
+
+    stats = [
+        "hp",
+        "atk",
+        "def",
+        "spa",
+        "spd",
+        "spe"
+    ]
+
+    # -----------------------------------------------------
+    # IV / EV EXISTENCE CHECK
+    # -----------------------------------------------------
+
+    for stat in stats:
+
+        if stat not in build["iv"]:
+            return False
+
+        if stat not in build["ev"]:
+            return False
+
+        try:
+            iv = int(build["iv"][stat])
+            ev = int(build["ev"][stat])
+
+        except (ValueError, TypeError):
+            return False
+
+        # -------------------------------------------------
+        # IV RANGE
+        # -------------------------------------------------
+
+        if iv < 0 or iv > 31:
+            return False
+
+        # -------------------------------------------------
+        # EV RANGE
+        # -------------------------------------------------
+
+        if ev < 0 or ev > 252:
+            return False
+
+    # -----------------------------------------------------
+    # TOTAL EV
+    # -----------------------------------------------------
+
+    total_evs = sum(
+        int(build["ev"][stat])
+        for stat in stats
+    )
+
+    if total_evs != 510:
+        return False
+
+    return True
+
+
+# =========================================================
+# 🧬 FINAL BUILD ENGINE — STEP 19
+# =========================================================
+
+def run_build_engine(build):
+
+    if not build:
+        return None
+
+    # -----------------------------------------------------
+    # VALIDATE BUILD
+    # -----------------------------------------------------
+
+    errors = validate_build(build)
+
+    if errors:
+        return {
+            "success": False,
+            "errors": errors
+        }
+
+    # -----------------------------------------------------
+    # CALCULATION SAFETY CHECK
+    # -----------------------------------------------------
+
+    if not validate_build_calculation(build):
+        return {
+            "success": False,
+            "errors": [
+                "❌ Build calculation data is invalid."
+            ]
+        }
+
+    # -----------------------------------------------------
+    # CALCULATE COMPLETE BUILD
+    # -----------------------------------------------------
+
+    build_result = calculate_complete_build(build)
+
+    if not build_result:
+        return {
+            "success": False,
+            "errors": [
+                "❌ Unable to calculate this Pokémon build."
+            ]
+        }
+
+    # -----------------------------------------------------
+    # FORMAT RESULT
+    # -----------------------------------------------------
+
+    result_text = format_build_result(
+        build_result
+    )
+
+    if not result_text:
+        return {
+            "success": False,
+            "errors": [
+                "❌ Unable to generate build result."
+            ]
+        }
+
+    # -----------------------------------------------------
+    # FINAL RESPONSE
+    # -----------------------------------------------------
+
+    return {
+        "success": True,
+        "text": result_text,
+        "data": build_result
+    }
+
+
+# =========================================================
+# 🧬 BUILD FORM HANDLER — STEP 20
+# =========================================================
+
+async def build_form_message(update, context):
+
+    if not update.message or not update.message.text:
+        return
+
+    text = update.message.text.strip()
+
+    # -----------------------------------------------------
+    # ONLY PROCESS BUILD FORMS
+    # -----------------------------------------------------
+
+    if "--- BUILD ---" not in text:
+        return
+
+    # -----------------------------------------------------
+    # PARSE BUILD FORM
+    # -----------------------------------------------------
+
+    build = parse_build_form(text)
+
+    # -----------------------------------------------------
+    # RUN BUILD ENGINE
+    # -----------------------------------------------------
+
+    result = run_build_engine(build)
+
+    if not result:
+        await update.message.reply_text(
+            "<blockquote>"
+            "❌ <b>𝐁𝐔𝐈𝐋𝐃 𝐄𝐍𝐆𝐈𝐍𝐄 𝐄𝐑𝐑𝐎𝐑</b>\n\n"
+            "Unable to process this build."
+            "</blockquote>",
+            parse_mode="HTML"
+        )
+        return
+
+    # -----------------------------------------------------
+    # INVALID BUILD
+    # -----------------------------------------------------
+
+    if not result["success"]:
+
+        error_text = (
+            "<blockquote>"
+            "❌ <b>𝐈𝐍𝐕𝐀𝐋𝐈𝐃 𝐁𝐔𝐈𝐋𝐃</b>\n\n"
+            "Please fix the following errors:\n\n"
+            + "\n".join(result["errors"])
+            + "\n\n"
+            "Edit your build form and send it again."
+            "</blockquote>"
+        )
+
+        await update.message.reply_text(
+            error_text,
+            parse_mode="HTML"
+        )
+
+        return
+
+    # -----------------------------------------------------
+    # SUCCESSFUL BUILD
+    # -----------------------------------------------------
+
+    await update.message.reply_text(
+        result["text"],
+        parse_mode="HTML"
+    )
+
+
+# =========================================================
+# 🧬 BUILD ENGINE — POKÉMON RESOLUTION CHECK — STEP 21
+# =========================================================
+
+def resolve_build_pokemon_safe(build):
+
+    if not build:
+        return None
+
+    pokemon_name = build.get("name")
+
+    if not pokemon_name:
+        return None
+
+    pokemon = get_pokemon(pokemon_name)
+
+    if not pokemon:
+        return None
+
+    return pokemon
+
+
+# =========================================================
 # AUTO POKEMON IMPORT
 # =========================================================
 
@@ -5382,6 +6694,7 @@ async def buildpoke(update, context):
         "--- 𝐁𝐔𝐈𝐋𝐃 ---\n"
         f"Name : {pokemon_name.title()}\n"
         "Nature : \n"
+        "Level : \n"
         "HP IV/EV : 31 , 0\n"
         "ATK IV/EV : 31 , 0\n"
         "DEF IV/EV : 31 , 0\n"
@@ -12319,7 +13632,7 @@ def main():
         target=run_api,
         daemon=True
     ).start()
-    
+
     init_db()
 
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
@@ -12331,8 +13644,21 @@ def main():
 
     app = Application.builder().token(token).build()
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("helpdex", helpdex))
+    # =====================================================
+    # BASIC COMMANDS
+    # =====================================================
+
+    app.add_handler(
+        CommandHandler("start", start)
+    )
+
+    app.add_handler(
+        CommandHandler("helpdex", helpdex)
+    )
+
+    # =====================================================
+    # PHOTO ID
+    # =====================================================
 
     app.add_handler(
         MessageHandler(
@@ -12341,10 +13667,49 @@ def main():
         )
     )
 
-    app.add_handler(CommandHandler("data", data_command))
-    app.add_handler(CommandHandler("datadamage", datadamage))
-    app.add_handler(CommandHandler("buildpoke", buildpoke))
-    app.add_handler(CommandHandler("datatype", datatype))
+    # =====================================================
+    # POKÉMON COMMANDS
+    # =====================================================
+
+    app.add_handler(
+        CommandHandler("data", data_command)
+    )
+
+    app.add_handler(
+        CommandHandler("datadamage", datadamage)
+    )
+
+    app.add_handler(
+        CommandHandler("buildpoke", buildpoke)
+    )
+
+    app.add_handler(
+        CommandHandler("datatype", datatype)
+    )
+
+    app.add_handler(
+        CommandHandler("datanature", datanature)
+    )
+
+    app.add_handler(
+        CommandHandler("evbuild", evbuild)
+    )
+
+    app.add_handler(
+        CommandHandler("datatm", datatm)
+    )
+
+    app.add_handler(
+        CommandHandler("pokeballs", pokeballs)
+    )
+
+    app.add_handler(
+        CommandHandler("move", move)
+    )
+
+    # =====================================================
+    # BUILD ENGINE CALLBACKS
+    # =====================================================
 
     app.add_handler(
         CallbackQueryHandler(
@@ -12352,14 +13717,32 @@ def main():
             pattern=r"^build_"
         )
     )
-    
+
+    # =====================================================
+    # BUILD FORM MESSAGE
+    # =====================================================
+    # Only messages containing "--- BUILD ---"
+    # are processed by the Build Engine.
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT
+            & filters.Regex(r"(?s).*--- BUILD ---.*"),
+            build_form_message
+        )
+    )
+
+    # =====================================================
+    # POKÉMON DATA CALLBACKS
+    # =====================================================
+
     app.add_handler(
         CallbackQueryHandler(
             dex_callback,
             pattern=r"^dex_(suggest|info|moves|weakness|evolution|shiny)_"
         )
     )
-    
+
     app.add_handler(
         CallbackQueryHandler(
             type_callback,
@@ -12373,17 +13756,11 @@ def main():
             pattern=r"^datatype_back$"
         )
     )
-       
-    app.add_handler(CommandHandler("datanature", datanature))
-    app.add_handler(CommandHandler("evbuild", evbuild))
-    app.add_handler(CommandHandler("datatm", datatm))
-    app.add_handler(CommandHandler("pokeballs", pokeballs))
-    app.add_handler(CommandHandler("move", move))
-    
+
     app.add_handler(
         CallbackQueryHandler(
             tm_callback,
-            pattern="^tm_page_[1-6]$"
+            pattern=r"^tm_page_[1-6]$"
         )
     )
 
@@ -12391,20 +13768,6 @@ def main():
         CallbackQueryHandler(
             ball_callback,
             pattern=r"^ball_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            dex_callback,
-            pattern=r"^dex_(info|moves|weakness|evolution|shiny)_"
-        )
-    )
-    
-    app.add_handler(
-        CallbackQueryHandler(
-            helpdex_callback,
-            pattern=r"^dex_"
         )
     )
 
@@ -12421,23 +13784,72 @@ def main():
             pattern=r"^ev_"
         )
     )
-    
+
+    # =====================================================
+    # GENERAL DEX CALLBACK
+    # =====================================================
+
+    app.add_handler(
+        CallbackQueryHandler(
+            helpdex_callback,
+            pattern=r"^dex_"
+        )
+    )
+
+    # =====================================================
+    # START MENU CALLBACKS
+    # =====================================================
+
     app.add_handler(
         CallbackQueryHandler(
             start_menu_callback,
-            pattern="^(start_commands|start_main|start_updates|commands_management|commands_pokemon|commands_music)$"
+            pattern=(
+                r"^(start_commands|start_main|start_updates|"
+                r"commands_management|commands_pokemon|commands_music)$"
+            )
         )
     )
-    
-    app.add_handler(CommandHandler("filter", filter_command))
-    app.add_handler(CommandHandler("filters", filters_command))
-    app.add_handler(CommandHandler("stop", stop_filter))
-    app.add_handler(CommandHandler("stickerfilter", sticker_filter))
-    
-    app.add_handler(CommandHandler("setwelcome", setwelcome))
-    app.add_handler(CommandHandler("getwelcome", getwelcome))
-    app.add_handler(CommandHandler("resetwelcome", resetwelcome))
-    
+
+    # =====================================================
+    # MANAGEMENT COMMANDS
+    # =====================================================
+
+    app.add_handler(
+        CommandHandler("filter", filter_command)
+    )
+
+    app.add_handler(
+        CommandHandler("filters", filters_command)
+    )
+
+    app.add_handler(
+        CommandHandler("stop", stop_filter)
+    )
+
+    app.add_handler(
+        CommandHandler("stickerfilter", sticker_filter)
+    )
+
+    # =====================================================
+    # WELCOME COMMANDS
+    # =====================================================
+
+    app.add_handler(
+        CommandHandler("setwelcome", setwelcome)
+    )
+
+    app.add_handler(
+        CommandHandler("getwelcome", getwelcome)
+    )
+
+    app.add_handler(
+        CommandHandler("resetwelcome", resetwelcome)
+    )
+
+    # =====================================================
+    # NEW MEMBER WELCOME
+    # =====================================================
+
     app.add_handler(
         MessageHandler(
             filters.StatusUpdate.NEW_CHAT_MEMBERS,
@@ -12445,38 +13857,62 @@ def main():
         )
     )
 
+    # =====================================================
+    # DAMAGE FORM
+    # =====================================================
+
     app.add_handler(
         MessageHandler(
             filters.TEXT,
             process_damage_form
         )
     )
-    
+
+    # =====================================================
+    # TEXT STICKER FILTER
+    # =====================================================
+
     app.add_handler(
         MessageHandler(
             filters.TEXT,
             text_sticker_filter_handler
         )
     )
-    
+
+    # =====================================================
+    # STICKER FILTER
+    # =====================================================
+
     app.add_handler(
         MessageHandler(
             filters.Sticker.ALL,
             sticker_filter_handler
         )
     )
-    
+
+    # =====================================================
+    # MODERATION
+    # =====================================================
+
     app.add_handler(
         MessageHandler(
             filters.TEXT | filters.CAPTION,
             moderation_handler
         )
-    ) 
+    )
+
+    # =====================================================
+    # START BOT
+    # =====================================================
 
     print("XERXES Bot is starting...")
 
     app.run_polling()
 
+
+# =========================================================
+# RUN
+# =========================================================
 
 if __name__ == "__main__":
     main()
