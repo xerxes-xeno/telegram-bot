@@ -263,6 +263,353 @@ async def buildpoke(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # =========================================================
+# 🧬 BUILD ENGINE — CALLBACKS
+# =========================================================
+
+async def build_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+    session = get_build_session(user_id)
+
+    if not session:
+        await query.edit_message_text(
+            "❌ <b>Build Session Expired</b>\n\n"
+            "Please start a new build with:\n"
+            "<code>/buildpoke Pikachu</code>",
+            parse_mode="HTML"
+        )
+        return
+
+    action = query.data
+
+    # -----------------------------------------------------
+    # CANCEL
+    # -----------------------------------------------------
+    if action == "build_cancel":
+        clear_build_session(user_id)
+
+        await query.edit_message_text(
+            "❌ <b>Build Cancelled</b>\n\n"
+            "Your Pokémon build session has been cleared.",
+            parse_mode="HTML"
+        )
+        return
+
+    pokemon = session["pokemon"].title()
+
+    # -----------------------------------------------------
+    # NATURE
+    # -----------------------------------------------------
+    if action == "build_nature":
+        keyboard = [
+            [
+                InlineKeyboardButton("⚔️ Attack", callback_data="build_nat_atk"),
+                InlineKeyboardButton("✨ Sp. Attack", callback_data="build_nat_spa")
+            ],
+            [
+                InlineKeyboardButton("🛡️ Defense", callback_data="build_nat_def"),
+                InlineKeyboardButton("✨ Sp. Defense", callback_data="build_nat_spd")
+            ],
+            [
+                InlineKeyboardButton("⚡ Speed", callback_data="build_nat_spe"),
+                InlineKeyboardButton("⚪ Neutral", callback_data="build_nat_neutral")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back", callback_data="build_back")
+            ]
+        ]
+
+        await query.edit_message_text(
+            f"🌿 <b>{pokemon} — Nature</b>\n\n"
+            "Choose the nature category for your build.",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return
+
+    # -----------------------------------------------------
+    # ABILITY
+    # -----------------------------------------------------
+    if action == "build_ability":
+        data = session["pokemon_data"]
+
+        abilities = (
+            data.get("abilities")
+            or data.get("Abilities")
+            or []
+        )
+
+        if isinstance(abilities, dict):
+            abilities = list(abilities.values())
+
+        if not abilities:
+            abilities = ["Default Ability"]
+
+        keyboard = []
+
+        for i, ability in enumerate(abilities[:6]):
+            if isinstance(ability, dict):
+                ability = (
+                    ability.get("name")
+                    or ability.get("Name")
+                    or str(ability)
+                )
+
+            keyboard.append([
+                InlineKeyboardButton(
+                    str(ability),
+                    callback_data=f"build_setability_{i}"
+                )
+            ])
+
+        keyboard.append([
+            InlineKeyboardButton("🔙 Back", callback_data="build_back")
+        ])
+
+        context.user_data["build_abilities"] = [
+            str(a.get("name") or a.get("Name") or a)
+            if isinstance(a, dict) else str(a)
+            for a in abilities[:6]
+        ]
+
+        await query.edit_message_text(
+            f"🧬 <b>{pokemon} — Ability</b>\n\n"
+            "Choose the ability for this build.",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return
+
+    # -----------------------------------------------------
+    # HELD ITEM
+    # -----------------------------------------------------
+    if action == "build_item":
+        keyboard = [
+            [
+                InlineKeyboardButton("💎 Choice Band", callback_data="build_item_choice_band"),
+                InlineKeyboardButton("💎 Choice Specs", callback_data="build_item_choice_specs")
+            ],
+            [
+                InlineKeyboardButton("⚡ Life Orb", callback_data="build_item_life_orb"),
+                InlineKeyboardButton("🛡️ Leftovers", callback_data="build_item_leftovers")
+            ],
+            [
+                InlineKeyboardButton("🎯 Focus Sash", callback_data="build_item_focus_sash"),
+                InlineKeyboardButton("🧿 Expert Belt", callback_data="build_item_expert_belt")
+            ],
+            [
+                InlineKeyboardButton("❌ None", callback_data="build_item_none")
+            ],
+            [
+                InlineKeyboardButton("🔙 Back", callback_data="build_back")
+            ]
+        ]
+
+        await query.edit_message_text(
+            f"🎒 <b>{pokemon} — Held Item</b>\n\n"
+            "Choose the held item for this build.",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return
+
+    # -----------------------------------------------------
+    # IV / EV
+    # -----------------------------------------------------
+    if action == "build_ivev":
+        await query.edit_message_text(
+            f"📊 <b>{pokemon} — IV / EV</b>\n\n"
+            "Default IVs are set to <b>31</b>.\n"
+            "Default EVs are set to <b>0</b>.\n\n"
+            "Detailed EV allocation will be handled by the "
+            "Build Engine validation system.",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "⚔️ Offensive",
+                        callback_data="build_ev_offensive"
+                    ),
+                    InlineKeyboardButton(
+                        "🛡️ Defensive",
+                        callback_data="build_ev_defensive"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "⚡ Speed",
+                        callback_data="build_ev_speed"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🔙 Back",
+                        callback_data="build_back"
+                    )
+                ]
+            ])
+        )
+        return
+
+    # -----------------------------------------------------
+    # MOVESET
+    # -----------------------------------------------------
+    if action == "build_moves":
+        await query.edit_message_text(
+            f"⚔️ <b>{pokemon} — Moveset</b>\n\n"
+            "Choose the moves that will form your build.\n\n"
+            "Moves are stored inside the current build session.",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "⚔️ Offensive",
+                        callback_data="build_moves_offensive"
+                    ),
+                    InlineKeyboardButton(
+                        "🛡️ Utility",
+                        callback_data="build_moves_utility"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🔙 Back",
+                        callback_data="build_back"
+                    )
+                ]
+            ])
+        )
+        return
+
+    # -----------------------------------------------------
+    # ROLE
+    # -----------------------------------------------------
+    if action == "build_role":
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "⚔️ Sweeper",
+                    callback_data="build_role_sweeper"
+                ),
+                InlineKeyboardButton(
+                    "🛡️ Tank",
+                    callback_data="build_role_tank"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🔄 Support",
+                    callback_data="build_role_support"
+                ),
+                InlineKeyboardButton(
+                    "🎯 Balanced",
+                    callback_data="build_role_balanced"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🔙 Back",
+                    callback_data="build_back"
+                )
+            ]
+        ]
+
+        await query.edit_message_text(
+            f"🎯 <b>{pokemon} — Battle Role</b>\n\n"
+            "Choose the main objective of this build.",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return
+
+    # -----------------------------------------------------
+    # SUMMARY
+    # -----------------------------------------------------
+    if action == "build_summary":
+        nature = session["nature"] or "Not selected"
+        ability = session["ability"] or "Not selected"
+        item = session["held_item"] or "Not selected"
+        role = session["role"] or "Not selected"
+
+        evs = session["evs"]
+        ivs = session["ivs"]
+
+        moves = session["moves"]
+
+        move_text = (
+            "\n".join(f"• {m}" for m in moves)
+            if moves else "Not selected"
+        )
+
+        await query.edit_message_text(
+            f"📋 <b>{pokemon} — BUILD SUMMARY</b>\n\n"
+            f"🌿 Nature: <b>{nature}</b>\n"
+            f"🧬 Ability: <b>{ability}</b>\n"
+            f"🎒 Held Item: <b>{item}</b>\n"
+            f"🎯 Role: <b>{role}</b>\n\n"
+            f"📊 <b>IVs</b>\n"
+            f"HP {ivs['hp']} | ATK {ivs['atk']} | DEF {ivs['def']}\n"
+            f"SPA {ivs['spa']} | SPD {ivs['spd']} | SPE {ivs['spe']}\n\n"
+            f"📈 <b>EVs</b>\n"
+            f"HP {evs['hp']} | ATK {evs['atk']} | DEF {evs['def']}\n"
+            f"SPA {evs['spa']} | SPD {evs['spd']} | SPE {evs['spe']}\n\n"
+            f"⚔️ <b>Moves</b>\n{move_text}",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        "🔄 Configure",
+                        callback_data="build_back"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "❌ Cancel",
+                        callback_data="build_cancel"
+                    )
+                ]
+            ])
+        )
+        return
+
+    # -----------------------------------------------------
+    # BACK TO MAIN BUILD MENU
+    # -----------------------------------------------------
+    if action == "build_back":
+        keyboard = [
+            [
+                InlineKeyboardButton("🌿 Nature", callback_data="build_nature"),
+                InlineKeyboardButton("🧬 Ability", callback_data="build_ability")
+            ],
+            [
+                InlineKeyboardButton("🎒 Held Item", callback_data="build_item"),
+                InlineKeyboardButton("📊 IV / EV", callback_data="build_ivev")
+            ],
+            [
+                InlineKeyboardButton("⚔️ Moveset", callback_data="build_moves"),
+                InlineKeyboardButton("🎯 Role", callback_data="build_role")
+            ],
+            [
+                InlineKeyboardButton("📋 Build Summary", callback_data="build_summary")
+            ],
+            [
+                InlineKeyboardButton("❌ Cancel", callback_data="build_cancel")
+            ]
+        ]
+
+        await query.edit_message_text(
+            "🧬 <b>POKÉMON BUILD ENGINE</b>\n\n"
+            f"🔹 Pokémon: <b>{pokemon}</b>\n\n"
+            "Choose a component to configure your build.",
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return
+
+
+# =========================================================
 # 🧬 POKÉMON BUILD ENGINE
 # =========================================================
 
@@ -6195,7 +6542,7 @@ async def nature_callback(update, context):
         await edit_page(text, keyboard)
         return
 
-        # =====================================================
+    # =====================================================
     # HASTY
     # =====================================================
 
@@ -6306,63 +6653,6 @@ async def nature_callback(update, context):
         await edit_page(text, keyboard)
         return
             
-
-# =========================================================
-# EV TRAINING GUIDE
-# =========================================================
-
-async def evbuild(update, context):
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "𝐇𝐏",
-                callback_data="ev_hp"
-            ),
-            InlineKeyboardButton(
-                "𝐀𝐭𝐭𝐚𝐜𝐤",
-                callback_data="ev_attack"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "𝐃𝐞𝐟𝐞𝐧𝐜𝐞",
-                callback_data="ev_defense"
-            ),
-            InlineKeyboardButton(
-                "𝐒𝐩𝐞𝐜𝐢𝐚𝐥 𝐀𝐭𝐭𝐚𝐜𝐤",
-                callback_data="ev_spattack"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "𝐒𝐩𝐞𝐜𝐢𝐚𝐥 𝐃𝐞𝐟𝐞𝐧𝐜𝐞",
-                callback_data="ev_spdefense"
-            ),
-            InlineKeyboardButton(
-                "𝐒𝐩𝐞𝐞𝐝",
-                callback_data="ev_speed"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "𝐇𝐨𝐰 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐖𝐨𝐫𝐤𝐬",
-                callback_data="ev_how"
-            )
-        ]
-    ]
-
-    await update.message.reply_text(
-        "🏋️ 𝐏𝐨𝐤𝐞́𝐦𝐨𝐧 𝐄𝐕 𝐓𝐫𝐚𝐢𝐧𝐢𝐧𝐠 𝐆𝐮𝐢𝐝𝐞\n\n"
-        "Each Pokémon defeated gives Effort Values (EVs) "
-        "that boost your Pokémon's stats.\n\n"
-        "Pokémon listed here give 3 EVs in their respective "
-        "stat when defeated.\n\n"
-        "Select a stat to see which Pokémon to battle for "
-        "EV training:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
-
 
 # =========================================================
 # EV TRAINING GUIDE
@@ -11981,6 +12271,13 @@ def main():
     app.add_handler(CommandHandler("datadamage", datadamage))
     app.add_handler(CommandHandler("buildpoke", buildpoke))
     app.add_handler(CommandHandler("datatype", datatype))
+
+    app.add_handler(
+        CallbackQueryHandler(
+            build_callback,
+            pattern=r"^build_"
+        )
+    )
     
     app.add_handler(
         CallbackQueryHandler(
