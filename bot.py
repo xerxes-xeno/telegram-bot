@@ -12054,6 +12054,31 @@ async def start_pokemon_journey(update, context):
 
 
 # =========================================================
+# SAFE START MENU MESSAGE EDITOR
+# =========================================================
+
+async def edit_start_menu(query, text, reply_markup=None):
+
+    try:
+        # Text message
+        if query.message and query.message.text is not None:
+            await query.edit_message_text(
+                text=text,
+                reply_markup=reply_markup
+            )
+
+        # Photo message with caption
+        elif query.message and query.message.photo:
+            await query.edit_message_caption(
+                caption=text,
+                reply_markup=reply_markup
+            )
+
+    except Exception as e:
+        print(f"START MENU EDIT ERROR: {e}")
+
+
+# =========================================================
 # START MENU CALLBACK
 # =========================================================
 
@@ -12094,7 +12119,8 @@ async def start_menu_callback(update, context):
             ]
         ]
 
-        await query.edit_message_text(
+        await edit_start_menu(
+            query,
             "𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
@@ -12105,7 +12131,8 @@ async def start_menu_callback(update, context):
 
     elif query.data == "commands_management":
 
-        await query.edit_message_text(
+        await edit_start_menu(
+            query,
             "𝐌𝐚𝐧𝐚𝐠𝐞𝐦𝐞𝐧𝐭 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬\n\n"
             "/ban\n"
             "/unban\n"
@@ -12135,7 +12162,8 @@ async def start_menu_callback(update, context):
 
     elif query.data == "commands_pokemon":
 
-        await query.edit_message_text(
+        await edit_start_menu(
+            query,
             "𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬\n\n"
             "/startpokedex\n"
             "/trainer\n"
@@ -12159,7 +12187,8 @@ async def start_menu_callback(update, context):
 
     elif query.data == "commands_music":
 
-        await query.edit_message_text(
+        await edit_start_menu(
+            query,
             "𝐌𝐮𝐬𝐢𝐜 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬\n\n"
             "Music commands will be available on festival of light.",
             reply_markup=InlineKeyboardMarkup([
@@ -12178,7 +12207,8 @@ async def start_menu_callback(update, context):
 
     elif query.data == "start_updates":
 
-        await query.edit_message_text(
+        await edit_start_menu(
+            query,
             "𝐗𝐄𝐑𝐗𝐄𝐒 𝐔𝐩𝐝𝐚𝐭𝐞𝐬\n\n"
             "🔹 𝐗𝐄𝐑𝐗𝐄𝐒 𝐏𝐨𝐤𝐞𝐦𝐨𝐧 𝐏𝐨𝐤𝐞𝐃𝐞𝐱\n"
             "🔹 𝐓𝐫𝐚𝐢𝐧𝐞𝐫 𝐒𝐲𝐬𝐭𝐞𝐦\n"
