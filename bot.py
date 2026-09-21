@@ -13789,6 +13789,10 @@ def main():
     # =====================================================
 
     app.add_handler(
+        CommandHandler("id", id_function)
+    )
+    
+    app.add_handler(
         CommandHandler("kick", kick)
     )
 
