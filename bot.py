@@ -13789,7 +13789,7 @@ def main():
     # =====================================================
 
     app.add_handler(
-        CommandHandler("id", id_function)
+        CommandHandler("id", user_id)
     )
     
     app.add_handler(
