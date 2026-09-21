@@ -26,6 +26,8 @@ from telegram import (
     WebAppInfo
 )
 
+from telegram.error import RetryAfter, Forbidden, BadRequest, TimedOut, NetworkError
+
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -13534,8 +13536,12 @@ async def starter_selected(update, context):
 
 
 # =========================================================
-# BROADCAST
+# BROADCAST SYSTEM
 # =========================================================
+
+BROADCAST_RETRY_LIMIT = 3
+BROADCAST_DELAY = 0.12
+
 
 async def broadcast(update, context):
 
@@ -13545,42 +13551,250 @@ async def broadcast(update, context):
         )
         return
 
-    if not context.args:
-        await update.message.reply_text(
-            "⚠️ Usage:\n/broadcast Your message here"
+    message = update.message
+
+    # Broadcast content must be supplied by replying to a message.
+    if not message.reply_to_message:
+        await message.reply_text(
+            "⚠️ <b>𝐁𝐫𝐨𝐚𝐝𝐜𝐚𝐬𝐭 𝐔𝐬𝐚𝐠𝐞</b>\n\n"
+            "Reply to the message you want to broadcast and use:\n"
+            "<code>/broadcast</code>\n\n"
+            "📝 Text\n"
+            "🖼️ Photo + caption\n"
+            "🎥 Video + caption\n\n"
+            "All supported content will be copied to users."
         )
         return
 
-    message = " ".join(context.args)
+    source = message.reply_to_message
+
+    # Detect supported broadcast content.
+    if source.text:
+        content_type = "text"
+    elif source.photo:
+        content_type = "photo"
+    elif source.video:
+        content_type = "video"
+    else:
+        await message.reply_text(
+            "❌ <b>Unsupported broadcast type.</b>\n\n"
+            "Currently supported:\n"
+            "📝 Text\n"
+            "🖼️ Photo\n"
+            "🎥 Video"
+        )
+        return
+
     users = get_all_users()
 
-    await update.message.reply_text(
-        f"📢 𝐁𝐫𝐨𝐚𝐝𝐜𝐚𝐬𝐭 𝐬𝐭𝐚𝐫𝐭𝐞𝐝...\n"
-        f"👥 𝐔𝐬𝐞𝐫𝐬: {len(users)}"
+    if not users:
+        await message.reply_text(
+            "⚠️ No registered users found."
+        )
+        return
+
+    preview = (
+        "📢 <b>𝐁𝐫𝐨𝐚𝐝𝐜𝐚𝐬𝐭 𝐏𝐫𝐞𝐯𝐢𝐞𝐰</b>\n\n"
+        f"📦 Type: <b>{content_type.upper()}</b>\n"
+        f"👥 Recipients: <b>{len(users)}</b>\n\n"
+        "⚠️ Are you sure you want to start the broadcast?"
+    )
+
+    keyboard = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(
+                "✅ 𝐂𝐨𝐧𝐟𝐢𝐫𝐦",
+                callback_data="broadcast_confirm"
+            ),
+            InlineKeyboardButton(
+                "❌ 𝐂𝐚𝐧𝐜𝐞𝐥",
+                callback_data="broadcast_cancel"
+            )
+        ]
+    ])
+
+    context.user_data["broadcast_source"] = source.message_id
+    context.user_data["broadcast_chat"] = source.chat_id
+
+    await message.reply_text(
+        preview,
+        reply_markup=keyboard,
+        parse_mode="HTML"
+    )
+
+
+# =========================================================
+# BROADCAST ENGINE
+# =========================================================
+
+async def broadcast_callback(update, context):
+
+    query = update.callback_query
+
+    if query.from_user.id != ADMIN_ID:
+        await query.answer(
+            "🚫 Only the Boss can control broadcasts.",
+            show_alert=True
+        )
+        return
+
+    await query.answer()
+
+    if query.data == "broadcast_cancel":
+
+        context.user_data.pop("broadcast_source", None)
+        context.user_data.pop("broadcast_chat", None)
+
+        await query.edit_message_text(
+            "🛑 <b>𝐁𝐑𝐎𝐀𝐃𝐂𝐀𝐒𝐓 𝐀𝐁𝐎𝐑𝐓𝐄𝐃</b>\n\n"
+            "👑 The Boss cancelled the transmission.\n"
+            "📡 Nothing was sent."
+        )
+
+        return
+
+    if query.data != "broadcast_confirm":
+        return
+
+    source_message_id = context.user_data.get("broadcast_source")
+    source_chat_id = context.user_data.get("broadcast_chat")
+
+    if not source_message_id or not source_chat_id:
+        await query.edit_message_text(
+            "❌ <b>𝐁𝐑𝐎𝐀𝐃𝐂𝐀𝐒𝐓 𝐋𝐎𝐒𝐓</b>\n\n"
+            "The source message could not be found.\n"
+            "Please create the broadcast again."
+        )
+        return
+
+    users = get_all_users()
+
+    await query.edit_message_text(
+        "🚀 <b>𝐁𝐑𝐎𝐀𝐃𝐂𝐀𝐒𝐓 𝐃𝐄𝐏𝐋𝐎𝐘𝐄𝐃</b>\n\n"
+        "⚡ Transmission has begun.\n"
+        f"👥 Targets: <b>{len(users)}</b>\n\n"
+        "📡 The empire is receiving the signal..."
     )
 
     sent = 0
     failed = 0
+    removed = 0
 
     for user_id in users:
 
-        try:
-            await context.bot.send_message(
-                chat_id=user_id,
-                text=message
-            )
+        delivered = False
+        permanent_failure = False
 
-            sent += 1
-            await asyncio.sleep(0.1)
+        for attempt in range(BROADCAST_RETRY_LIMIT):
 
-        except Exception as e:
-            print("Broadcast error:", user_id, e)
-            failed += 1
+            try:
 
-    await update.message.reply_text(
-        "📊 𝐁𝐫𝐨𝐚𝐝𝐜𝐚𝐬𝐭 𝐜𝐨𝐦𝐩𝐥𝐞𝐭𝐞𝐝.\n\n"
-        f"✅ 𝐒𝐞𝐧𝐭: {sent}\n"
-        f"❌ 𝐅𝐚𝐢𝐥𝐞𝐝: {failed}"
+                await context.bot.copy_message(
+                    chat_id=user_id,
+                    from_chat_id=source_chat_id,
+                    message_id=source_message_id
+                )
+
+                sent += 1
+                delivered = True
+                break
+
+            except RetryAfter as e:
+
+                wait_time = int(e.retry_after) + 1
+
+                print(
+                    f"Broadcast rate limit: "
+                    f"{user_id} → waiting {wait_time}s"
+                )
+
+                await asyncio.sleep(wait_time)
+
+            except (Forbidden, BadRequest) as e:
+
+                print(
+                    f"Broadcast permanent failure: "
+                    f"{user_id} → {e}"
+                )
+
+                permanent_failure = True
+                break
+
+            except (TimedOut, NetworkError) as e:
+
+                print(
+                    f"Broadcast temporary failure: "
+                    f"{user_id} → {e}"
+                )
+
+                if attempt < BROADCAST_RETRY_LIMIT - 1:
+                    await asyncio.sleep(2)
+
+            except Exception as e:
+
+                print(
+                    f"Broadcast unknown error: "
+                    f"{user_id} → {e}"
+                )
+
+                if attempt < BROADCAST_RETRY_LIMIT - 1:
+                    await asyncio.sleep(2)
+
+        if not delivered:
+
+            if permanent_failure:
+                try:
+                    conn = db()
+                    cur = conn.cursor()
+
+                    cur.execute(
+                        "DELETE FROM users WHERE user_id = ?",
+                        (user_id,)
+                    )
+
+                    conn.commit()
+                    conn.close()
+
+                    removed += 1
+
+                except Exception as db_error:
+
+                    print(
+                        "Broadcast user cleanup error:",
+                        user_id,
+                        db_error
+                    )
+
+                    failed += 1
+
+            else:
+                failed += 1
+
+        await asyncio.sleep(BROADCAST_DELAY)
+
+    total = len(users)
+
+    success_rate = (
+        (sent / total) * 100
+        if total
+        else 0
+    )
+
+    context.user_data.pop("broadcast_source", None)
+    context.user_data.pop("broadcast_chat", None)
+
+    await context.bot.send_message(
+        chat_id=query.from_user.id,
+        text=(
+            "📊 <b>𝐁𝐑𝐎𝐀𝐃𝐂𝐀𝐒𝐓 𝐂𝐎𝐌𝐏𝐋𝐄𝐓𝐄𝐃</b>\n\n"
+            "👑 <b>Transmission finished.</b>\n\n"
+            f"👥 Total: <b>{total}</b>\n"
+            f"✅ Sent: <b>{sent}</b>\n"
+            f"❌ Failed: <b>{failed}</b>\n"
+            f"🗑️ Removed: <b>{removed}</b>\n\n"
+            f"📈 Success Rate: <b>{success_rate:.1f}%</b>"
+        ),
+        parse_mode="HTML"
     )
 
 
@@ -13864,6 +14078,13 @@ def main():
         CommandHandler("broadcast", broadcast)
     )
 
+    app.add_handler(
+        CallbackQueryHandler(
+            broadcast_callback,
+            pattern=r"^broadcast_(confirm|cancel)$"
+        )
+    )
+  
     # =====================================================
     # WELCOME COMMANDS
     # =====================================================
