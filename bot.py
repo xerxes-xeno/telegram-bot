@@ -13817,7 +13817,7 @@ def main():
     )
 
     app.add_handler(
-        CommandHandler("resetwarn", resetwarn)
+        CommandHandler("resetwarn", resetwarns)
     )
 
     app.add_handler(
