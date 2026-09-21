@@ -2383,65 +2383,6 @@ async def dex_callback(update, context):
             show_alert=True
         )
 
-# =========================================================
-# BAG COMMAND
-# =========================================================
-
-async def bag(update, context):
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "֎ 𝐌𝐞𝐠𝐚 𝐒𝐭𝐨𝐧𝐞",
-                callback_data="bag_mega"
-            ),
-            InlineKeyboardButton(
-                "⌘ 𝐈𝐭𝐞𝐦𝐬",
-                callback_data="bag_items"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🀪 𝐓𝐮𝐭𝐨𝐫𝐬",
-                callback_data="bag_tutors"
-            ),
-            InlineKeyboardButton(
-                "💿 𝐓𝐌𝐬",
-                callback_data="bag_tms"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "✪ 𝐙-𝐂𝐫𝐲𝐬𝐭𝐚𝐥",
-                callback_data="bag_zcrystal"
-            ),
-            InlineKeyboardButton(
-                "⎉ 𝐏𝐨𝐤𝐞𝐛𝐚𝐥𝐥𝐬",
-                callback_data="bag_pokeballs"
-            )
-        ]
-    ]
-
-    # Image + quote card
-    card = create_bag_card()
-
-    image_buffer = BytesIO()
-
-    card.save(
-        image_buffer,
-        format="PNG"
-    )
-
-    image_buffer.seek(0)
-    image_buffer.name = "inventory.png"
-
-    await update.message.reply_photo(
-        photo=image_buffer,
-        reply_markup=InlineKeyboardMarkup(
-            keyboard
-        )
-    )
-
 
 # =========================================================
 # MINI APP API
@@ -13848,6 +13789,70 @@ def main():
     # =====================================================
 
     app.add_handler(
+        CommandHandler("setwelcome", setwelcome)
+    )
+
+    app.add_handler(
+        CommandHandler("getwelcome", getwelcome)
+    )
+
+    app.add_handler(
+        CommandHandler("resetwelcome", resetwelcome)
+    )
+
+    app.add_handler(
+        CommandHandler("kick", kick)
+    )
+
+    app.add_handler(
+        CommandHandler("pin", pin)
+    )
+   
+    app.add_handler(
+        CommandHandler("unpin", unpin)
+    )
+
+    app.add_handler(
+        CommandHandler("help", help_command)
+    )
+
+    app.add_handler(
+        CommandHandler("warn", warn)
+    )
+
+    app.add_handler(
+        CommandHandler("warnings", warnings)
+    )
+
+    app.add_handler(
+        CommandHandler("resetwarn", resetwarn)
+    )
+
+    app.add_handler(
+        CommandHandler("mute", mute)
+    )
+
+    app.add_handler(
+        CommandHandler("unmute", unmute)
+    )
+
+    app.add_handler(
+        CommandHandler("ban", ban)
+    )
+   
+    app.add_handler(
+        CommandHandler("unban", unban)
+    )
+
+    app.add_handler(
+        CommandHandler("startpokedex", start_pokedex)
+    )
+
+    app.add_handler(
+        CommandHandler("bag", bag)
+    )
+
+    app.add_handler(
         CommandHandler("filter", filter_command)
     )
 
@@ -13861,6 +13866,10 @@ def main():
 
     app.add_handler(
         CommandHandler("stickerfilter", sticker_filter)
+    )
+
+    app.add_handler(
+        CommandHandler("broadcast", broadcast)
     )
 
     # =====================================================
@@ -13938,7 +13947,7 @@ def main():
     # START BOT
     # =====================================================
 
-    print("XERXES Bot is starting...")
+    print("IT'S READY TO ROLL BOSS")
 
     app.run_polling()
 
